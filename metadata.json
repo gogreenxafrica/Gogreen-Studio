@@ -1,0 +1,7 @@
+{
+  "name": "Copy of Gogreen Crypto",
+  "description": "A mobile-first fintech application for Nigerians to easily sell crypto and receive automatic bank payments.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
