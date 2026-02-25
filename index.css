@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+:root {
+  --c-primary: #1A5D22;
+  --c-secondary: #76B923;
+  --c-accent: #E5E7EB;
+  --c-ghost: #F9FAFB;
+  --c-dark: #050B06;
+  --c-text: #111827;
+}
+
+.dark {
+  --c-primary: #4ade80;
+  --c-secondary: #1A5D22;
+  --c-accent: #1f2937;
+  --c-ghost: #050B06;
+  --c-dark: #000000;
+  --c-text: #F9FAFB;
+}
+
+@theme {
+  --color-primary: var(--c-primary);
+  --color-secondary: var(--c-secondary);
+  --color-accent: var(--c-accent);
+  --color-ghost: var(--c-ghost);
+  --color-dark: var(--c-dark);
+  
+  --radius-card: 24px;
+  --radius-button: 18px;
+  
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+}
+
+body {
+  background-color: var(--color-ghost);
+  color: var(--c-text);
+  -webkit-tap-highlight-color: transparent;
+  font-family: var(--font-sans);
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+::selection {
+  background: rgba(26, 93, 34, 0.1);
+  color: #1A5D22;
+}
+
+/* Glassmorphism Utilities */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+}
+
+.dark .glass {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.glass-dark {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.05);
+}
+
+.dark .glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2);
+}
+
+.premium-shadow {
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes shine {
+  0% { transform: translateX(-100%) skewX(-15deg); }
+  50% { transform: translateX(200%) skewX(-15deg); }
+  100% { transform: translateX(200%) skewX(-15deg); }
+}
+
+.animate-shine {
+  animation: shine 4s infinite;
+}
+
+/* Remove spin buttons from number inputs */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}

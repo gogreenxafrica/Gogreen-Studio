@@ -6,7 +6,7 @@ interface CaptchaProps {
   isVerified: boolean;
 }
 
-export const SlideCaptcha: React.FC<CaptchaProps> = ({ onVerify, isVerified }) => {
+export const SlideCaptcha = ({ onVerify, isVerified }: CaptchaProps) => {
   const [dragX, setDragX] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   

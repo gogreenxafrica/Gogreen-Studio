@@ -1,40 +1,64 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 
 interface LogoProps {
   className?: string;
-  variant?: 'color' | 'white';
+  variant?: 'color' | 'white' | 'premium' | 'icon' | 'icon-white';
 }
 
-export const Logo: React.FC<LogoProps> = ({ 
-  className = "w-24 h-24", 
+/**
+ * Logo component using the provided high-fidelity assets.
+ */
+export const Logo = ({ 
+  className = "w-48 h-16", 
   variant = 'color' 
-}) => {
-  const src = variant === 'color' ? 'input_file_0.png' : 'input_file_1.png';
+}: LogoProps) => {
+  const [hasError, setHasError] = useState(false);
   
+  // Updated to use real files from public/assets/logos
+  const getSrc = () => {
+    switch (variant) {
+      case 'white':
+        return '/assets/logos/gogreen-full-text-logo-white.png';
+      case 'premium':
+        return '/assets/logos/gogreen-full-text+icon-logo-full-green+white-combo.png';
+      case 'icon':
+        return '/assets/logos/gogreen-dark-green-logomark.png';
+      case 'icon-white':
+        return '/assets/logos/gogreen-white-logomark.png';
+      case 'color':
+      default:
+        return '/assets/logos/gogreen-full-text-logo-full-green.png';
+    }
+  };
+
+  const src = getSrc();
+  
+  if (hasError) {
+    return (
+      <div className={`flex items-center justify-center ${className}`}>
+        <div className={`font-black text-2xl tracking-tighter flex items-baseline ${variant === 'white' || variant === 'premium' ? 'text-white' : 'text-primary'}`}>
+          go<span className={variant === 'white' ? 'opacity-60' : variant === 'premium' ? 'text-secondary' : 'text-secondary'}>green</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className={`flex flex-col items-center justify-center ${className}`}>
+    <div className={`flex items-center justify-center overflow-hidden ${className}`}>
       <img 
         src={src} 
         alt="Gogreen Logo" 
         className="w-full h-full object-contain"
-        onError={(e) => {
-          // If the specific variant fails, try the other one before hiding
-          if (e.currentTarget.src.includes('input_file_1.png')) {
-            e.currentTarget.src = 'input_file_0.png';
-          } else {
-            e.currentTarget.style.display = 'none';
-          }
-        }} 
+        onError={() => setHasError(true)} 
       />
     </div>
   );
 };
 
-export const LogoText: React.FC<{ className?: string, variant?: 'white' | 'primary' }> = ({ 
+export const LogoText = ({ 
   className = "h-8", 
   variant = 'primary' 
-}) => {
+}: { className?: string, variant?: 'white' | 'primary' }) => {
   const textColor = variant === 'white' ? 'text-white' : 'text-primary';
   
   return (
@@ -45,14 +69,13 @@ export const LogoText: React.FC<{ className?: string, variant?: 'white' | 'prima
   );
 };
 
-export const FullLogo: React.FC<{ className?: string, variant?: 'white' | 'color' }> = ({ 
+export const FullLogo = ({ 
   className = "", 
   variant = 'color' 
-}) => {
+}: { className?: string, variant?: 'white' | 'color' | 'premium' }) => {
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      <Logo className="w-10 h-10" variant={variant} />
-      <LogoText className="h-auto !text-2xl" variant={variant === 'white' ? 'white' : 'primary'} />
+      <Logo className="w-32 h-10" variant={variant as any} />
     </div>
   );
 };

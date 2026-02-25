@@ -6,7 +6,7 @@ interface SwipeButtonProps {
   text: string;
 }
 
-export const SwipeButton: React.FC<SwipeButtonProps> = ({ onComplete, text }) => {
+export const SwipeButton = ({ onComplete, text }: SwipeButtonProps) => {
   const [dragX, setDragX] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
