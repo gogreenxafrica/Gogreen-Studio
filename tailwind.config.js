@@ -7,9 +7,33 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#1A5D22',
-        dark: '#051a08',
-        ghost: '#f4f4f4',
+        primary: '#2da437', // Brand Green
+        ghost: '#ffffff', // Brand White
+        'brand-gray': '#d4d3d3', // Brand Gray
+        green: {
+          50: '#f2fbf3',
+          100: '#e0f6e3',
+          200: '#c2ecc7',
+          300: '#93dba0',
+          400: '#5bc36e',
+          500: '#2da437', // Brand color
+          600: '#208429',
+          700: '#1b6823',
+          800: '#185320',
+          900: '#14441c',
+        },
+        gray: {
+          50: '#fafafa',
+          100: '#f5f5f5',
+          200: '#ebebeb',
+          300: '#d4d3d3', // Brand gray
+          400: '#a3a3a3',
+          500: '#737373',
+          600: '#525252',
+          700: '#404040',
+          800: '#262626',
+          900: '#171717',
+        }
       },
       keyframes: {
         'progress-indeterminate': {

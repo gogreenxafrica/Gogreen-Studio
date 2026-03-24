@@ -1,7 +1,15 @@
 import React from 'react';
+import { motion } from 'motion/react';
 
 export const Skeleton = ({ className = "h-4 w-full" }: { className?: string }) => (
-  <div className={`bg-accent animate-pulse ${className}`} />
+  <div className={`relative overflow-hidden bg-accent/60 ${className}`}>
+    <motion.div
+      animate={{ x: ['-100%', '100%'] }}
+      transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+      className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent"
+    />
+    <div className="absolute inset-0 bg-accent animate-pulse" />
+  </div>
 );
 
 export const SkeletonScreen = ({ type = 'list' }: { type?: 'home' | 'transactions' | 'rewards' | 'profile' | 'list' }) => {
@@ -25,7 +33,7 @@ export const SkeletonScreen = ({ type = 'list' }: { type?: 'home' | 'transaction
         <div className="px-6 pb-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
             {/* Balance Card */}
-            <div className="w-full p-8 rounded-[36px] bg-white border border-gray-100 flex flex-col items-center gap-6 shadow-sm">
+            <div className="w-full p-8 rounded-[36px] bg-surface border border-line flex flex-col items-center gap-6 shadow-sm">
                <Skeleton className="h-3 w-24 rounded-full opacity-50" />
                <Skeleton className="h-10 w-48 rounded-xl" />
                <Skeleton className="h-6 w-32 rounded-full opacity-40" />
@@ -50,7 +58,7 @@ export const SkeletonScreen = ({ type = 'list' }: { type?: 'home' | 'transaction
              </div>
              <div className="space-y-3">
                {[1, 2, 3, 4, 5].map(i => (
-                 <div key={i} className="p-4 bg-white rounded-[24px] flex items-center gap-4 border border-gray-100 shadow-sm">
+                 <div key={i} className="p-4 bg-surface rounded-[24px] flex items-center gap-4 border border-line shadow-sm">
                    <Skeleton className="w-10 h-10 rounded-xl shrink-0" />
                    <div className="flex-1 space-y-2">
                      <div className="flex justify-between">
@@ -74,7 +82,7 @@ export const SkeletonScreen = ({ type = 'list' }: { type?: 'home' | 'transaction
   // Generic List View
   if (type === 'transactions' || type === 'list') {
     return (
-      <div className={`${containerStyles} max-w-4xl mx-auto`}>
+      <div className={containerStyles}>
         <div className="px-6 py-6 sticky top-0 z-20 flex items-center">
            <Skeleton className="w-10 h-10 rounded-full shrink-0" />
            <div className="flex-1 flex flex-col items-center pr-10 gap-1">
@@ -84,7 +92,7 @@ export const SkeletonScreen = ({ type = 'list' }: { type?: 'home' | 'transaction
         </div>
         <div className="flex-1 overflow-y-auto no-scrollbar px-6 pb-10 space-y-4">
            {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-              <div key={i} className="p-5 bg-white rounded-[28px] flex items-center gap-4 border border-gray-100 shadow-sm">
+              <div key={i} className="p-5 bg-surface rounded-[28px] flex items-center gap-4 border border-line shadow-sm">
                  <Skeleton className="w-12 h-12 rounded-2xl shrink-0" />
                  <div className="flex-1 space-y-2">
                     <div className="flex justify-between">
@@ -110,7 +118,7 @@ export const SkeletonScreen = ({ type = 'list' }: { type?: 'home' | 'transaction
   if (type === 'rewards') {
     return (
       <div className={containerStyles}>
-        <div className="p-8 rounded-b-[40px] bg-white border-b border-gray-100 shadow-sm flex flex-col gap-6 relative overflow-hidden mb-6">
+        <div className="p-8 rounded-b-[40px] bg-surface border-b border-line shadow-sm flex flex-col gap-6 relative overflow-hidden mb-6">
             <div className="flex justify-between items-center">
                <Skeleton className="h-6 w-32 rounded-md" />
                <Skeleton className="h-6 w-16 rounded-full" />
@@ -126,8 +134,8 @@ export const SkeletonScreen = ({ type = 'list' }: { type?: 'home' | 'transaction
             </div>
         </div>
 
-        <div className="px-6 space-y-6 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-6">
-           <div className="p-6 bg-white rounded-[32px] border border-gray-100 shadow-sm">
+        <div className="px-6 space-y-6 w-full grid grid-cols-1 lg:grid-cols-2 gap-6">
+           <div className="p-6 bg-surface rounded-[32px] border border-line shadow-sm">
               <Skeleton className="w-12 h-12 rounded-2xl mb-4" />
               <Skeleton className="h-6 w-48 rounded-md mb-2" />
               <Skeleton className="h-3 w-full max-w-[200px] rounded-md mb-4 opacity-60" />
@@ -145,8 +153,8 @@ export const SkeletonScreen = ({ type = 'list' }: { type?: 'home' | 'transaction
 
   // Fallback
   return (
-    <div className={`${containerStyles} max-w-3xl mx-auto`}>
-      <div className="px-6 py-8 border-b border-gray-100 bg-white">
+    <div className={containerStyles}>
+      <div className="px-6 py-8 border-b border-line bg-surface">
          <div className="flex items-center gap-4 mb-6">
             <Skeleton className="w-20 h-20 rounded-[28px]" />
             <div className="flex-1 space-y-2">
@@ -157,7 +165,7 @@ export const SkeletonScreen = ({ type = 'list' }: { type?: 'home' | 'transaction
       </div>
       <div className="p-6 space-y-3">
          {[1, 2, 3, 4].map(i => (
-            <div key={i} className="p-4 bg-white rounded-[24px] border border-gray-100 flex items-center gap-4">
+            <div key={i} className="p-4 bg-surface rounded-[24px] border border-line flex items-center gap-4">
                <Skeleton className="w-10 h-10 rounded-xl shrink-0" />
                <div className="flex-1 space-y-2">
                   <Skeleton className="h-4 w-32 rounded-md" />

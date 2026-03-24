@@ -1,96 +1,158 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
 :root {
-  --c-primary: #1A5D22;
-  --c-secondary: #76B923;
-  --c-accent: #E5E7EB;
-  --c-ghost: #F9FAFB;
-  --c-dark: #050B06;
-  --c-text: #111827;
+  /* Brand - A more electric, modern green */
+  --c-primary: #2da437; 
+  --c-primary-dark: #24832c;
+  
+  /* Neutral Palette - Cool Grays (Slate-like) */
+  --c-secondary: #F3F4F6;
+  --c-accent: #ECFDF5;
+  
+  /* Backgrounds */
+  --c-app: #FFFFFF;
+  --c-surface: #FFFFFF;
+  --c-surface-alt: #FFFFFF;
+  --c-ghost: #FFFFFF;
+  
+  /* Content */
+  --c-content: #111827; /* Gray-900 */
+  --c-content-muted: #6B7280; /* Gray-500 */
+  --c-content-subtle: #9CA3AF; /* Gray-400 */
+  
+  /* Borders */
+  --c-line: #F3F4F6;
+  --c-line-strong: #E5E7EB;
+  
+  /* Dark Mode Base */
+  --c-dark: #0B0E11; /* Binance-like dark */
 }
 
 .dark {
-  --c-primary: #4ade80;
-  --c-secondary: #1A5D22;
-  --c-accent: #1f2937;
-  --c-ghost: #050B06;
+  --c-primary: #2da437;
+  --c-primary-dark: #24832c;
+  
+  --c-secondary: #1E2329; /* Binance Card BG */
+  --c-accent: rgba(45, 164, 55, 0.1);
+  
+  --c-app: #0B0E11;
+  --c-surface: #1E2329;
+  --c-surface-alt: #2B3139;
+  
+  --c-content: #EAECEF;
+  --c-content-muted: #848E9C;
+  --c-content-subtle: #474D57;
+  
+  --c-line: #2B3139;
+  --c-line-strong: #474D57;
+  
   --c-dark: #000000;
-  --c-text: #F9FAFB;
 }
 
 @theme {
   --color-primary: var(--c-primary);
+  --color-primary-dark: var(--c-primary-dark);
   --color-secondary: var(--c-secondary);
   --color-accent: var(--c-accent);
   --color-ghost: var(--c-ghost);
+  --color-app: var(--c-app);
+  --color-surface: var(--c-surface);
+  --color-surface-alt: var(--c-surface-alt);
+  --color-content: var(--c-content);
+  --color-content-muted: var(--c-content-muted);
+  --color-content-subtle: var(--c-content-subtle);
+  --color-line: var(--c-line);
+  --color-line-strong: var(--c-line-strong);
   --color-dark: var(--c-dark);
   
   --radius-card: 24px;
-  --radius-button: 18px;
+  --radius-button: 12px;
   
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-display: var(--font-sans);
+}
+
+html {
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background-color: var(--color-ghost);
-  color: var(--c-text);
+  background-color: var(--color-app);
+  color: var(--color-content);
   -webkit-tap-highlight-color: transparent;
   font-family: var(--font-sans);
   user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
 }
 
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
 
-::selection {
-  background: rgba(26, 93, 34, 0.1);
-  color: #1A5D22;
+/* Modern Fintech Card (Coinbase/Binance Hybrid) */
+.fintech-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
 }
 
-/* Glassmorphism Utilities */
+.dark .fintech-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  box-shadow: none;
+}
+
+/* Refined Glassmorphism */
 .glass {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .dark .glass {
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-}
-
-.glass-dark {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 8px 32px rgba(0, 0, 0, 0.1);
+  background: rgba(30, 35, 41, 0.85); /* Darker glass */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
 }
 
 .dark .glass-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2);
+  background: rgba(30, 35, 41, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
-.premium-shadow {
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
+/* Animations */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+  20%, 40%, 60%, 80% { transform: translateX(10px); }
+}
+
+.animate-shake {
+  animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
 }
 
 @keyframes shine {
@@ -103,13 +165,48 @@ body {
   animation: shine 4s infinite;
 }
 
-/* Remove spin buttons from number inputs */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-10px) rotate(5deg); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes coin-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+.animate-coin-bounce {
+  animation: coin-bounce 2s ease-in-out infinite;
+}
+
+/* Input Reset */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-
 input[type=number] {
   -moz-appearance: textfield;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
+
+input[type="date"] {
+  cursor: pointer;
 }

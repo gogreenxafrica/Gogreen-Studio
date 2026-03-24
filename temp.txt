@@ -1,0 +1,146 @@
+25:        className={`w-9 h-9 flex items-center justify-center rounded-full active:scale-90 transition-all ${theme === 'dark' ? 'bg-white/10 text-white border border-white/10 backdrop-blur-md' : 'bg-primary/5 text-primary border border-primary/10 backdrop-blur-sm'}`}
+30:        <h1 className={`font-bold tracking-tight text-base ${theme === 'dark' ? 'text-white' : 'text-content'}`}>{title}</h1>
+31:        {subtitle && <p className={`text-[8px] font-black uppercase tracking-[0.2em] mt-0.5 ${theme === 'dark' ? 'text-white/40' : 'text-primary/60'}`}>{subtitle}</p>}
+53:          className="px-4 py-3 hover:bg-white/5 cursor-pointer border-b border-white/5 last:border-0 text-sm text-white/70 hover:text-white transition-colors"
+256:          className="h-full px-6 text-white text-[10px] font-black uppercase bg-primary hover:bg-green-600 transition-colors rounded-l-[16px]"
+269:          className="h-full px-6 text-white text-[10px] font-black uppercase bg-blue-500 hover:bg-blue-600 transition-colors rounded-r-[16px]"
+282:        <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white p-1.5 shadow-sm" style={{ backgroundColor: tx.color }}>
+879:                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-primary/50">₦</div>
+882:                <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xs shadow-lg shadow-blue-500/50">Ξ</div>
+885:                <div className="w-14 h-14 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-orange-500/50">₮</div>
+892:             <div className="absolute bottom-16 text-white/60 text-[10px] tracking-[0.4em] font-black uppercase animate-pulse text-center z-10">Exchanging across continents.</div>
+898:          <div className="flex-1 flex flex-col bg-dark p-10 animate-fade-in text-white relative overflow-hidden justify-center items-center">
+916:                          className={`w-12 h-12 bg-white/5 border ${pinError ? 'border-red-500 bg-red-500/10 text-red-500' : isFilled ? 'border-primary bg-primary text-white' : isActive ? 'border-primary/50 bg-white/10' : 'border-white/10'} rounded-full flex items-center justify-center text-xl font-black transition-all relative`}
+935:                               num === 'del' ? 'bg-white/5 text-white/40 hover:bg-white/10 hover:text-white' : 
+936:                               'bg-white/5 text-white hover:bg-white/10 border border-white/5'
+979:          <div className="flex-1 flex flex-col bg-gradient-to-br from-gray-900 via-[#051a08] to-black animate-fade-in text-white overflow-hidden items-center justify-center">
+986:                  <div className="relative z-20 bg-white/10 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/10 text-xs font-medium text-white/80 animate-slide-up shadow-xl max-w-[250px] text-center">
+993:                    <p className="text-white/40 text-base font-medium leading-relaxed">{data.desc}</p>
+1025:                    <button onClick={() => setScreen(AppScreen.ONBOARDING_3)} className="text-white/40">
+1030:                  <h2 className="text-4xl font-black text-white mb-2">Welcome Back</h2>
+1065:                <button onClick={() => setScreen(AppScreen.LOGIN)} className="text-white/40 mb-10">
+1068:                <h2 className="text-4xl font-black text-white mb-2">Reset Password</h2>
+1069:                <p className="text-white/40 text-[10px] font-black uppercase tracking-widest mb-10">Enter your email to receive instructions</p>
+1073:                      <label className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] ml-1">Email Address</label>
+1079:                        className="!bg-white/5 !border-white/10 !text-white placeholder:text-white/20" 
+1095:                <button onClick={() => signupStep > 0 ? setSignupStep(signupStep - 1) : setScreen(AppScreen.ONBOARDING_3)} className="text-white/40 mb-10">
+1098:                <h2 className="text-4xl font-black text-white mb-2">Create Account</h2>
+1104:                      <label className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] ml-1">{currentStep.label}</label>
+1107:                        className={`w-full py-4 px-4 glass-dark border ${isCountryOpen ? 'border-primary' : 'border-white/10'} rounded-[20px] flex justify-between items-center text-white font-medium cursor-pointer active:bg-white/10 transition-all`}
+1113:                        <svg className={`w-4 h-4 text-white/30 transition-transform ${isCountryOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+1122:                            <span className="text-white text-sm font-bold">Nigeria</span>
+1126:                      <p className="text-[9px] text-white/20 italic ml-1 mt-1">Gogreen currently supports Nigeria only.</p>
+1130:                      <label className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] ml-1">{currentStep.label}</label>
+1140:                            <p className="text-white font-bold text-sm">Automatic Bank Payment</p>
+1141:                            <p className="text-white/40 text-[10px]">Crypto deposits are paid directly to your bank.</p>
+1152:                            <p className="text-white font-bold text-sm">Store in Gogreen Balance</p>
+1153:                            <p className="text-white/40 text-[10px]">Deposits are kept in your wallet for manual withdrawal.</p>
+1160:                      <label className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] ml-1">{currentStep.label}</label>
+1207:                              <div className={`w-4 h-4 rounded-full flex items-center justify-center transition-colors ${req.valid ? 'bg-primary text-white' : 'bg-white/10 text-white/20'}`}>
+1210:                              <span className={`text-[10px] font-medium transition-colors ${req.valid ? 'text-white' : 'text-white/40'}`}>{req.label}</span>
+1232:          <div className="flex-1 flex flex-col bg-gradient-to-br from-gray-900 via-[#051a08] to-black p-10 animate-fade-in text-white relative overflow-hidden items-center justify-center">
+1235:                <p className="text-white/40 text-[10px] font-black uppercase tracking-widest mb-4">Enter the 4-digit code sent to you</p>
+1283:                  <h2 className="text-3xl font-black text-white mb-2">Set Transaction PIN</h2>
+1284:                  <p className="text-white/40 text-xs font-medium mb-10 text-center">Create a 4-digit PIN to secure your transactions.</p>
+1288:                        <div key={i} className={`w-12 h-12 rounded-xl border-2 flex items-center justify-center text-2xl font-black transition-all ${tempPin.length > i ? 'border-primary bg-primary text-white shadow-[0_0_15px_rgba(46,139,58,0.4)]' : 'border-white/10 bg-white/5 text-white'}`}>
+1314:                           className={`h-16 rounded-2xl flex items-center justify-center text-xl font-bold active:scale-90 transition-transform ${num === '' ? 'invisible' : num === 'del' ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 'bg-white/5 border border-white/10 text-white hover:bg-white/10'}`}
+1329:                     <h2 className="text-3xl font-black text-white">Add Bank</h2>
+1330:                     <button onClick={() => setScreen(AppScreen.ACCOUNT_CREATED)} className="text-white/40 text-xs font-bold uppercase tracking-widest hover:text-white transition-colors">Skip</button>
+1336:                           <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest ml-1">Select Bank</label>
+1337:                           <select className="w-full p-4 rounded-[20px] bg-white/5 border border-white/10 focus:outline-none focus:border-primary text-sm font-bold text-white appearance-none">
+1350:                           <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest ml-1">Account Number</label>
+1354:                              className="w-full p-4 rounded-[20px] bg-white/5 border border-white/10 focus:outline-none focus:border-primary text-sm font-mono font-bold text-white placeholder:text-white/20" 
+1382:                  <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" strokeWidth="4" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
+1384:                <h2 className="text-4xl font-black text-white mb-2">Welcome Home</h2>
+1385:                <p className="text-white/40 text-[10px] font-black uppercase tracking-widest mb-12">Your Gogreen Africa Dashboard is ready</p>
+1398:                   <div className={`w-10 h-10 text-white ${isGlobalLoading ? 'animate-spin' : ''}`} style={{ animationDuration: '3s' }}>
+1402:                <h2 className="text-3xl font-black text-white mb-3">Secure Wallet Setup</h2>
+1403:                <p className="text-white/40 text-xs font-medium mb-10 max-w-[280px] leading-relaxed">
+1429:                   <div className={`w-10 h-10 text-white ${isGlobalLoading ? 'animate-pulse' : ''}`}>
+1433:                <h2 className="text-3xl font-black text-white mb-3">Virtual Bank Account</h2>
+1434:                <p className="text-white/40 text-xs font-medium mb-10 max-w-[280px] leading-relaxed">
+1477:                    <div className="absolute -bottom-1 -right-1 bg-secondary text-white w-2.5 h-2.5 rounded-full border border-ghost flex items-center justify-center shadow-sm">
+1491:                  <div className="bg-primary p-3.5 rounded-[20px] text-white shadow-xl shadow-primary/20 relative overflow-hidden group">
+1528:                              className={`w-7 h-7 rounded-lg flex items-center justify-center text-[9px] font-black transition-all ${currency === 'USD' ? 'bg-surface text-primary shadow-lg' : 'text-white/40 hover:text-white'}`}
+1534:                              className={`w-7 h-7 rounded-lg flex items-center justify-center text-[9px] font-black transition-all ${currency === 'NGN' ? 'bg-surface text-primary shadow-lg' : 'text-white/40 hover:text-white'}`}
+1545:                            <p className="text-[8px] font-bold text-white/80">Pending: ₦ {pendingBalance.toLocaleString()}</p>
+1559:                          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-4 bg-primary border border-white/10 rounded-full flex items-center justify-center text-white/40 hover:text-white transition-all active:scale-95 z-20"
+1589:                            <div className={`w-8 h-8 ${item.color} !text-white/90 border rounded-[10px] flex items-center justify-center p-2 shadow-sm group-active:scale-90 transition-all hover:border-current/10`}>
+1592:                            <span className="text-[7px] font-bold uppercase tracking-widest text-white/70">{item.label}</span>
+1670:                          <div className="w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold p-2" style={{ backgroundColor: tx.color }}>{tx.icon}</div>
+1686:               <div onClick={() => setScreen(AppScreen.SUPPORT)} className="w-14 h-14 bg-dark rounded-full flex items-center justify-center text-white shadow-2xl shadow-black/20 animate-bounce cursor-pointer border-4 border-white p-3.5 hover:bg-primary transition-colors">
+1932:                      <button onClick={() => setScreen(AppScreen.TRANSACTION_DETAILS)} className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center text-white backdrop-blur-md">
+1949:                              <p className="text-white/40 text-[9px] font-bold uppercase tracking-[0.2em] mb-1">Total Amount</p>
+1950:                              <h1 className="text-3xl font-black text-white tracking-tight">{selectedTx.fiatAmount}</h1>
+1959:                                  <span className="text-[10px] text-white/40 font-medium">Date</span>
+1960:                                  <span className="text-[10px] text-white font-bold">{selectedTx.date}, {selectedTx.time}</span>
+1963:                                  <span className="text-[10px] text-white/40 font-medium">Reference</span>
+1964:                                  <span className="text-[10px] text-white font-bold font-mono">{selectedTx.ref}</span>
+1968:                                  <span className="text-[10px] text-white/40 font-medium">Type</span>
+1969:                                  <span className="text-[10px] text-white font-bold">{selectedTx.type}</span>
+1974:                                      <span className="text-[10px] text-white/40 font-medium">Bank</span>
+1975:                                      <span className="text-[10px] text-white font-bold">{selectedTx.bankName}</span>
+1978:                                      <span className="text-[10px] text-white/40 font-medium">Account</span>
+1979:                                      <span className="text-[10px] text-white font-bold">{selectedTx.accountNumber}</span>
+1987:                              <span className="text-[9px] font-medium text-white uppercase tracking-widest">Secured by Gogreen</span>
+2095:                <div className="bg-primary p-4 sm:p-6 rounded-b-[32px] sm:rounded-b-[40px] text-white relative overflow-hidden shadow-2xl shadow-primary/20">
+2112:                                <p className="text-[9px] font-black uppercase tracking-widest opacity-60 text-white/80">Total Points</p>
+2119:                                <p className="text-[9px] font-black uppercase tracking-widest opacity-60 text-white/80">Referral</p>
+2139:                                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-yellow-400 rounded-2xl flex items-center justify-center text-white text-xl sm:text-2xl shadow-lg shadow-yellow-400/20">
+2185:                                    <div key={v.id} className={`${v.color} min-w-[260px] sm:min-w-0 p-5 sm:p-8 rounded-[32px] sm:rounded-[40px] text-white relative overflow-hidden shadow-2xl shadow-black/10 flex-shrink-0 sm:flex-shrink-1 group`}>
+2268:                      <Button noShine onClick={() => setScreen(AppScreen.SEND_SELECT_ASSET)} className="!h-8 !rounded-lg !text-[9px] !bg-green-600 !text-white hover:!bg-green-700">
+2306:                         <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-base font-bold shadow-sm" style={{ backgroundColor: coin.color }}>{coin.symbol[0]}</div>
+2409:                        <div className="bg-primary p-3 rounded-[16px] text-white shadow-xl shadow-primary/20 relative overflow-hidden mb-3">
+2474:                              <div className="w-full h-full rounded-full flex items-center justify-center text-white text-[9px] font-bold" style={{ backgroundColor: selectedCoin.color }}>{selectedCoin.symbol[0]}</div>
+2520:                              <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{ backgroundColor: selectedCoin?.color }}>{selectedCoin?.symbol[0]}</div>
+2606:                              <div className={`${selectedVoucher.color} p-2.5 rounded-lg text-white flex justify-between items-center shadow-md`}>
+2632:                                              <div className={`w-6 h-6 rounded-md ${v.color} flex items-center justify-center text-white text-[8px] font-black`}>%</div>
+2670:            <div className="flex-1 flex flex-col bg-primary items-center justify-center p-8 text-center animate-fade-in text-white">
+2673:                      <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
+2676:                   <p className="text-white/70 font-medium mb-12">Your funds are on the way to your bank account.</p>
+2680:                         <span className="text-white/60 text-xs uppercase font-bold tracking-widest">Amount</span>
+2684:                         <span className="text-white/60 text-xs uppercase font-bold tracking-widest">Reference</span>
+2704:              <button onClick={() => setScreen(AppScreen.HOME)} className="w-9 h-9 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center text-white active:scale-90 transition-transform">
+2712:                  className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${scannerTab === 'scan' ? 'bg-surface text-black' : 'text-white/60 hover:text-white'}`}
+2718:                  className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${scannerTab === 'receive' ? 'bg-surface text-black' : 'text-white/60 hover:text-white'}`}
+2724:              <div className="w-9 h-9 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center text-white">
+2752:                  <p className="text-white/60 text-[9px] font-medium text-center max-w-[180px]">Align the QR code within the frame to pay instantly</p>
+2755:                      <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white group-active:scale-90 transition-transform border border-white/5">
+2758:                      <span className="text-[8px] text-white/60 font-black uppercase tracking-widest group-hover:text-white transition-colors">Gallery</span>
+2761:                      <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white group-active:scale-90 transition-transform border border-white/5">
+2764:                      <span className="text-[8px] text-white/60 font-black uppercase tracking-widest group-hover:text-white transition-colors">Flash</span>
+2801:                <p className="text-white/30 text-[8px] font-black uppercase tracking-widest mt-5 text-center max-w-[240px]">
+2904:                                    className={`p-2 rounded-md border text-[10px] font-bold transition-all ${billDetails.provider === p ? 'bg-primary text-white border-primary shadow-md shadow-primary/20' : 'bg-surface text-content border-line shadow-sm'}`}
+2984:                            <div className={`${selectedVoucher.color} p-2.5 rounded-lg text-white flex justify-between items-center shadow-md`}>
+3010:                                                <div className={`w-6 h-6 rounded-md ${v.color} flex items-center justify-center text-white text-[8px] font-black`}>%</div>
+3026:                    <div className="bg-primary p-3 rounded-[16px] text-white shadow-xl shadow-primary/20">
+3032:                            <p className="text-[8px] font-bold text-white/60 uppercase tracking-widest">You saved ₦ {discount.toLocaleString()}</p>
+3254:                  <div className="bg-primary p-5 rounded-[24px] text-white shadow-xl shadow-primary/20 relative overflow-hidden mb-1">
+3339:                      <div className="bg-primary p-5 rounded-[24px] text-white shadow-xl shadow-primary/20 relative overflow-hidden mb-4">
+3440:                           <div key={i} className={`w-10 h-10 rounded-xl border-2 flex items-center justify-center text-xl font-black transition-all ${tempPin.length > i ? 'border-primary bg-primary text-white' : 'border-line-strong bg-surface text-content'}`}>
+3651:                        <button className="absolute bottom-0 right-1/2 translate-x-10 translate-y-1.5 w-7 h-7 bg-primary text-white rounded-full flex items-center justify-center border-2 border-white shadow-sm pointer-events-none">
+3820:                           <div className={`max-w-[85%] p-2.5 rounded-[16px] shadow-sm ${msg.sender === 'user' ? 'bg-primary text-white rounded-br-none' : 'bg-surface text-content border border-line rounded-bl-none'}`}>
+3822:                              <p className={`text-[8px] mt-1 text-right font-bold ${msg.sender === 'user' ? 'text-white/60' : 'text-content-subtle'}`}>{msg.time}</p>
+3842:                          className="w-7 h-7 bg-primary text-white rounded-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-90 shadow-lg shadow-primary/20"
+4002:                         <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-sm" style={{ backgroundColor: coin.color }}>{coin.symbol[0]}</div>
+4032:                          <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-sm" style={{ backgroundColor: sendAsset?.color }}>{sendAsset?.symbol[0]}</div>
+4189:            <div className="flex-1 flex flex-col bg-primary items-center justify-center p-4 text-center animate-fade-in text-white">
+4192:                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
+4195:                   <p className="text-white/60 font-medium mb-4 max-w-[250px] mx-auto leading-relaxed text-[10px]">
+4201:                           <span className="text-[8px] text-white/60 font-bold uppercase tracking-widest">Amount</span>
+4202:                           <span className="text-[10px] font-black text-white">{sendAmount} {sendAsset?.symbol}</span>
+4205:                           <span className="text-[8px] text-white/60 font-bold uppercase tracking-widest">Recipient</span>
+4206:                           <span className="text-[10px] font-black text-white truncate max-w-[150px]">{sendRecipient}</span>
+4257:                         <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-base font-bold shadow-sm" style={{ backgroundColor: coin.color }}>{coin.symbol[0]}</div>
+4317:                         <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-sm" style={{ backgroundColor: coin.color }}>{coin.symbol[0]}</div>
+4358:                              <div className="w-6 h-6 rounded-full flex items-center justify-center text-white font-bold shadow-sm shrink-0 text-xs" style={{ backgroundColor: swapFromAsset?.color }}>{swapFromAsset?.symbol[0]}</div>
+4386:                              <div className="w-6 h-6 rounded-full flex items-center justify-center text-white font-bold shadow-sm shrink-0 text-xs" style={{ backgroundColor: swapToAsset?.color }}>{swapToAsset?.symbol[0]}</div>
+4472:          <div className="flex-1 flex flex-col bg-primary items-center justify-center p-4 text-center animate-fade-in text-white">
+4475:                      <Icons.Refresh className="w-5 h-5 text-white" />
+4478:                   <p className="text-white/60 font-medium mb-4 max-w-[250px] mx-auto leading-relaxed text-[10px]">
+4484:                           <span className="text-[8px] text-white/60 font-bold uppercase tracking-widest">Swapped</span>
+4485:                           <span className="text-[10px] font-black text-white">{swapAmount} {swapFromAsset?.symbol}</span>
+4488:                           <span className="text-[8px] text-white/60 font-bold uppercase tracking-widest">Received</span>
+4489:                           <span className="text-[10px] font-black text-white">
+4608:                                          <div className="w-4 h-4 bg-primary rounded-full flex items-center justify-center text-white">
+4658:                      <div key={i} className={`w-10 h-10 rounded-xl border-2 flex items-center justify-center text-lg font-black transition-all ${pinInput.length > i ? 'border-primary bg-primary text-white' : 'border-line bg-surface-alt text-content'}`}>

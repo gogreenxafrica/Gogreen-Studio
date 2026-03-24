@@ -76,9 +76,10 @@ export const SwipeButton = ({ onComplete, text }: SwipeButtonProps) => {
   return (
     <div 
       ref={containerRef}
-      className="w-full h-16 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full flex items-center p-2 shadow-2xl relative overflow-hidden select-none touch-none"
+      className="w-full h-16 bg-white border border-gray-200 rounded-full flex items-center p-1.5 shadow-inner relative overflow-hidden select-none touch-none group"
     >
-      <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent opacity-50 pointer-events-none" />
+      {/* Shimmer Effect */}
+      <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-gray-100/50 to-transparent pointer-events-none" />
       
       {/* Swipe Handle */}
       <div 
@@ -89,10 +90,10 @@ export const SwipeButton = ({ onComplete, text }: SwipeButtonProps) => {
           transform: `translateX(${dragX}px)`,
           transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
         }}
-        className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white shadow-lg cursor-grab active:cursor-grabbing relative z-20 group"
+        className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white shadow-lg shadow-primary/30 cursor-grab active:cursor-grabbing relative z-20 group-hover:scale-[1.02] transition-transform"
       >
         <svg 
-          className={`w-6 h-6 transition-transform duration-300 ${isDragging ? 'scale-110' : ''}`} 
+          className={`w-5 h-5 transition-transform duration-300 ${isDragging ? 'scale-110' : ''}`} 
           fill="none" 
           stroke="currentColor" 
           strokeWidth="3" 
@@ -104,7 +105,7 @@ export const SwipeButton = ({ onComplete, text }: SwipeButtonProps) => {
 
       {/* Text track */}
       <div 
-        className="flex-1 text-white font-black uppercase text-[10px] tracking-widest pr-12 text-center relative z-10 transition-opacity duration-300"
+        className="flex-1 text-primary font-bold uppercase text-[10px] tracking-wider pr-12 text-center relative z-10 transition-opacity duration-300 select-none"
         style={{ opacity: 1 - (dragX / 100) }}
       >
         {text}

@@ -36,7 +36,7 @@ export const Logo = ({
   if (hasError) {
     return (
       <div className={`flex items-center justify-center ${className}`}>
-        <div className={`font-black text-2xl tracking-tighter flex items-baseline ${variant === 'white' || variant === 'premium' ? 'text-white' : 'text-primary'}`}>
+        <div className={`font-black text-2xl tracking-tighter flex items-baseline ${variant === 'white' || variant === 'premium' ? 'text-content' : 'text-primary'}`}>
           go<span className={variant === 'white' ? 'opacity-60' : variant === 'premium' ? 'text-secondary' : 'text-secondary'}>green</span>
         </div>
       </div>
@@ -59,12 +59,12 @@ export const LogoText = ({
   className = "h-8", 
   variant = 'primary' 
 }: { className?: string, variant?: 'white' | 'primary' }) => {
-  const textColor = variant === 'white' ? 'text-white' : 'text-primary';
+  const textColor = variant === 'white' ? 'text-content' : 'text-primary';
   
   return (
     <div className={`flex items-baseline font-bold text-3xl tracking-tight ${className} ${textColor}`}>
       <span>go</span>
-      <span className={variant === 'white' ? 'text-white' : 'text-primary'}>green</span>
+      <span className={variant === 'white' ? 'text-content' : 'text-primary'}>green</span>
     </div>
   );
 };

@@ -69,12 +69,12 @@ export const SlideCaptcha = ({ onVerify, isVerified }: CaptchaProps) => {
 
   return (
     <div className="flex flex-col gap-2">
-      <label className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] ml-1">Bot Verification</label>
+      <label className="text-[10px] font-bold text-content/40 uppercase tracking-[0.2em] ml-1">Bot Verification</label>
       <div 
         ref={containerRef}
-        className={`w-full h-14 bg-white/5 border ${isVerified ? 'border-primary/50' : 'border-white/10'} rounded-[20px] flex items-center p-1 relative overflow-hidden select-none touch-none transition-colors duration-300`}
+        className={`w-full h-14 bg-surface-alt border ${isVerified ? 'border-primary/50' : 'border-line'} rounded-[20px] flex items-center p-1 relative overflow-hidden select-none touch-none transition-colors duration-300`}
       >
-        <div className={`absolute inset-0 flex items-center justify-center text-[10px] font-black uppercase tracking-[0.2em] pointer-events-none transition-opacity duration-300 ${isVerified ? 'text-primary' : 'text-white/20'}`}>
+        <div className={`absolute inset-0 flex items-center justify-center text-[10px] font-black uppercase tracking-[0.2em] pointer-events-none transition-opacity duration-300 ${isVerified ? 'text-primary' : 'text-content/20'}`}>
           {isVerified ? 'Verified' : 'Slide to verify'}
         </div>
         
@@ -86,7 +86,7 @@ export const SlideCaptcha = ({ onVerify, isVerified }: CaptchaProps) => {
             transform: `translateX(${dragX}px)`,
             transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
           }}
-          className={`w-12 h-full rounded-[16px] flex items-center justify-center text-white shadow-lg cursor-grab active:cursor-grabbing relative z-10 transition-colors duration-300 ${isVerified ? 'bg-primary' : 'bg-primary/40'}`}
+          className={`w-12 h-full rounded-[16px] flex items-center justify-center text-content shadow-lg cursor-grab active:cursor-grabbing relative z-10 transition-colors duration-300 ${isVerified ? 'bg-primary' : 'bg-primary/40'}`}
         >
           {isVerified ? (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>

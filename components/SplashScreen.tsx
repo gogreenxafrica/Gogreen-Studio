@@ -93,7 +93,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ setScreen }) => {
       }
 
       if (operation.error) {
-          throw new Error(operation.error.message);
+          throw new Error(String((operation.error as any).message || 'Unknown error'));
       }
 
       const videoUri = operation.response?.generatedVideos?.[0]?.video?.uri;
@@ -126,7 +126,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ setScreen }) => {
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-black items-center justify-center relative overflow-hidden h-screen w-full">
+    <div className="flex-1 flex flex-col bg-gray-900 items-center justify-center relative overflow-hidden h-screen w-full">
         {/* Background Gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-[#051a08] to-black" />
 
@@ -144,21 +144,21 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ setScreen }) => {
                 />
             ) : (
                 <div className="flex flex-col items-center text-center space-y-8 max-w-md relative z-20">
-                    <div className="w-24 h-24 bg-white/5 rounded-3xl flex items-center justify-center border border-white/10 shadow-2xl backdrop-blur-sm">
+                    <div className="w-24 h-24 bg-surface-alt rounded-3xl flex items-center justify-center border border-line shadow-2xl backdrop-blur-sm">
                         <img src="/assets/logos/gogreen-white-logomark.png" alt="Logo" className="w-12 h-12 opacity-80" />
                     </div>
                     
                     <div className="space-y-2">
-                        <h1 className="text-3xl font-black text-white tracking-tight">
+                        <h1 className="text-3xl font-black text-content tracking-tight">
                             {isGenerating ? "Creating Magic..." : "Welcome to GoGreen"}
                         </h1>
-                        <p className="text-white/40 font-medium">
+                        <p className="text-content/40 font-medium">
                             {isGenerating ? loadingMessage : "Experience the future of crypto with a cinematic intro."}
                         </p>
                     </div>
 
                     {error && (
-                        <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
+                        <div className="p-4 bg-gray-500/10 border border-red-500/20 rounded-xl text-gray-400 text-sm">
                             {error}
                         </div>
                     )}
@@ -169,17 +169,18 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ setScreen }) => {
                                 <Icons.Sparkles className="mr-2 w-5 h-5" />
                                 Generate Cinematic Intro
                             </Button>
-                            <button 
+                            <Button 
+                                variant="ghost"
                                 onClick={() => setScreen(AppScreen.ONBOARDING_1)}
-                                className="text-white/30 text-sm font-bold uppercase tracking-widest hover:text-white transition-colors py-4"
+                                className="!text-content/40 hover:!text-content !h-auto !py-4"
                             >
                                 Skip Intro
-                            </button>
+                            </Button>
                         </div>
                     )}
                     
                     {isGenerating && (
-                        <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
+                        <div className="w-full bg-surface-alt h-1 rounded-full overflow-hidden">
                             <div className="h-full bg-primary animate-progress-indeterminate" />
                         </div>
                     )}

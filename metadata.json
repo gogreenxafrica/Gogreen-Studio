@@ -1,6 +1,6 @@
 {
-  "name": "Copy of Gogreen Crypto",
-  "description": "A mobile-first fintech application for Nigerians to easily sell crypto and receive automatic bank payments.",
+  "name": "Gogreen Crypto",
+  "description": "A premium crypto and multi-currency banking app for worldwide spending and rewards.",
   "requestFramePermissions": [
     "camera"
   ]

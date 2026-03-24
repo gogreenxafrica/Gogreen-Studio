@@ -10,12 +10,22 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
+    "@google/genai": "^1.42.0",
     "@tailwindcss/vite": "^4.2.0",
+    "@yudiel/react-qr-scanner": "^2.5.1",
+    "d3": "^7.9.0",
+    "lucide-react": "^0.575.0",
+    "motion": "^12.34.3",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-hot-toast": "^2.6.0",
     "react-qr-code": "^2.0.18",
+    "react-swipeable": "^7.0.2",
+    "recharts": "^3.7.0",
     "tailwindcss": "^4.2.0"
+  },
+  "overrides": {
+    "node-domexception": "file:./domexception-shim.js"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

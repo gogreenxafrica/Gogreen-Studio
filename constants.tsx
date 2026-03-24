@@ -4,31 +4,46 @@ import { Icons } from './components/Icons';
 
 export const DOMAINS = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'icloud.com', 'mail.com'];
 
+export const DEFAULT_AVATARS = [
+  // Male placeholders
+  '/assets/avatars/male-1.svg',
+  '/assets/avatars/male-2.svg',
+  '/assets/avatars/male-3.svg',
+  '/assets/avatars/male-4.svg',
+  // Female placeholders
+  '/assets/avatars/female-1.svg',
+  '/assets/avatars/female-2.svg',
+  '/assets/avatars/female-3.svg',
+  '/assets/avatars/female-4.svg'
+];
+
 export const SIGNUP_STEPS = [
-  { key: 'username', label: 'Choose Username', placeholder: 'kehindevhassan', prefix: '₦-' },
-  { key: 'fullName', label: 'Full Name', placeholder: 'Hassan Kehinde' },
+  { key: 'country', label: 'Country of Residence', isDropdown: true },
   { key: 'email', label: 'Email Address', placeholder: 'hassan@example.com', type: 'email' },
-  { key: 'country', label: 'Country', isDropdown: true },
+  { key: 'otp', label: 'Verify Email', isOtp: true },
+  { key: 'fullName', label: 'Full Name', placeholder: 'Hassan Kehinde' },
+  { key: 'username', label: 'Choose Username', placeholder: 'kehindevhassan', prefix: '₦' },
   { key: 'referralCode', label: 'Referral Code (Optional)', placeholder: 'CODE123', prefix: '₦-' },
+  { key: 'referralSource', label: 'How did you hear about us?', isSourceDropdown: true },
   { key: 'password', label: 'Security Password', placeholder: '••••••••', type: 'password' },
   { key: 'confirmPassword', label: 'Confirm Password', placeholder: '••••••••', type: 'password' },
+  { key: 'nin', label: 'National Identity Number (NIN)', placeholder: '111********', type: 'number' },
+  { key: 'selfie', label: 'Take a Selfie', isFileUpload: true },
   { key: 'autoWithdrawToBank', label: 'Payment Preference', isPreference: true },
   { key: 'captcha', label: 'Human Verification' }
 ];
 
 export const ALL_SERVICES = [
-  { id: 'airtime', label: 'Airtime', icon: <Icons.Phone />, color: 'bg-blue-500/10 text-blue-600 border-blue-500/20', screen: AppScreen.PAY_BILLS },
-  { id: 'data', label: 'Data', icon: <Icons.Wifi />, color: 'bg-purple-500/10 text-purple-600 border-purple-500/20', screen: AppScreen.PAY_BILLS },
-  { id: 'cable', label: 'Cable', icon: <Icons.Monitor />, color: 'bg-orange-500/10 text-orange-600 border-orange-500/20', screen: AppScreen.PAY_BILLS },
+  { id: 'receive', label: 'Receive', icon: <Icons.QrCode />, color: 'bg-green-500/10 text-green-600 border-green-500/20', screen: AppScreen.CRYPTO_INVOICE },
+  { id: 'pay_bills', label: 'Pay Bills', icon: <Icons.Zap />, color: 'bg-gray-500\/10 text-gray-600 border-gray-500\/20', screen: AppScreen.PAY_BILLS },
+  { id: 'withdraw', label: 'Sell Giftcards', icon: <Icons.Card />, color: 'bg-green-500/10 text-green-600 border-green-500/20', screen: AppScreen.WITHDRAW_MONEY },
   { id: 'history', label: 'History', icon: <Icons.Refresh />, color: 'bg-green-500/10 text-green-600 border-green-500/20', screen: AppScreen.TRANSACTION_HISTORY },
-  { id: 'rates', label: 'Rates', icon: <Icons.Coin />, color: 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20', screen: AppScreen.COIN_SELECTION },
-  { id: 'support', label: 'Support', icon: <Icons.Headphones />, color: 'bg-red-500/10 text-red-600 border-red-500/20', screen: AppScreen.SUPPORT },
-  { id: 'rewards', label: 'Rewards', icon: <Icons.Gift />, color: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20', screen: AppScreen.REWARDS },
-  { id: 'withdraw', label: 'Withdraw', icon: <Icons.Bank />, color: 'bg-indigo-500/10 text-indigo-600 border-indigo-500/20', screen: AppScreen.WITHDRAW_MONEY },
+  { id: 'rewards', label: 'Earn Money', icon: <Icons.Gift />, color: 'bg-gray-500\/10 text-gray-600 border-gray-500\/20', screen: AppScreen.REWARDS },
+  { id: 'rates', label: 'Rates', icon: <Icons.TrendingUp />, color: 'bg-green-500/10 text-green-600 border-green-500/20', screen: AppScreen.RATES },
+  { id: 'support', label: 'Support', icon: <Icons.Headphones />, color: 'bg-gray-500\/10 text-gray-600 border-gray-500\/20', screen: AppScreen.SUPPORT },
 ];
 
 export const COINS = [
-  { id: 'ngn', name: 'Naira Wallet', symbol: 'NGN', network: 'Fiat', rate: 1, color: '#1A5D22', address: '0028391823' },
   { id: 'btc', name: 'Bitcoin', symbol: 'BTC', network: 'Bitcoin Network', rate: 165432000, color: '#F7931A', address: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa' },
   { id: 'eth', name: 'Ethereum', symbol: 'ETH', network: 'ERC20', rate: 4540200, color: '#627EEA', address: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045' },
   { id: 'usdt', name: 'Tether', symbol: 'USDT', network: 'Select Network', rate: 1710, color: '#26A17B', address: '' },
@@ -58,7 +73,7 @@ export const TRANSACTIONS = [
     exchangeRate: '₦ 1,710 / USDT',
     coinName: 'Tether',
     unitAmount: '450.53',
-    depositDate: 'Oct 24, 2023, 14:20 PM',
+    addFundDate: 'Oct 24, 2023, 14:20 PM',
     explorerLink: 'https://tronscan.org/#/transaction/TX-88291045'
   },
   { 
@@ -122,21 +137,59 @@ export const TRANSACTIONS = [
     networkFee: '₦ 0.00',
     exchangeRate: '1:1'
   },
+  { 
+    id: 5, 
+    type: 'Withdrawal (Auto-Swap)', 
+    date: 'Oct 25, 2023', 
+    time: '09:15 AM', 
+    fiatAmount: '₦ 550,000.00', 
+    cryptoAmount: 'Multiple Assets',
+    status: 'Success', 
+    ref: 'WD-SWAP-8821', 
+    icon: <Icons.Bank />, 
+    color: '#1A5D22',
+    network: 'NIP',
+    walletAddress: 'N/A',
+    bankName: 'Access Bank',
+    accountNumber: '00****12',
+    platformFee: '₦ 25.00',
+    networkFee: '₦ 0.00',
+    exchangeRate: 'Mixed',
+    fundingSource: [
+      { asset: 'NGN Wallet', amount: '₦ 200,000.00' },
+      { asset: 'BTC', amount: '0.0021 BTC' },
+      { asset: 'USDT', amount: '1.50 USDT' }
+    ]
+  },
 ];
 
 export const NOTIFICATIONS = [
-  { id: 1, title: 'Security Alert', desc: 'New login detected from iPhone 13.', time: '2m ago', type: 'security' },
-  { id: 2, title: 'Reward Earned', desc: 'You received 50 points for your last trade.', time: '1h ago', type: 'reward' },
-  { id: 3, title: 'Deposit Successful', desc: 'Your wallet has been funded with ₦50,000.', time: '5h ago', type: 'money' },
+  { id: 1, title: 'Security Alert', desc: 'New login detected from iPhone 13.', time: '2m ago', type: 'security', target: AppScreen.LOGGED_IN_DEVICES },
+  { id: 2, title: 'Reward Earned', desc: 'You received 50 points for your last trade.', time: '1h ago', type: 'reward', target: AppScreen.REWARDS },
+  { id: 3, title: 'Add Fund Successful', desc: 'Your wallet has been funded with ₦50,000.', time: '5h ago', type: 'money', target: AppScreen.TRANSACTION_DETAILS, txId: 1 },
 ];
 
 export const REWARD_HISTORY = [
-  { id: 1, type: 'Referral Bonus', date: 'Oct 24', amount: '+ ₦1,000' },
+  { id: 1, type: 'Referral Bonus', date: 'Oct 24', amount: '+ ₦3,000' },
   { id: 2, type: 'Trade Reward', date: 'Oct 22', amount: '+ 50 Pts' },
   { id: 3, type: 'Weekly Challenge', date: 'Oct 20', amount: '+ ₦500' },
 ];
 
 export const VOUCHERS = [
-  { id: 1, title: 'Zero Fee Trade', desc: 'On your next USDT sale', color: 'bg-purple-600', minOrderAmount: 5000 },
-  { id: 2, title: 'Airtime Bonus', desc: 'Get 5% back on recharge', color: 'bg-blue-600', minOrderAmount: 1000 },
+  { id: 1, title: 'Zero Fee Trade', desc: 'On your next USDT sale', color: 'bg-gray-900', minOrderAmount: 5000 },
+  { id: 2, title: 'Airtime Bonus', desc: 'Get 5% back on recharge', color: 'bg-primary', minOrderAmount: 1000 },
+];
+
+export const RATES = [
+  { pair: 'USD / NGN', rate: '1,710', change: '+1.2%', icon: '🇺🇸' },
+  { pair: 'GBP / NGN', rate: '2,150', change: '-0.5%', icon: '🇬🇧' },
+  { pair: 'EUR / NGN', rate: '1,840', change: '+0.8%', icon: '🇪🇺' },
+  { pair: 'USDT / NGN', rate: '1,715', change: '+0.1%', icon: '💵' },
+];
+
+export const CHECKLIST_ITEMS = [
+  { id: 'fund', title: 'Add money', desc: 'Fund your wallet', completed: false, screen: AppScreen.ADD_MONEY, category: 'Daily' },
+  { id: 'airtime', title: 'Buy Airtime', desc: 'Use your 5% bonus voucher', completed: false, screen: AppScreen.PAY_BILLS, category: 'Daily' },
+  { id: 'advanced_kyc', title: 'Complete Advanced KYC', desc: 'Unlock unlimited withdrawals', completed: false, screen: AppScreen.KYC_INTRO, category: 'Weekly' },
+  { id: 'sell_crypto', title: 'Sell Crypto', desc: 'Trade at least once', completed: false, screen: AppScreen.COIN_SELECTION, category: 'Weekly' },
 ];
