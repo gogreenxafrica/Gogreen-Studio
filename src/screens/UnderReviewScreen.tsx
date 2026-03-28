@@ -39,7 +39,7 @@ export const UnderReviewScreen: React.FC<UnderReviewScreenProps> = ({
 
         <Button 
           onClick={onBackToHome}
-          className="w-full max-w-[240px] !bg-primary !text-white !rounded-2xl shadow-lg shadow-primary/20"
+          className="px-12 !bg-primary !text-white !rounded-2xl shadow-lg shadow-primary/20"
         >
           Back to home
         </Button>

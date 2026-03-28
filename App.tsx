@@ -21,6 +21,7 @@ import { BrandPattern } from './src/components/BrandPattern';
 import { LoadingScreen } from './components/LoadingScreen';
 import { BottomSheet } from './components/BottomSheet';
 import { HomeScreen } from './src/screens/HomeScreen';
+import { ServicesScreen } from './src/screens/ServicesScreen';
 import { MeScreen } from './src/screens/MeScreen';
 import { SendScreen } from './src/screens/SendScreen';
 import { SwapScreen } from './src/screens/SwapScreen';
@@ -37,9 +38,10 @@ import { SupportScreen } from './src/components/SupportScreen';
 import { CryptoHubScreen } from './src/screens/CryptoHubScreen';
 import { UnderReviewScreen } from './src/screens/UnderReviewScreen';
 import { GuidesAndTutorialsScreen } from './src/screens/GuidesAndTutorialsScreen';
+import { GiftCardScreen } from './src/screens/GiftCardScreen';
 import { BackHeader } from './src/components/BackHeader';
 import { EmailSuggestions } from './src/components/EmailSuggestions';
-import { TutorialOverlay } from './src/components/TutorialOverlay';
+import { PrivacyText } from './components/PrivacyText';
 import { useAppContext } from './AppContext';
 import { SecurityService } from './src/services/SecurityService';
 import QRCode from "react-qr-code";
@@ -52,9 +54,7 @@ import * as Constants from './constants';
 const MODAL_SCREENS = [
   AppScreen.SEND_SELECT_ASSET, AppScreen.SEND_RECIPIENT, AppScreen.SEND_AMOUNT, AppScreen.SEND_CONFIRM, AppScreen.SEND_PROCESSING, AppScreen.SEND_FAILED, AppScreen.SEND_REJECTED,
   AppScreen.ADD_MONEY,
-  AppScreen.TRANSACTION_HISTORY,
   AppScreen.RATES,
-  AppScreen.SUPPORT,
   AppScreen.NOTIFICATIONS,
   AppScreen.COIN_SELECTION,
   AppScreen.RECEIPT_OPTIONS,
@@ -67,7 +67,6 @@ const MODAL_SCREENS = [
   AppScreen.AIRTIME,
   AppScreen.CRYPTO_INVOICE,
   AppScreen.CRYPTO_WALLET_SETUP,
-  AppScreen.BANK_ACCOUNT_SETUP,
   AppScreen.VIRTUAL_ACCOUNT,
   AppScreen.USSD_DEPOSIT,
   AppScreen.SUGGESTION_BOX,
@@ -75,7 +74,6 @@ const MODAL_SCREENS = [
   AppScreen.GUIDES_AND_TUTORIALS,
   AppScreen.REFER_FRIEND,
   AppScreen.REFERRAL_WITHDRAW_CONFIRM,
-  AppScreen.CHANGE_PIN,
   AppScreen.CHANGE_PASSWORD,
   AppScreen.EDIT_PROFILE,
   AppScreen.APP_UPDATE,
@@ -92,7 +90,12 @@ const MODAL_SCREENS = [
   AppScreen.SELL_SUMMARY,
   AppScreen.SELL_PROCESSING,
   AppScreen.SELL_FAILED,
-  AppScreen.SELL_REJECTED
+  AppScreen.SELL_REJECTED,
+  AppScreen.GIFT_CARD_TRADE_OPTIONS,
+  AppScreen.GIFT_CARD_LIST,
+  AppScreen.GIFT_CARD_COUNTRY,
+  AppScreen.GIFT_CARD_DETAILS,
+  AppScreen.GIFT_CARD_CONFIRMATION
 ];
 
 
@@ -125,7 +128,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
     onSwipedLeft: () => onSwipe(tx.id, 'left'),
     onSwipedRight: () => onSwipe(tx.id, 'right'),
     onTap: onTap,
-    preventScrollOnSwipe: true,
+    preventScrollOnSwipe: false,
     trackMouse: true,
   });
 
@@ -163,29 +166,35 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
       {/* Main Content */}
       <div
         {...handlers}
-        className={`p-1.5 bg-white rounded-[14px] flex items-center gap-2 border border-gray-100 shadow-sm cursor-pointer active:scale-[0.98] transition-all hover:shadow-md relative z-10 transform transition-transform duration-300 ease-out ${
+        className={`p-3.5 bg-white rounded-2xl flex items-center gap-4 border border-gray-100 shadow-sm cursor-pointer active:scale-[0.98] transition-all hover:shadow-md relative z-10 transform transition-transform duration-300 ease-out ${
           direction === 'left' ? 'translate-x-[-70px]' : direction === 'right' ? 'translate-x-[70px]' : 'translate-x-0'
         }`}
       >
-        <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white p-1.5 shadow-sm relative" style={{ backgroundColor: tx.color }}>
-          {tx.icon}
+        <div className="w-5 h-5 rounded-full flex items-center justify-center text-white font-bold shadow-sm transition-transform relative shrink-0" style={{ backgroundColor: tx.color }}>
+          <div className="w-3 h-3">
+            {tx.icon}
+          </div>
           {(tx.status === 'Pending' || tx.status === 'Processing') && (
-             <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-primary rounded-full flex items-center justify-center border border-white shadow-sm z-10">
-                <Icons.Loader className="w-2.5 h-2.5 text-white" />
+             <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-white rounded-full flex items-center justify-center border border-gray-50 shadow-sm z-10">
+                <Icons.Loader className="w-2 h-2 text-orange-500 animate-spin" />
              </div>
           )}
         </div>
-        <div className="flex-1">
-          <div className="flex justify-between items-start mb-0">
-            <p className="font-bold text-gray-900 text-[10px]">{tx.type}</p>
-            <div className="text-right">
-              <p className="font-bold text-gray-900 text-[10px]">{hideBalance ? '••••••' : tx.fiatAmount}</p>
-              <p className="text-[7px] font-medium text-gray-400">{hideBalance ? '••••••' : tx.cryptoAmount}</p>
-            </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex justify-between items-center mb-0.5">
+            <p className="font-bold text-[13px] tracking-tight text-gray-900 truncate">{tx.type}</p>
+            <p className={`font-bold text-[13px] tabular-nums ${tx.type === 'Add Fund' ? 'text-green-600' : 'text-gray-900'}`}>
+              {tx.type === 'Add Fund' ? '+' : ''}
+              <PrivacyText hide={hideBalance}>{tx.fiatAmount}</PrivacyText>
+            </p>
           </div>
-          <div className="flex justify-between items-center">
-            <p className="text-[7px] text-gray-400 font-medium">{tx.date} • {tx.time}</p>
-            <span className={`text-[7px] font-black uppercase px-1.5 py-0.5 rounded-full ${tx.status === 'Success' ? 'bg-green-100 text-green-700' : tx.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}`}>
+          <div className="flex items-center justify-between">
+            <p className="text-[11px] text-gray-400 font-medium">{tx.date}</p>
+            <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md ${
+              tx.status === 'Success' ? 'bg-green-50 text-green-600' : 
+              tx.status === 'Pending' || tx.status === 'Processing' ? 'bg-yellow-50 text-yellow-600' : 
+              'bg-red-50 text-red-600'
+            }`}>
               {tx.status}
             </span>
           </div>
@@ -308,15 +317,12 @@ export const RatesScreen = ({ onSell, onProtectedNavigation, areCryptoWalletsGen
 };
 
 export const App = () => {
-
-
   const {
     screen, setScreen, previousScreen, setPreviousScreen,
     globalOverlay, setGlobalOverlay,
     walletBalance, setWalletBalance,
     pendingBalance, setPendingBalance,
     signupData, setSignupData,
-    kycLevel, setKycLevel,
     signupStep, setSignupStep,
     loginData, setLoginData,
     isCaptchaVerified, setIsCaptchaVerified,
@@ -336,18 +342,22 @@ export const App = () => {
     showQuickAccessDropdown, setShowQuickAccessDropdown,
     activeTab, setActiveTab,
     activeModal, setActiveModal,
-    seenScreens, markScreenSeen, resetScreenSeen,
     favoriteCoinIds, toggleFavoriteCoin,
     completeChecklistTask,
     areCryptoWalletsGenerated, setAreCryptoWalletsGenerated,
-    areBankAccountsGenerated, setAreBankAccountsGenerated,
     underReviewData, setUnderReviewData,
+    isSupportOpen, setIsSupportOpen,
+    supportInitialView, setSupportInitialView,
+    giftCardTradeType, setGiftCardTradeType,
+    selectedGiftCard, setSelectedGiftCard,
+    selectedGiftCardCountry, setSelectedGiftCardCountry,
+    giftCardAmount, setGiftCardAmount,
+    kycData, setKycData,
     triggerReview,
     addNotification
   } = useAppContext();
 
   // Global Interception State
-  const [showTutorial, setShowTutorial] = useState<boolean>(false);
   const [pendingRoute, setPendingRoute] = useState<AppScreen | null>(null);
   const [isGeneratingCryptoWallets, setIsGeneratingCryptoWallets] = useState<boolean>(false);
   const [isGeneratingBankAccounts, setIsGeneratingBankAccounts] = useState<boolean>(false);
@@ -360,24 +370,8 @@ export const App = () => {
   const [referralBalance, setReferralBalance] = useState<number>(15000);
   const [points, setPoints] = useState<number>(1250);
   
-  // KYC State
-  // const [kycData, setKycData] = useState({ bvn: '', nin: '' }); // Removed in favor of signupData
-  const [capturedImage, setCapturedImage] = useState<string | null>(null);
-  const [uploadedFile, setUploadedFile] = useState<string | null>(null);
-
-  // Tutorial Trigger Logic
   useEffect(() => {
-    // Only trigger the welcome tour once when the user first lands on the Home screen
-    if (screen === AppScreen.HOME && !seenScreens['welcome_tour']) {
-      const timer = setTimeout(() => {
-        setShowTutorial(true);
-      }, 1500); // Delay for initial animations
-      return () => clearTimeout(timer);
-    }
-  }, [screen, seenScreens]);
-
-  useEffect(() => {
-    if ([AppScreen.HOME, AppScreen.PAY_BILLS, AppScreen.SCANNER, AppScreen.REWARDS, AppScreen.ME].includes(screen)) {
+    if ([AppScreen.HOME, AppScreen.SERVICES, AppScreen.TRANSACTION_HISTORY, AppScreen.ME, AppScreen.CHAT].includes(screen)) {
       setActiveTab(screen);
     }
   }, [screen, setActiveTab]);
@@ -395,6 +389,7 @@ export const App = () => {
   const [billDetails, setBillDetails] = useState({ provider: '', customerId: '', amount: '' });
   const [bugReport, setBugReport] = useState({ subject: '', description: '' });
   const [toastToShow, setToastToShow] = useState<any>(null);
+  const [uploadedFile, setUploadedFile] = useState<string | null>(null);
   
   // Settings State
   const [biometricEnabled, setBiometricEnabled] = useState<boolean>(false);
@@ -406,9 +401,11 @@ export const App = () => {
   const [showPinModal, setShowPinModal] = useState<boolean>(false);
   const [pinInput, setPinInput] = useState<string>('');
   const [onPinSuccess, setOnPinSuccess] = useState<(() => void) | null>(null);
+  const [onPinCancel, setOnPinCancel] = useState<(() => void) | null>(null);
   
   // Global Loading State
   const [isGlobalLoading, setIsGlobalLoading] = useState<boolean>(false);
+  const [isKycLoading, setIsKycLoading] = useState<boolean>(false);
   const [globalLoadingMessage, setGlobalLoadingMessage] = useState<string>('Processing...');
 
   // OTP State
@@ -427,57 +424,10 @@ export const App = () => {
   const [swapAmount, setSwapAmount] = useState<string>('');
   const [swapQuote, setSwapQuote] = useState<{ rate: number, fee: number, received: number } | null>(null);
 
-  // Chat State
-  const [chatMessages, setChatMessages] = useState<{id: number, text: string, sender: 'user' | 'support', time: string}[]>([
-    { id: 1, text: "Hello! How can we help you today?", sender: 'support', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
-  ]);
-  const [chatInput, setChatInput] = useState('');
-  const chatEndRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (screen === AppScreen.SUPPORT) {
-        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [chatMessages, screen]);
-
-  const handleSendMessage = useCallback(() => {
-    if (!chatInput.trim()) return;
-    
-    const newMessage = {
-      id: chatMessages.length + 1,
-      text: chatInput,
-      sender: 'user' as const,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
-    
-    setChatMessages(prev => [...prev, newMessage]);
-    setChatInput('');
-    
-    // Simulate support response
-    setTimeout(() => {
-      setChatMessages(prev => [...prev, {
-        id: prev.length + 1,
-        text: "Thanks for reaching out! A support agent will be with you shortly to assist with your inquiry.",
-        sender: 'support',
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      }]);
-    }, 1500);
-  }, [chatInput, chatMessages.length]);
-
   const [isCountryOpen, setIsCountryOpen] = useState(false);
   const [isSourceOpen, setIsSourceOpen] = useState(false);
   const [isStateDropdownOpen, setIsStateDropdownOpen] = useState(false);
   const [stateSearchTerm, setStateSearchTerm] = useState('');
-  const [kycFiles, setKycFiles] = useState<Record<string, string>>({});
-  const [advancedKycData, setAdvancedKycData] = useState({
-    country: 'Nigeria',
-    streetAddress: '',
-    state: '',
-    city: '',
-    postalCode: '',
-    dob: '',
-    phone: '+234'
-  });
   const [advancedOtpValue, setAdvancedOtpValue] = useState('');
   const [scannerTab, setScannerTab] = useState<'scan' | 'receive'>('scan');
   const [isBackCamera, setIsBackCamera] = useState(true);
@@ -540,20 +490,6 @@ export const App = () => {
     return 'Good Evening';
   }, []);
 
-  useEffect(() => {
-    if (screen === AppScreen.SPLASH) {
-      const timer = setTimeout(() => {
-        if (!pushNotificationsEnabled) {
-          setScreen(AppScreen.NOTIFICATION_PERMISSION);
-        } else {
-          setScreen(AppScreen.ONBOARDING_1);
-        }
-        setIsLoading(false);
-      }, 3500);
-      return () => clearTimeout(timer);
-    }
-  }, [screen, pushNotificationsEnabled]);
-
   // Scroll to top on screen change
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -561,7 +497,7 @@ export const App = () => {
 
   // Handle OTP Focus
   useEffect(() => {
-    if (screen === AppScreen.OTP_VERIFICATION || screen === AppScreen.WELCOME_BACK || screen === AppScreen.KYC_PIN_SETUP) {
+    if (screen === AppScreen.OTP_VERIFICATION || screen === AppScreen.WELCOME_BACK) {
       const timer = setTimeout(() => {
         otpInputRef.current?.focus();
       }, 300);
@@ -583,12 +519,8 @@ export const App = () => {
       AppScreen.OTP_VERIFICATION,
       AppScreen.ACCOUNT_CREATED,
       AppScreen.WELCOME_BACK,
-      AppScreen.KYC_PIN_SETUP,
       AppScreen.CRYPTO_WALLET_SETUP,
-      AppScreen.BANK_ACCOUNT_SETUP,
       AppScreen.NOTIFICATION_PERMISSION,
-      AppScreen.ACCOUNT_OPENING_INFO,
-      AppScreen.WELCOME_TO_GOGREEN,
     ];
 
     const isUnrefreshable = unrefreshableScreens.includes(screen);
@@ -634,56 +566,55 @@ export const App = () => {
   }, []);
 
   // Navigation Logic with Protection
-  const handleProtectedNavigation = useCallback((target: AppScreen) => {
-    // Withdraw and Bill Payments require virtual account to be generated
-    const requiresVirtualAccount = [
-      AppScreen.WITHDRAW_MONEY,
-      AppScreen.PAY_BILLS,
-      AppScreen.AIRTIME,
-      AppScreen.BILL_PAYMENT_DETAILS,
-      AppScreen.BILL_PAYMENT_SUMMARY
-    ];
+  const handleProtectedNavigation = useCallback((target: AppScreen, isFromNavBar: boolean = false) => {
+    if (target === AppScreen.SUPPORT) {
+      if (screen === AppScreen.WELCOME_BACK || screen === AppScreen.LOGIN || screen === AppScreen.SIGNUP) {
+        setIsSupportOpen(true);
+      } else {
+        setScreen(AppScreen.SUPPORT);
+        if (isFromNavBar) setActiveTab(AppScreen.SUPPORT);
+      }
+      return;
+    }
+
+    if (target === AppScreen.CHAT) {
+      setScreen(AppScreen.CHAT);
+      if (isFromNavBar) setActiveTab(AppScreen.CHAT);
+      return;
+    }
+    
+    if (isFromNavBar) setActiveTab(target);
 
     let finalTarget = target;
-
-    if (requiresVirtualAccount.includes(target) && !areBankAccountsGenerated) {
-      showToast('error', 'Virtual Account Required', 'Please generate a virtual account first.');
-      finalTarget = AppScreen.BANK_ACCOUNT_SETUP;
-    }
 
     // Crypto Wallet Generation Check
     if ([AppScreen.COIN_SELECTION, AppScreen.SWAP_AMOUNT, AppScreen.SWAP_SELECT_ASSET_FROM, AppScreen.SWAP_SELECT_ASSET_TO, AppScreen.SEND_SELECT_ASSET, AppScreen.COIN_DETAIL, AppScreen.CRYPTO_INVOICE].includes(finalTarget) && !areCryptoWalletsGenerated) {
        finalTarget = AppScreen.CRYPTO_WALLET_SETUP;
     }
 
-    // Bank Account Generation Check
-    if (finalTarget === AppScreen.ADD_MONEY && !areBankAccountsGenerated) {
-       finalTarget = AppScreen.BANK_ACCOUNT_SETUP;
-    }
-
-    // BVN and KYC checks for generation screens
-    const generationScreens = [
-      AppScreen.CRYPTO_WALLET_SETUP,
-      AppScreen.BANK_ACCOUNT_SETUP
-    ];
-
-    if (generationScreens.includes(finalTarget)) {
-      if (!signupData.bvn) {
-        setPendingRoute(target); // Remember original target
-        setScreen(AppScreen.KYC_BVN);
-        return;
-      }
-      
-      if (kycLevel < 2) {
-        setPendingRoute(target); // Remember original target
-        showToast('error', 'KYC Required', 'You need at least Tier 2 KYC to generate accounts.');
-        setScreen(AppScreen.KYC_INTRO);
-        return;
-      }
-    }
-
     if (finalTarget === AppScreen.SCANNER) {
        setScannerTab('receive');
+    }
+
+    // PIN Verification Check for sensitive screens
+    const requiresPin = [
+      AppScreen.PAYMENT_SETTINGS,
+      AppScreen.ACCOUNT_SETTINGS,
+      AppScreen.SECURITY_SETTINGS,
+      AppScreen.CHANGE_PIN,
+      AppScreen.EDIT_PROFILE,
+      AppScreen.DELETE_ACCOUNT,
+      AppScreen.REFERRAL_WITHDRAW_CONFIRM,
+      AppScreen.BANK_DETAILS,
+    ];
+
+    if (requiresPin.includes(finalTarget)) {
+      setPendingRoute(finalTarget);
+      setOnPinSuccess(() => {
+        setScreen(finalTarget);
+      });
+      setShowPinModal(true);
+      return;
     }
 
     if (finalTarget !== target) {
@@ -691,7 +622,7 @@ export const App = () => {
     }
 
     setScreen(finalTarget);
-  }, [signupData.bvn, areCryptoWalletsGenerated, areBankAccountsGenerated, setScreen, setScannerTab, kycLevel, showToast]);
+  }, [screen, areCryptoWalletsGenerated, setScreen, setScannerTab, showToast, setActiveTab, setPendingRoute, setOnPinSuccess, setShowPinModal]);
 
   useEffect(() => {
     if (toastToShow) {
@@ -765,6 +696,7 @@ export const App = () => {
 
   const showNavbar = useMemo(() => [
     AppScreen.HOME,
+    AppScreen.SERVICES,
     AppScreen.PAY_BILLS,
     AppScreen.SCANNER,
     AppScreen.REWARDS,
@@ -772,6 +704,8 @@ export const App = () => {
     AppScreen.TRANSACTION_HISTORY,
     AppScreen.SUGGESTION_BOX,
     AppScreen.NOTIFICATIONS,
+    AppScreen.SUPPORT,
+    AppScreen.CHAT,
   ].includes(screen), [screen]);
 
   const signupSteps = Constants.SIGNUP_STEPS;
@@ -783,8 +717,6 @@ export const App = () => {
     
     if (step.key === 'otp') return otpValue.length === 4;
     if (step.key === 'captcha') return isCaptchaVerified;
-    if (step.key === 'selfie') return !!kycFiles['selfie'];
-    if (step.key === 'nin') return String((signupData as any)['nin'] || '').length >= 11;
     if (step.key === 'autoWithdrawToBank') return true;
     if (step.key === 'country') return !!signupData.country;
     if (step.key === 'referralSource') return !!signupData.referralSource;
@@ -794,7 +726,7 @@ export const App = () => {
     if (step.key === 'username') return val && val.length > 3 && val.startsWith('₦');
     if (step.key === 'password') return val && val.length >= 8;
     return val && val.length >= 2;
-  }, [signupStep, signupSteps, signupData, isCaptchaVerified, otpValue, kycFiles]);
+  }, [signupStep, signupSteps, signupData, isCaptchaVerified, otpValue]);
 
   const [isSignupLoading, setIsSignupLoading] = useState(false);
 
@@ -805,25 +737,19 @@ export const App = () => {
       await new Promise(r => setTimeout(r, 600));
       setSignupStep(prev => prev + 1);
       setIsSignupLoading(false);
-      
-      // Feedback for the user
-      if (signupSteps[signupStep].isFileUpload) {
-        showToast('success', 'Document Uploaded', 'Moving to the next step...');
-      }
     } else {
       triggerReview({
-        title: "Your verification is now under review",
+        title: "Your account is being set up",
         message: "We'll notify you once it's complete.",
-        notificationTitle: "KYC Verified",
-        notificationDesc: "Your identity has been confirmed successfully.",
+        notificationTitle: "Account Ready",
+        notificationDesc: "Your account has been set up successfully.",
         nextScreen: AppScreen.SIGNUP_UNDER_REVIEW,
         onComplete: () => {
-          // Upgrade logic for signup KYC (e.g., set KYC level)
-          setKycLevel(2);
+          // Signup complete logic
         }
       });
     }
-  }, [signupStep, signupSteps.length, setScreen, signupSteps, triggerReview, setKycLevel]);
+  }, [signupStep, signupSteps.length, setScreen, signupSteps, triggerReview]);
 
   const handleOtpChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const val = (e.target.value ?? '').replace(/[^0-9]/g, '').slice(0, 4);
@@ -838,7 +764,6 @@ export const App = () => {
     if (val.length === 4) {
       setTimeout(() => {
         if (val === (transactionPin || '1234')) {
-          markScreenSeen('welcome_tour');
           setScreen(AppScreen.HOME);
         } else {
           showToast('error', 'Incorrect PIN', 'The PIN you entered is incorrect. Please try again.');
@@ -847,7 +772,7 @@ export const App = () => {
         }
       }, 500);
     }
-  }, [pinError, transactionPin, setScreen, showToast, markScreenSeen]);
+  }, [pinError, transactionPin, setScreen, showToast]);
 
   const handlePinSetup = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const val = (e.target.value ?? '').replace(/[^0-9]/g, '').slice(0, 4);
@@ -868,37 +793,6 @@ export const App = () => {
          });
       }, 2000);
   }, [triggerReview, setAreCryptoWalletsGenerated]);
-
-  const handleBankAccountGeneration = useCallback(() => {
-      if (!signupData.bvn || signupData.bvn.length < 11) {
-        showToast('error', 'BVN Required', 'Please verify your BVN to generate a bank account.');
-        setScreen(AppScreen.KYC_BVN);
-        return;
-      }
-
-      setGlobalLoadingMessage('Generating Account...');
-      setIsGlobalLoading(true);
-      setTimeout(() => {
-         setIsGlobalLoading(false);
-         triggerReview({
-            title: "Account under review",
-            message: "Your virtual bank account is being provisioned by our partner bank. This usually takes a few minutes.",
-            notificationTitle: "Bank Account Ready",
-            notificationDesc: "Your virtual bank account is now active and ready for deposits.",
-            onComplete: () => setAreBankAccountsGenerated(true)
-         });
-      }, 2000);
-  }, [triggerReview, setAreBankAccountsGenerated, signupData.bvn, setScreen, showToast]);
-
-  const handleRefresh = useCallback(async () => {
-    return new Promise<void>((resolve) => {
-      setTimeout(() => {
-        // Simulate data refresh
-        showToast('success', 'Refreshed', 'Latest data fetched successfully.');
-        resolve();
-      }, 1500);
-    });
-  }, [showToast]);
 
   const handleShareReceipt = useCallback(async () => {
     if (navigator.share && selectedTx) {
@@ -1073,35 +967,11 @@ export const App = () => {
 
   const renderScreenContent = (screenToRender: AppScreen) => {
     switch (screenToRender) {
-      case AppScreen.SPLASH:
-        return (
-          <div className="fixed inset-0 z-50 bg-dark flex flex-col items-center justify-center animate-fade-in overflow-hidden">
-             <div className="absolute top-12 left-6 opacity-20 animate-coin-bounce" style={{ animationDuration: '3s', animationDelay: '0s' }}>
-                <div className="w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center text-yellow-900 font-bold shadow-lg shadow-yellow-500/50">฿</div>
-             </div>
-             <div className="absolute top-16 right-6 opacity-20 animate-coin-bounce" style={{ animationDuration: '4s', animationDelay: '1s' }}>
-                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-primary/50">₦</div>
-             </div>
-             <div className="absolute bottom-32 left-8 opacity-20 animate-coin-bounce" style={{ animationDuration: '3.5s', animationDelay: '0.5s' }}>
-                <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xs shadow-lg shadow-blue-500/50">Ξ</div>
-             </div>
-             <div className="absolute bottom-40 right-8 opacity-20 animate-coin-bounce" style={{ animationDuration: '2.5s', animationDelay: '1.5s' }}>
-                <div className="w-14 h-14 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-orange-500/50">₮</div>
-             </div>
-
-             <div className="relative animate-coin-bounce px-8 z-10">
-                <Logo className="w-64 h-24 mb-4 relative z-10" variant="premium" />
-                <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-48 h-4 bg-primary/20 blur-xl rounded-full scale-x-150 animate-shadow-pulse" />
-             </div>
-             <div className="absolute bottom-16 text-white/60 text-[10px] tracking-[0.4em] font-black uppercase animate-pulse text-center z-10">Exchanging across continents.</div>
-          </div>
-        );
-
       case AppScreen.WELCOME_BACK:
         return (
           <div className="flex-1 flex flex-col bg-white p-8 animate-fade-in text-gray-900 relative overflow-hidden justify-center items-center">
              <div className="absolute top-4 right-4">
-                <button onClick={() => setGlobalOverlay(AppScreen.SUPPORT)} className="text-primary font-bold text-sm">Get Help</button>
+                <button onClick={() => setIsSupportOpen(true)} className="text-primary font-bold text-sm">Get Help</button>
              </div>
              <div className="w-full max-w-xs mx-auto flex flex-col items-center">
                <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-50 mb-4 relative z-10">
@@ -1137,7 +1007,6 @@ export const App = () => {
                                 if (newPin.length === 4) {
                                   // Validate PIN
                                   if (newPin === transactionPin) {
-                                    markScreenSeen('welcome_tour');
                                     setScreen(AppScreen.HOME);
                                     setWelcomePin('');
                                   } else {
@@ -1178,16 +1047,16 @@ export const App = () => {
       case AppScreen.ONBOARDING_1:
       case AppScreen.ONBOARDING_2:
       case AppScreen.ONBOARDING_3:
-        return <OnboardingScreen onComplete={() => setScreen(AppScreen.ACCOUNT_OPENING_INFO)} onLogin={() => setScreen(AppScreen.LOGIN)} />;
+        return <OnboardingScreen onComplete={() => setScreen(AppScreen.SIGNUP)} onLogin={() => setScreen(AppScreen.LOGIN)} />;
       
       case AppScreen.LOGIN:
           return (
-            <div className="flex-1 flex flex-col bg-white p-8 animate-slide-up overflow-y-auto no-scrollbar items-center justify-center">
+            <div className="flex-1 flex flex-col bg-white p-8 animate-slide-up overflow-y-auto no-scrollbar items-center justify-center relative">
+              <div className="absolute top-4 right-4">
+                <button onClick={() => setIsSupportOpen(true)} className="text-primary font-bold text-sm">Get Help</button>
+              </div>
               <div className="w-full max-w-md">
                   <div className="flex justify-between items-center mb-12">
-                    <button onClick={() => setScreen(AppScreen.ONBOARDING_3)} className="text-gray-400">
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
-                    </button>
                     <Logo className="w-24 h-8" variant="premium" />
                   </div>
                   <h2 className="text-4xl font-black text-gray-900 mb-2">Welcome Back</h2>
@@ -1212,9 +1081,10 @@ export const App = () => {
                     <div className="flex justify-end">
                       <Button variant="ghost" onClick={() => setScreen(AppScreen.FORGOT_PASSWORD)} className="!w-auto !h-8 !px-0 !text-gray-500">Forgot Password?</Button>
                     </div>
-                    <Button onClick={() => { markScreenSeen('welcome_tour'); setScreen(AppScreen.HOME); }}>Login</Button>
-                    <div className="text-center pt-4">
-                      <Button variant="ghost" onClick={() => setScreen(AppScreen.SIGNUP)} className="!w-auto mx-auto opacity-60 hover:opacity-100 !text-gray-500">Don't have an account? <span className="text-primary ml-1">Sign Up</span></Button>
+                    <Button fullWidth onClick={() => { setScreen(AppScreen.HOME); }}>Login</Button>
+                    <div className="text-center pt-4 flex justify-center items-center whitespace-nowrap">
+                      <span className="text-[10px] font-black uppercase tracking-[0.15em] text-gray-500 opacity-60">Don't have an account?</span>
+                      <button onClick={() => setScreen(AppScreen.SIGNUP)} className="text-[10px] font-black uppercase tracking-[0.15em] text-primary ml-1 hover:opacity-80 transition-opacity">Sign Up</button>
                     </div>
                   </div>
               </div>
@@ -1242,7 +1112,7 @@ export const App = () => {
                         variant="default"
                       />
                    </div>
-                   <Button onClick={() => { showToast('success', 'Reset Link Sent', 'Please check your email for instructions.'); setScreen(AppScreen.LOGIN); }}>Send Reset Link</Button>
+                   <Button fullWidth onClick={() => { showToast('success', 'Reset Link Sent', 'Please check your email for instructions.'); setScreen(AppScreen.LOGIN); }}>Send Reset Link</Button>
                 </div>
              </div>
           </div>
@@ -1253,11 +1123,16 @@ export const App = () => {
         const isMismatchedPassword = currentStep.key === 'confirmPassword' && signupData.confirmPassword.length >= 8 && signupData.confirmPassword !== signupData.password;
         
         return (
-          <div className="flex-1 flex flex-col bg-white p-8 animate-slide-up overflow-y-auto no-scrollbar items-center justify-center">
+          <div className="flex-1 flex flex-col bg-white p-8 animate-slide-up overflow-y-auto no-scrollbar items-center justify-center relative">
+            <div className="absolute top-4 right-4">
+              <button onClick={() => setIsSupportOpen(true)} className="text-primary font-bold text-sm">Get Help</button>
+            </div>
             <div className="w-full max-w-md">
-                <button onClick={() => signupStep > 0 ? setSignupStep(signupStep - 1) : setScreen(AppScreen.ONBOARDING_3)} className="text-gray-400 mb-10">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
-                </button>
+                {signupStep > 0 && (
+                  <button onClick={() => setSignupStep(signupStep - 1)} className="text-gray-400 mb-10">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                  </button>
+                )}
                 <h2 className="text-4xl font-black text-gray-900 mb-2">Create Account</h2>
                 <p className="text-primary text-[10px] font-black uppercase tracking-[0.2em] mb-10">Step {signupStep + 1} of {signupSteps.length}</p>
                 
@@ -1346,7 +1221,7 @@ export const App = () => {
                     </div>
                   ) : currentStep.key === 'captcha' ? (
                     <SlideCaptcha isVerified={isCaptchaVerified} onVerify={() => setIsCaptchaVerified(true)} />
-                  ) : currentStep.isOtp ? (
+                  ) : (currentStep as any).isOtp ? (
                     <div className="flex flex-col gap-4">
                       <label className="text-[10px] font-bold text-gray-900 uppercase tracking-[0.2em] ml-1">{currentStep.label}</label>
                       <p className="text-primary/70 text-[9px] font-medium leading-relaxed italic">
@@ -1380,43 +1255,6 @@ export const App = () => {
                       <Button variant="ghost" onClick={() => showToast('info', 'OTP Resent', 'A new verification code has been sent.')} className="mt-2 opacity-60 hover:opacity-100 !text-gray-500">
                         Resend Code in 0:45
                       </Button>
-                    </div>
-                  ) : currentStep.isFileUpload ? (
-                    <div className="flex flex-col gap-4">
-                       <label className="text-[10px] font-bold text-gray-900 uppercase tracking-[0.2em] ml-1">{currentStep.label}</label>
-                       <div className="relative">
-                          <input 
-                            type="file" 
-                            accept="image/*"
-                            onChange={(e) => {
-                               const file = e.target.files?.[0];
-                               if (file) {
-                                  const reader = new FileReader();
-                                  reader.onloadend = () => {
-                                     setKycFiles(prev => ({ ...prev, [currentStep.key]: reader.result as string }));
-                                  };
-                                  reader.readAsDataURL(file);
-                               }
-                            }}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                          />
-                          <div className={`w-full p-8 rounded-[32px] border-2 border-dashed ${kycFiles[currentStep.key] ? 'border-primary bg-primary/5' : 'border-gray-200 bg-gray-50'} flex flex-col items-center justify-center gap-3 transition-all`}>
-                             {kycFiles[currentStep.key] ? (
-                                <>
-                                   <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-primary shadow-lg">
-                                      <img src={kycFiles[currentStep.key]} className="w-full h-full object-cover" alt="Preview" />
-                                   </div>
-                                   <span className="text-[10px] font-black text-primary uppercase tracking-widest">Document Attached</span>
-                                   <button onClick={(e) => { e.preventDefault(); setKycFiles(prev => { const n = {...prev}; delete n[currentStep.key]; return n; }); }} className="z-20 px-4 py-2 bg-white rounded-xl shadow-sm text-red-500 text-[9px] font-black uppercase tracking-widest">Remove</button>
-                                </>
-                             ) : (
-                                <>
-                                   <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-400"><Icons.Image /></div>
-                                   <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Tap to upload document</span>
-                                </>
-                             )}
-                          </div>
-                       </div>
                     </div>
                   ) : (
                     <div className="flex flex-col gap-1 relative">
@@ -1478,6 +1316,7 @@ export const App = () => {
                   )}
                   <div className="pt-4">
                     <Button 
+                      fullWidth
                       disabled={!validateCurrentStep() || isCountryOpen || isSignupLoading} 
                       onClick={handleNextSignup}
                     >
@@ -1505,11 +1344,15 @@ export const App = () => {
                 </div>
                 <h2 className="text-2xl font-black text-gray-900 mb-4 px-4 leading-tight">Your verification is now under review</h2>
                 <p className="text-gray-500 text-sm font-medium mb-12">We'll notify you once it's complete.</p>
-                <div className="w-full px-4">
-                  <Button onClick={() => setScreen(AppScreen.KYC_PIN_SETUP)} className="w-full !h-14 !rounded-2xl !bg-emerald-600 hover:!bg-emerald-700 !text-white !font-bold !text-sm shadow-lg shadow-emerald-500/20">Continue</Button>
+                <div className="w-full px-4 flex flex-col items-center gap-4">
+                  <div className="flex items-center gap-3 text-emerald-600 font-bold text-sm animate-pulse">
+                    <Icons.Refresh className="w-5 h-5 animate-spin" />
+                    <span>Verifying your details...</span>
+                  </div>
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">This may take a few minutes</p>
                 </div>
                 {/* Hidden button to simulate user coming back and being approved */}
-                <button onClick={() => setScreen(AppScreen.KYC_PIN_SETUP)} className="absolute bottom-0 opacity-0 w-10 h-10"></button>
+                <button onClick={() => setScreen(AppScreen.ONBOARDING_ADD_BANK)} className="absolute bottom-0 opacity-0 w-10 h-10"></button>
              </div>
           </div>
         );
@@ -1549,8 +1392,9 @@ export const App = () => {
                   style={{ fontSize: '16px' }}
                 />
                 <Button 
+                  fullWidth
                   disabled={otpValue.length < 4}
-                  onClick={() => setScreen(AppScreen.KYC_INTRO)}
+                  onClick={() => setScreen(AppScreen.ONBOARDING_ADD_BANK)}
                   className="!bg-emerald-600 hover:!bg-emerald-700"
                 >
                   Continue
@@ -1569,8 +1413,8 @@ export const App = () => {
             </div>
             <h2 className="text-2xl font-black text-gray-900 mb-4">Instant and secure login with Touch ID</h2>
             <p className="text-gray-500 text-sm font-medium mb-12 max-w-[280px]">You can instantly and securely log in to your account using biometric data.</p>
-            <Button onClick={() => { setBiometricEnabled(true); setScreen(AppScreen.SECURITY); }} className="w-full !h-14 !rounded-2xl mb-4">Enable</Button>
-            <Button variant="ghost" onClick={() => setScreen(AppScreen.SECURITY)} className="w-full !h-14 !rounded-2xl">Skip for now</Button>
+            <Button fullWidth onClick={() => { setBiometricEnabled(true); setScreen(AppScreen.SECURITY); }} className="!h-14 !rounded-2xl mb-4">Enable</Button>
+            <Button fullWidth variant="ghost" onClick={() => setScreen(AppScreen.SECURITY)} className="!h-14 !rounded-2xl">Skip for now</Button>
           </div>
         );
 
@@ -1582,484 +1426,10 @@ export const App = () => {
             </div>
             <h2 className="text-2xl font-black text-gray-900 mb-4">Instant notifications</h2>
             <p className="text-gray-500 text-sm font-medium mb-12 max-w-[280px]">We can notify you when something important happens, like your balance changes or there's a security alert.</p>
-            <Button onClick={() => { setPushNotificationsEnabled(true); setScreen(AppScreen.ONBOARDING_1); }} className="w-full !h-14 !rounded-2xl mb-4">Turn on notifications</Button>
-            <Button variant="ghost" onClick={() => setScreen(AppScreen.ONBOARDING_1)} className="w-full !h-14 !rounded-2xl">Skip for now</Button>
+            <Button fullWidth onClick={() => { setPushNotificationsEnabled(true); setScreen(AppScreen.ONBOARDING_1); }} className="!h-14 !rounded-2xl mb-4">Turn on notifications</Button>
+            <Button fullWidth variant="ghost" onClick={() => setScreen(AppScreen.ONBOARDING_1)} className="!h-14 !rounded-2xl">Skip for now</Button>
           </div>
         );
-
-      case AppScreen.ACCOUNT_OPENING_INFO:
-        return (
-          <div className="flex-1 flex flex-col bg-white animate-fade-in p-8 pt-24">
-            <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mb-10">
-              <Icons.FileText className="w-10 h-10 text-emerald-600" />
-            </div>
-            <h2 className="text-3xl font-black text-gray-900 mb-6 leading-tight">Important account opening information</h2>
-            <p className="text-gray-500 text-sm font-medium mb-12 text-justify leading-relaxed">To help the government fight the funding of terrorism and money laundering activities, Federal law requires all financial institutions to obtain, verify, and record information that identifies each person who opens an account.</p>
-            <div className="flex items-start gap-3 mb-12">
-              <div className="relative flex items-center justify-center shrink-0 mt-1">
-                <input 
-                  type="checkbox" 
-                  className="peer appearance-none w-5 h-5 rounded border border-gray-300 checked:bg-emerald-600 checked:border-emerald-600 transition-all cursor-pointer" 
-                />
-                <Icons.Check className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none" />
-              </div>
-              <p className="text-gray-500 text-xs text-justify leading-relaxed">By proceeding, you authorize Gogreen and partners to verify your identity and access third-party information for compliance and fraud prevention.</p>
-            </div>
-            <div className="mt-auto">
-              <Button onClick={() => setScreen(AppScreen.SIGNUP)} className="w-full !h-14 !rounded-2xl">Continue</Button>
-            </div>
-          </div>
-        );
-
-      case AppScreen.WELCOME_TO_GOGREEN:
-        return (
-          <div className="flex-1 flex flex-col bg-white animate-fade-in items-center justify-center p-8 text-center text-gray-900">
-            <div className="w-24 h-24 bg-emerald-50 rounded-full flex items-center justify-center mb-8 backdrop-blur-md">
-              <Icons.CheckCircle className="w-12 h-12 text-emerald-600" />
-            </div>
-            <h2 className="text-3xl font-black mb-4">Welcome to Gogreen!</h2>
-            <p className="text-gray-500 text-sm font-medium mb-12 max-w-[280px]">Your account setup is complete. What would you like to do next?</p>
-            
-            <div className="w-full max-w-md space-y-4">
-              <button 
-                onClick={() => setScreen(AppScreen.HOME)}
-                className="w-full p-4 bg-gray-50 hover:bg-gray-100 border border-gray-100 rounded-2xl flex items-center gap-4 text-left transition-all group"
-              >
-                <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                  <Icons.Bank className="w-6 h-6 text-emerald-600" />
-                </div>
-                <p className="font-bold text-sm leading-tight text-gray-900">Send your coin to your naira bank directly in minutes</p>
-              </button>
-
-              <button 
-                onClick={() => setScreen(AppScreen.HOME)}
-                className="w-full p-4 bg-gray-50 hover:bg-gray-100 border border-gray-100 rounded-2xl flex items-center gap-4 text-left transition-all group"
-              >
-                <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                  <Icons.TrendingUp className="w-6 h-6 text-emerald-600" />
-                </div>
-                <p className="font-bold text-sm leading-tight text-gray-900">Grow your wealth by holding coins</p>
-              </button>
-
-              <button 
-                onClick={() => setScreen(AppScreen.HOME)}
-                className="w-full p-4 bg-gray-50 hover:bg-gray-100 border border-gray-100 rounded-2xl flex items-center gap-4 text-left transition-all group"
-              >
-                <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                  <Icons.Wallet className="w-6 h-6 text-emerald-600" />
-                </div>
-                <p className="font-bold text-sm leading-tight text-gray-900">Have your own wallet</p>
-              </button>
-            </div>
-          </div>
-        );
-
-      case AppScreen.WELCOME_TO_GOGREEN_ALT:
-        return (
-          <div className="flex-1 flex flex-col bg-white animate-fade-in items-center justify-center p-8 text-center">
-            <h2 className="text-2xl font-black text-gray-900 mb-8">Welcome to Gogreen<br/>What would you like to do now?</h2>
-            <div className="grid grid-cols-2 gap-4 w-full max-w-md mb-12">
-              <div className="p-4 border rounded-2xl flex flex-col items-center gap-2">
-                <Icons.Bank className="w-8 h-8 text-indigo-600" />
-                <p className="text-xs font-bold text-gray-900">Open bank account</p>
-                <p className="text-[9px] text-gray-400">USD, GBP, EUR</p>
-              </div>
-              <div className="p-4 border rounded-2xl flex flex-col items-center gap-2">
-                <Icons.Card className="w-8 h-8 text-indigo-600" />
-                <p className="text-xs font-bold text-gray-900">Get USD card</p>
-                <p className="text-[9px] text-gray-400">Spend anywhere</p>
-              </div>
-              <div className="p-4 border rounded-2xl flex flex-col items-center gap-2">
-                <Icons.Send className="w-8 h-8 text-indigo-600" />
-                <p className="text-xs font-bold text-gray-900">Send money</p>
-                <p className="text-[9px] text-gray-400">Fast and low fees</p>
-              </div>
-              <div className="p-4 border rounded-2xl flex flex-col items-center gap-2">
-                <Icons.TrendingUp className="w-8 h-8 text-indigo-600" />
-                <p className="text-xs font-bold text-gray-900">Grow wealth</p>
-                <p className="text-[9px] text-gray-400">Save and invest</p>
-              </div>
-              <div className="p-4 border rounded-2xl flex flex-col items-center gap-2">
-                <Icons.Coin className="w-8 h-8 text-indigo-600" />
-                <p className="text-xs font-bold text-gray-900">Stablecoin account</p>
-                <p className="text-[9px] text-gray-400">USDC and USDT</p>
-              </div>
-            </div>
-            <Button onClick={() => setScreen(AppScreen.HOME)} className="w-full !h-14 !rounded-2xl">Continue</Button>
-          </div>
-        );
-
-      case AppScreen.KYC_INTRO:
-        return (
-          <div className="flex-1 flex flex-col bg-white animate-fade-in items-center justify-center p-8 text-center">
-             <div className="w-full max-w-md">
-                <div className="w-24 h-24 bg-emerald-50 rounded-full flex items-center justify-center mb-8 animate-pulse mx-auto border border-emerald-100 shadow-[0_0_30px_rgba(16,185,129,0.1)]">
-                   <Icons.Shield className="w-10 h-10 text-emerald-600" />
-                </div>
-                <h2 className="text-3xl font-black text-gray-900 mb-3">Advanced Verification</h2>
-                <p className="text-gray-500 text-xs font-medium mb-10 leading-relaxed max-w-[280px] mx-auto">
-                   Upgrade to Advanced Level to unlock unlimited withdrawals and higher transaction limits.
-                </p>
-                
-                <div className="space-y-4 mb-12 text-left bg-gray-50 p-6 rounded-[24px] border border-gray-100">
-                   <div className="flex items-center gap-4">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black ${kycLevel >= 2 ? 'bg-emerald-100 text-emerald-600' : 'bg-gray-200 text-gray-500'}`}>
-                        {kycLevel >= 2 ? <Icons.Check className="w-4 h-4" /> : '1'}
-                      </div>
-                      <div>
-                         <h4 className="text-gray-900 text-sm font-bold">Tier 2 {kycLevel >= 2 ? 'Complete' : 'Pending'}</h4>
-                         <p className="text-gray-500 text-[10px]">NIN & Selfie Verified</p>
-                      </div>
-                   </div>
-                   <div className="flex items-center gap-4">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black ${kycLevel >= 3 ? 'bg-emerald-100 text-emerald-600' : 'bg-gray-200 text-gray-500'}`}>
-                        {kycLevel >= 3 ? <Icons.Check className="w-4 h-4" /> : '2'}
-                      </div>
-                      <div>
-                         <h4 className="text-gray-900 text-sm font-bold">Proof of Address</h4>
-                         <p className="text-gray-500 text-[10px]">Utility Bill or Bank Statement</p>
-                      </div>
-                   </div>
-                </div>
-
-                <Button 
-                   disabled={kycLevel < 2}
-                   onClick={() => setScreen(AppScreen.KYC_ADVANCED_FORM)}
-                >
-                   {kycLevel < 2 ? 'Complete Tier 2 First' : 'Continue'}
-                </Button>
-                <p className="mt-6 text-[9px] text-gray-400 font-bold uppercase tracking-widest">Review takes 24-48 hours</p>
-             </div>
-          </div>
-        );
-
-       case AppScreen.KYC_BVN:
-          return (
-             <div className="flex-1 flex flex-col bg-white animate-slide-up items-center justify-center p-8">
-                <div className="w-full max-w-md">
-                   <BackHeader title="BVN Verification" onBack={() => setScreen(AppScreen.HOME)} theme="light" className="mb-8 bg-transparent" />
-                   <p className="text-gray-500 text-xs font-medium mb-8">Enter your 11-digit Bank Verification Number to unlock virtual accounts and crypto addresses.</p>
-                   
-                   <div className="space-y-6">
-                      <Input 
-                         label="BVN" 
-                         placeholder="12345678901" 
-                         value={signupData.bvn || ''} 
-                         onChange={(e) => {
-                            const val = e.target.value.replace(/[^0-9]/g, '').slice(0, 11);
-                            setSignupData({...signupData, bvn: val});
-                         }}
-                         variant="default"
-                         inputClassName="!text-lg !tracking-widest !font-mono"
-                      />
-                      <div className="bg-amber-50 p-4 rounded-[20px] border border-amber-100 flex gap-3 items-start">
-                         <span className="text-amber-600 mt-0.5"><Icons.Lock className="w-4 h-4" /></span>
-                         <p className="text-[10px] text-amber-800 leading-relaxed font-medium">Your BVN is encrypted and only used for identity verification. We do not have access to your bank accounts.</p>
-                      </div>
-                   </div>
-  
-                   <div className="mt-10">
-                      <Button 
-                         disabled={!signupData.bvn || signupData.bvn.length < 11} 
-                         onClick={() => {
-                            triggerReview({
-                               title: "BVN under review",
-                               message: "We are verifying your BVN with the national database. This usually takes a few moments.",
-                               notificationTitle: "BVN Verified",
-                               notificationDesc: "Your identity has been confirmed successfully.",
-                               onComplete: () => {
-                                  if (pendingRoute) {
-                                     setScreen(pendingRoute);
-                                     setPendingRoute(null);
-                                  } else {
-                                     setScreen(AppScreen.HOME);
-                                  }
-                               }
-                            });
-                         }}
-                      >
-                         Continue
-                      </Button>
-                   </div>
-                </div>
-             </div>
-          );
-
-      case AppScreen.KYC_ADVANCED_FORM:
-         return (
-            <div className="flex-1 flex flex-col bg-white animate-slide-up items-center p-8 overflow-y-auto no-scrollbar">
-               <div className="w-full max-w-md mt-10">
-                  <BackHeader title="Enter your home address" onBack={() => setScreen(AppScreen.KYC_INTRO)} theme="light" className="mb-8 bg-transparent" />
-                  
-                  <div className="bg-gray-50 border border-gray-100 rounded-[24px] p-4 flex gap-4 mb-8 animate-fade-in">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                      <Icons.Info className="w-5 h-5 text-primary" />
-                    </div>
-                    <p className="text-gray-600 text-xs font-medium leading-relaxed">
-                      Please enter your details exactly as they appear on your government-issued ID to avoid verification delays.
-                    </p>
-                  </div>
-
-                  <div className="space-y-6">
-                     <div className="flex flex-col gap-2 relative">
-                       <label className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] ml-1">Country of residence</label>
-                       <div className="w-full py-4 px-4 bg-gray-50 border border-gray-200 rounded-[20px] flex justify-between items-center text-gray-900 font-medium">
-                         <div className="flex items-center gap-3">
-                           <span className="text-xl">🇳🇬</span>
-                           <span>{advancedKycData.country}</span>
-                         </div>
-                         <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
-                       </div>
-                     </div>
-
-                     <Input 
-                        label="Street address" 
-                        placeholder="e.g. 123 Main St" 
-                        value={advancedKycData.streetAddress} 
-                        onChange={(e) => setAdvancedKycData({...advancedKycData, streetAddress: e.target.value})}
-                        variant="default"
-                     />
-                     <div className="flex flex-col gap-2 relative">
-                       <label className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] ml-1">State</label>
-                       <div 
-                         onClick={() => setIsStateDropdownOpen(!isStateDropdownOpen)}
-                         className={`w-full py-4 px-4 bg-gray-50 border ${isStateDropdownOpen ? 'border-primary' : 'border-gray-200'} rounded-[20px] flex justify-between items-center text-gray-900 font-medium cursor-pointer active:bg-gray-100 transition-all`}
-                       >
-                         <span className={`${!advancedKycData.state ? 'text-gray-400' : ''}`}>{advancedKycData.state || 'Select a state'}</span>
-                         <svg className={`w-4 h-4 text-gray-400 transition-transform ${isStateDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
-                       </div>
-                       {isStateDropdownOpen && (
-                         <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-[20px] overflow-hidden z-30 shadow-2xl animate-fade-in max-h-60 overflow-y-auto">
-                           <input 
-                             type="text" 
-                             placeholder="Search state..." 
-                             className="w-full p-4 bg-gray-50 text-gray-900 border-b border-gray-100 outline-none"
-                             value={stateSearchTerm}
-                             onChange={(e) => setStateSearchTerm(e.target.value)}
-                           />
-                           {['Abia', 'Adamawa', 'Akwa Ibom', 'Anambra', 'Bauchi', 'Bayelsa', 'Benue', 'Borno', 'Cross River', 'Delta', 'Ebonyi', 'Edo', 'Ekiti', 'Enugu', 'Gombe', 'Imo', 'Jigawa', 'Kaduna', 'Kano', 'Katsina', 'Kebbi', 'Kogi', 'Kwara', 'Lagos', 'Nasarawa', 'Niger', 'Ogun', 'Ondo', 'Osun', 'Oyo', 'Plateau', 'Rivers', 'Sokoto', 'Taraba', 'Yobe', 'Zamfara']
-                             .filter(state => state.toLowerCase().includes(stateSearchTerm.toLowerCase()))
-                             .map((state) => (
-                               <div 
-                                 key={state}
-                                 onClick={() => { setAdvancedKycData({...advancedKycData, state: state}); setIsStateDropdownOpen(false); setStateSearchTerm(''); }}
-                                 className="p-4 hover:bg-gray-50 flex items-center gap-3 cursor-pointer border-b border-gray-50 last:border-0"
-                               >
-                                 <span className="text-gray-900 text-sm font-bold">{state}</span>
-                               </div>
-                           ))}
-                         </div>
-                       )}
-                     </div>
-                     <Input 
-                        label="City" 
-                        placeholder="e.g. Ikeja" 
-                        value={advancedKycData.city} 
-                        onChange={(e) => setAdvancedKycData({...advancedKycData, city: e.target.value})}
-                        variant="default"
-                     />
-                     <Input 
-                        label="Postal code" 
-                        placeholder="e.g. 100001" 
-                        value={advancedKycData.postalCode} 
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/[^0-9]/g, '');
-                          if (val.length <= 6) {
-                            setAdvancedKycData({...advancedKycData, postalCode: val});
-                          }
-                        }}
-                        variant="default"
-                     />
-                     <Input 
-                        label="Date of Birth" 
-                        placeholder="DD/MM/YYYY" 
-                        type="date"
-                        value={advancedKycData.dob} 
-                        onChange={(e) => setAdvancedKycData({...advancedKycData, dob: e.target.value})}
-                        variant="default"
-                     />
-                     <Input 
-                        label="Phone Number" 
-                        placeholder="+234 800 000 0000" 
-                        type="tel"
-                        value={advancedKycData.phone} 
-                        onChange={(e) => {
-                          let val = e.target.value;
-                          if (!val.startsWith('+234')) {
-                            val = '+234';
-                          }
-                          const rest = val.slice(4).replace(/[^0-9]/g, '');
-                          setAdvancedKycData({...advancedKycData, phone: '+234' + rest});
-                        }}
-                        variant="default"
-                     />
-                  </div>
-
-                  <div className="mt-10 mb-10">
-                     <Button 
-                        disabled={!advancedKycData.streetAddress || !advancedKycData.state || !advancedKycData.city || !advancedKycData.postalCode || !advancedKycData.dob || !advancedKycData.phone}
-                        onClick={() => setScreen(AppScreen.KYC_PHONE_VERIFICATION)}
-                     >
-                        Continue
-                     </Button>
-                  </div>
-               </div>
-            </div>
-         );
-
-      case AppScreen.KYC_PHONE_VERIFICATION:
-         return (
-            <div className="flex-1 flex flex-col bg-white animate-slide-up items-center justify-center p-8">
-               <div className="w-full max-w-md">
-                  <BackHeader title="Verify your phone number" onBack={() => setScreen(AppScreen.KYC_ADVANCED_FORM)} theme="light" className="mb-8 bg-transparent" />
-                  <p className="text-gray-500 text-xs font-medium mb-10 leading-relaxed">
-                    Enter the security code sent to <br/><span className="text-gray-900 font-bold">{advancedKycData.phone}</span> to secure your account.
-                  </p>
-                  
-                  <div className="flex justify-between gap-2 mb-12">
-                    {[...Array(6)].map((_, i) => (
-                      <input
-                        key={i}
-                        type="text"
-                        maxLength={1}
-                        className="w-12 h-14 bg-gray-50 border border-gray-200 rounded-[16px] text-center text-xl font-black text-gray-900 focus:border-primary focus:bg-emerald-50 transition-all outline-none"
-                        value={advancedOtpValue[i] || ''}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/[^0-9]/g, '');
-                          if (val) {
-                            const newOtp = advancedOtpValue.split('');
-                            newOtp[i] = val;
-                            setAdvancedOtpValue(newOtp.join(''));
-                            if (i < 5) {
-                              const nextInput = e.target.nextElementSibling as HTMLInputElement;
-                              if (nextInput) nextInput.focus();
-                            }
-                          }
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Backspace') {
-                            const newOtp = advancedOtpValue.split('');
-                            newOtp[i] = '';
-                            setAdvancedOtpValue(newOtp.join(''));
-                            if (i > 0) {
-                              const prevInput = e.currentTarget.previousElementSibling as HTMLInputElement;
-                              if (prevInput) prevInput.focus();
-                            }
-                          }
-                        }}
-                      />
-                    ))}
-                  </div>
-
-                  <div className="mt-10 space-y-4">
-                     <Button 
-                        disabled={advancedOtpValue.length < 6}
-                        onClick={() => setScreen(AppScreen.KYC_UTILITY)}
-                        className="!bg-emerald-600 hover:!bg-emerald-700"
-                     >
-                        Continue
-                     </Button>
-                     <Button variant="outline" className="w-full !border-gray-200 !text-gray-700">
-                        Receive code by WhatsApp
-                     </Button>
-                  </div>
-               </div>
-            </div>
-         );
-
-      case AppScreen.KYC_UTILITY:
-         return (
-            <div className="flex-1 flex flex-col bg-white animate-slide-up items-center justify-center p-8">
-               <div className="w-full max-w-md">
-                  <BackHeader title="Proof of Address" onBack={() => setScreen(AppScreen.KYC_PHONE_VERIFICATION)} theme="light" className="mb-8 bg-transparent" />
-                  <p className="text-gray-500 text-xs font-medium mb-10 leading-relaxed">
-                    Please upload a clear photo of your Utility Bill (Electricity, Water) or a recent Bank Statement showing your address.
-                  </p>
-                  
-                  <div className="space-y-6">
-                     <div className="w-full h-48 rounded-[32px] border-2 border-dashed border-gray-200 bg-gray-50 flex flex-col items-center justify-center gap-4 cursor-pointer hover:bg-gray-100 transition-all group">
-                        <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                           <Icons.Upload className="w-8 h-8" />
-                        </div>
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Tap to upload document</p>
-                     </div>
-                     
-                     <div className="bg-blue-50 p-4 rounded-[20px] border border-blue-100 flex gap-3 items-start">
-                        <span className="text-blue-500 mt-0.5"><Icons.Shield className="w-4 h-4" /></span>
-                        <p className="text-[10px] text-blue-800 leading-relaxed font-medium">Your documents are stored securely and only used for verification purposes.</p>
-                     </div>
-                  </div>
-
-                  <div className="mt-10">
-                     <Button 
-                        className="!bg-emerald-600 hover:!bg-emerald-700"
-                        onClick={() => {
-                           triggerReview({
-                              title: "Documents under review",
-                              message: "Our compliance team is reviewing your proof of address. This usually takes 24-48 hours.",
-                              notificationTitle: "KYC Verified",
-                              notificationDesc: "Your proof of address has been approved. You now have higher limits.",
-                              onComplete: () => {
-                                 setKycLevel(3);
-                                 setScreen(AppScreen.ACCOUNT_SETTINGS);
-                              }
-                           });
-                        }}
-                     >
-                        Continue
-                     </Button>
-                  </div>
-               </div>
-            </div>
-         );
-
-      case AppScreen.KYC_PIN_SETUP:
-         return (
-            <div className="flex-1 flex flex-col bg-white animate-slide-up items-center justify-center p-8">
-               <div className="w-full max-w-md flex flex-col items-center">
-                  <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-600 mb-6 border border-emerald-100 shadow-[0_0_30px_rgba(16,185,129,0.1)]">
-                     <Icons.Lock />
-                  </div>
-                  <h2 className="text-3xl font-black text-gray-900 mb-2">Set Transaction PIN</h2>
-                  <p className="text-gray-500 text-xs font-medium mb-10 text-center">Create a 4-digit PIN to secure your transactions.</p>
-                  
-                  <div className="flex gap-4 justify-center mb-10 w-full max-w-[240px]">
-                     {[0, 1, 2, 3].map(i => (
-                        <div key={i} className={`w-12 h-12 rounded-xl border-2 flex items-center justify-center text-2xl font-black transition-all ${tempPin.length > i ? 'border-primary bg-primary text-white shadow-[0_0_15px_rgba(46,139,58,0.2)]' : 'border-gray-200 bg-gray-50 text-gray-400'}`}>
-                           {tempPin.length > i ? '•' : ''}
-                        </div>
-                     ))}
-                  </div>
-                  
-                  <div className="grid grid-cols-3 gap-4 w-full max-w-[280px]">
-                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, '', 0, 'del'].map((num, idx) => (
-                        <button 
-                           key={idx}
-                           onClick={() => {
-                              if (num === 'del') {
-                                 setTempPin(prev => prev.slice(0, -1));
-                              } else if (num !== '' && tempPin.length < 4) {
-                                 const newPin = tempPin + num;
-                                 setTempPin(newPin);
-                                 if (newPin.length === 4) {
-                                    setTimeout(() => {
-                                       setTransactionPin(newPin);
-                                       setTempPin('');
-                                       showToast("PIN Set Successfully!");
-                                       setScreen(AppScreen.ONBOARDING_ADD_BANK);
-                                    }, 500);
-                                 }
-                              }
-                           }}
-                           className={`h-16 rounded-2xl flex items-center justify-center text-xl font-bold active:scale-90 transition-transform ${num === '' ? 'invisible' : num === 'del' ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-gray-50 border border-gray-200 text-gray-900 hover:bg-gray-100'}`}
-                        >
-                           {num === 'del' ? <Icons.Trash /> : num}
-                        </button>
-                     ))}
-                  </div>
-               </div>
-            </div>
-         );
 
       case AppScreen.ONBOARDING_ADD_BANK:
          return (
@@ -2067,7 +1437,7 @@ export const App = () => {
                <div className="w-full max-w-md flex flex-col h-full">
                   <div className="flex justify-between items-center mb-8">
                      <h2 className="text-3xl font-black text-gray-900">Add Bank</h2>
-                     <button onClick={() => setScreen(AppScreen.ACCOUNT_CREATED)} className="text-gray-400 text-xs font-bold uppercase tracking-widest hover:text-gray-900 transition-colors">Skip</button>
+                     <button onClick={() => setScreen(AppScreen.HOME)} className="text-gray-400 text-xs font-bold uppercase tracking-widest hover:text-gray-900 transition-colors">Skip</button>
                   </div>
                   
                   <div className="flex-1 flex flex-col">
@@ -2107,7 +1477,7 @@ export const App = () => {
                      </div>
 
                      <div className="mt-10">
-                        <Button className="!bg-emerald-600 hover:!bg-emerald-700" onClick={() => { showToast("Bank Account Added!"); setScreen(AppScreen.ACCOUNT_CREATED); }}>Continue</Button>
+                        <Button fullWidth className="!bg-emerald-600 hover:!bg-emerald-700" onClick={() => { showToast("Bank Account Added!"); setScreen(AppScreen.HOME); }}>Continue</Button>
                      </div>
                   </div>
                </div>
@@ -2123,32 +1493,7 @@ export const App = () => {
                 </div>
                 <h2 className="text-4xl font-black text-gray-900 mb-2">Welcome Home</h2>
                 <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-12">Your Gogreen Africa Dashboard is ready</p>
-                <Button onClick={() => { setScreen(AppScreen.WELCOME_TO_GOGREEN); }}>Continue</Button>
-            </div>
-          </div>
-        );
-
-      case AppScreen.KYC_UPLOADING:
-        return (
-          <div className="flex-1 flex flex-col bg-white items-center justify-center p-8 text-center animate-fade-in">
-            <div className="w-full max-w-md flex flex-col items-center">
-              <div className="w-32 h-32 mb-8 relative">
-                <div className="absolute inset-0 bg-emerald-50 rounded-full animate-ping opacity-20"></div>
-                <div className="relative z-10 w-full h-full bg-white rounded-full flex items-center justify-center shadow-xl shadow-emerald-500/10">
-                  <Logo className="w-20 h-20 animate-pulse" />
-                </div>
-              </div>
-              <h2 className="text-2xl font-black text-gray-900 mb-2">Uploading Documents</h2>
-              <p className="text-gray-500 text-sm font-medium">Please wait while we securely upload your details...</p>
-              
-              <div className="mt-12 w-full max-w-[200px] h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                <motion.div 
-                  initial={{ width: "0%" }}
-                  animate={{ width: "100%" }}
-                  transition={{ duration: 4, ease: "linear" }}
-                  className="h-full bg-emerald-600"
-                />
-              </div>
+                <Button fullWidth onClick={() => { setScreen(AppScreen.HOME); }}>Continue</Button>
             </div>
           </div>
         );
@@ -2187,38 +1532,7 @@ export const App = () => {
                       </div>
                    </div>
                 ) : (
-                   <Button onClick={handleCryptoWalletGeneration} className="w-full max-w-[280px]">Generate Addresses</Button>
-                )}
-             </div>
-          </div>
-         );
-
-      case AppScreen.BANK_ACCOUNT_SETUP:
-         return (
-          <div className="flex-1 flex flex-col bg-gradient-to-br from-gray-900 via-[#051a08] to-black items-center justify-center p-8 text-center animate-fade-in relative overflow-hidden">
-             <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(46,139,58,0.15),transparent_70%)] pointer-events-none" />
-             <div className="relative z-10 flex flex-col items-center w-full max-w-md">
-                <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-8 border border-primary/20 shadow-[0_0_30px_rgba(46,139,58,0.2)]">
-                   <div className={`w-10 h-10 text-white ${isGlobalLoading ? 'animate-pulse' : ''}`}>
-                      <Icons.Bank />
-                   </div>
-                </div>
-                <h2 className="text-3xl font-black text-white mb-3">Virtual Bank Account</h2>
-                <p className="text-white/40 text-xs font-medium mb-10 max-w-[280px] leading-relaxed">
-                   Generating a dedicated virtual bank account for your Naira deposits.
-                </p>
-                {isGlobalLoading ? (
-                   <div className="space-y-3 w-full max-w-[280px]">
-                      <div className="flex justify-between text-[10px] font-bold text-primary uppercase tracking-widest px-1">
-                         <span>Connecting to Bank...</span>
-                         <span className="animate-pulse">Secure</span>
-                      </div>
-                      <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden">
-                         <div className="h-full bg-primary animate-pulse w-2/3 rounded-full"></div>
-                      </div>
-                   </div>
-                ) : (
-                   <Button onClick={handleBankAccountGeneration} className="w-full max-w-[280px]">Generate Account</Button>
+                   <Button fullWidth onClick={handleCryptoWalletGeneration} className="max-w-[280px]">Generate Addresses</Button>
                 )}
              </div>
           </div>
@@ -2233,11 +1547,9 @@ export const App = () => {
       case AppScreen.HOME:
         return (
           <HomeScreen
-            onRefresh={handleRefresh}
             greeting={getGreeting()}
             user={signupData}
             hasUnreadNotifications={hasUnreadNotifications}
-            kycLevel={kycLevel}
             currency={currency}
             setCurrency={setCurrency}
             hideBalance={hideBalance}
@@ -2256,52 +1568,91 @@ export const App = () => {
           />
         );
 
+      case AppScreen.SERVICES:
+        return <ServicesScreen />;
+
       /* ==========================================================================================
          1) CRYPTO INVOICE SCREEN
          ========================================================================================== */
       case AppScreen.CRYPTO_INVOICE:
         return <CryptoInvoiceScreen />;
 
+      case AppScreen.SUPPORT:
+        return <SupportScreen onBack={() => setScreen(previousScreen || AppScreen.HOME)} initialView={supportInitialView} />;
+
+      case AppScreen.CHAT:
+        return <SupportScreen onBack={() => setScreen(previousScreen || AppScreen.HOME)} initialView="CHAT_HISTORY" />;
+
       /* ==========================================================================================
          2) TRANSACTION HISTORY SCREEN
          ========================================================================================== */
       case AppScreen.TRANSACTION_HISTORY:
         return (
-          <div className="flex-1 flex flex-col bg-ghost animate-fade-in overflow-hidden items-center">
-            <div className="w-full max-w-4xl flex flex-col h-full">
-                <BackHeader title="Transactions" subtitle="History" />
+          <div className="flex-1 flex flex-col bg-white animate-fade-in overflow-hidden items-center relative">
+            <div className="w-full max-w-4xl flex flex-col h-full overflow-hidden">
                 
-                {/* Filters */}
-                <div className="px-2 py-0.5 flex gap-1.5 overflow-x-auto no-scrollbar">
-                  <select 
-                    value={txFilterType} 
-                    onChange={(e) => setTxFilterType(e.target.value)}
-                    className="bg-white border border-gray-200 text-gray-700 text-[8px] font-bold rounded-full px-2 py-0.5 outline-none focus:border-primary transition-colors cursor-pointer"
-                  >
-                    <option value="All">All Types</option>
-                    <option value="Buy">Buy</option>
-                    <option value="Sell">Sell</option>
-                    <option value="Add Fund">Add Fund</option>
-                    <option value="Withdrawal">Withdrawal</option>
-                  </select>
+                {/* 1. FIXED TOP CONTAINER (Static Header) */}
+                <div className="z-20 flex-shrink-0 header-integrated">
+                  <BackHeader 
+                    title="Transactions" 
+                    subtitle="History" 
+                    className="!px-5 !bg-transparent !border-b-0" 
+                  />
+                  
+                  {/* Filters and Summary Section */}
+                  <div className="px-5 py-4 space-y-4">
+                    {/* Type Filters */}
+                    <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+                      {['All', 'Buy', 'Sell', 'Withdrawal'].map(type => (
+                        <button
+                          key={type}
+                          onClick={() => setTxFilterType(type)}
+                          className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${
+                            txFilterType === type 
+                              ? 'bg-primary text-white shadow-lg shadow-primary/20' 
+                              : 'bg-gray-50 text-gray-400 hover:bg-gray-100'
+                          }`}
+                        >
+                          {type}
+                        </button>
+                      ))}
+                    </div>
 
-                  <select 
-                    value={txFilterDate} 
-                    onChange={(e) => setTxFilterDate(e.target.value)}
-                    className="bg-white border border-gray-200 text-gray-700 text-[8px] font-bold rounded-full px-2 py-0.5 outline-none focus:border-primary transition-colors cursor-pointer"
-                  >
-                    <option value="All Time">All Time</option>
-                    <option value="Today">Today</option>
-                    <option value="This Week">This Week</option>
-                    <option value="This Month">This Month</option>
-                  </select>
+                    {/* Date Filters */}
+                    <div className="flex gap-2 overflow-x-auto no-scrollbar">
+                      {['All Time', 'Today', 'This Week', 'This Month'].map(date => (
+                        <button
+                          key={date}
+                          onClick={() => setTxFilterDate(date)}
+                          className={`px-4 py-1.5 rounded-xl text-[9px] font-bold transition-all whitespace-nowrap border ${
+                            txFilterDate === date 
+                              ? 'bg-white border-primary text-primary shadow-sm' 
+                              : 'bg-white border-gray-100 text-gray-400 hover:border-gray-200'
+                          }`}
+                        >
+                          {date}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Activity Summary Line */}
+                    <div className="flex justify-between items-center px-1 pt-2">
+                      <h3 className="font-display font-black text-gray-900 text-[10px] uppercase tracking-[0.2em]">
+                        {txFilterType === 'All' ? 'All Activities' : `${txFilterType} Activities`}
+                      </h3>
+                      <span className="text-[9px] font-bold text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full">
+                        {filteredTransactions.length} Total
+                      </span>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="flex-1 px-3 pb-3 overflow-y-auto no-scrollbar">
+                {/* 2. SEPARATE SCROLLABLE WIDGET (Transaction List) */}
+                <div className="flex-1 px-5 pt-4 pb-24 overflow-y-auto bg-gray-50/30 scroll-smooth">
                   {isTxLoading ? (
                     <SkeletonScreen type="list" />
                   ) : (
-                    <div className="space-y-1 pt-1">
+                    <div className="space-y-3">
                       {filteredTransactions.length > 0 ? (
                         <>
                           {filteredTransactions.slice(0, visibleTransactions).map(tx => (
@@ -2316,17 +1667,25 @@ export const App = () => {
                               hideBalance={hideBalance}
                             />
                           ))}
+                          
+                          {/* Pagination / Load More */}
                           {visibleTransactions < filteredTransactions.length && (
-                            <Button onClick={() => setVisibleTransactions(prev => prev + 10)} className="w-full mt-1.5 !h-8 text-[9px]">Load More</Button>
+                            <button 
+                              onClick={() => setVisibleTransactions(prev => prev + 10)}
+                              className="w-full py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] hover:text-primary transition-colors"
+                            >
+                              Load More Transactions
+                            </button>
                           )}
                         </>
                       ) : (
-                        <div className="flex flex-col items-center justify-center py-20 text-center px-6">
-                          <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center text-gray-300 mb-6 shadow-inner">
-                             <Icons.FileText className="w-8 h-8 opacity-50" />
+                        /* Empty State */
+                        <div className="flex flex-col items-center justify-center py-20 text-center">
+                          <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                            <Icons.History className="w-10 h-10 text-gray-200" />
                           </div>
-                          <h3 className="text-lg font-black text-gray-900 mb-2 tracking-tight">No Transaction Yet</h3>
-                          <p className="text-xs text-gray-400 max-w-[240px] font-medium leading-relaxed">Looks like there's no recent activity to show here. Get started by making a transaction.</p>
+                          <h3 className="text-gray-900 font-black text-sm mb-1">No transactions found</h3>
+                          <p className="text-gray-400 text-[10px] max-w-[200px]">Try adjusting your filters to find what you're looking for.</p>
                         </div>
                       )}
                     </div>
@@ -2345,7 +1704,7 @@ export const App = () => {
            <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center">
               <div className="w-full max-w-2xl flex flex-col h-full">
                   <BackHeader title="Details" subtitle={selectedTx.status} onBack={() => setScreen(AppScreen.TRANSACTION_HISTORY)} />
-                  <div className="p-3 overflow-y-auto no-scrollbar pb-6">
+                  <div className="p-3 flex-1 overflow-y-auto no-scrollbar pb-24">
                     <div className="bg-white rounded-[16px] p-3 shadow-sm border border-gray-100 flex flex-col items-center text-center">
                         
                         {/* Status Badge */}
@@ -2354,8 +1713,12 @@ export const App = () => {
                         </div>
 
                         {/* Big Amounts */}
-                        <h2 className="text-xl font-black text-gray-900 mb-0.5">{hideBalance ? '••••••' : selectedTx.fiatAmount}</h2>
-                        <p className="text-gray-400 text-[9px] font-bold uppercase tracking-widest mb-6">{hideBalance ? '••••••' : selectedTx.cryptoAmount}</p>
+                        <h2 className="text-xl font-black text-gray-900 mb-0.5">
+                          <PrivacyText hide={hideBalance}>{selectedTx.fiatAmount}</PrivacyText>
+                        </h2>
+                        <p className="text-gray-400 text-[9px] font-bold uppercase tracking-widest mb-6">
+                          <PrivacyText hide={hideBalance}>{selectedTx.cryptoAmount}</PrivacyText>
+                        </p>
 
                         {/* Transaction Progress */}
                         <div className="w-full bg-gray-50 rounded-xl p-4 text-left border border-gray-100 mb-4">
@@ -2647,9 +2010,9 @@ export const App = () => {
                       </div>
                       <div className="text-right">
                          <p className="font-bold text-gray-900 text-[11px] tracking-tight">
-                           {currency === 'NGN' ? '₦' : '$'} {hideBalance ? '••••••' : (currency === 'NGN' ? (coin.balance * coin.rate).toLocaleString() : ((coin.balance * coin.rate) / 1710).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }))}
+                           {currency === 'NGN' ? '₦' : '$'} <PrivacyText hide={hideBalance}>{(currency === 'NGN' ? (coin.balance * coin.rate).toLocaleString() : ((coin.balance * coin.rate) / 1710).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }))}</PrivacyText>
                          </p>
-                         <p className="text-[8px] text-gray-400 font-bold uppercase tracking-widest">{hideBalance ? '••••••' : coin.balance} {coin.symbol}</p>
+                         <p className="text-[8px] text-gray-400 font-bold uppercase tracking-widest"><PrivacyText hide={hideBalance}>{coin.balance}</PrivacyText> {coin.symbol}</p>
                       </div>
                     </div>
                   ))
@@ -2847,13 +2210,16 @@ export const App = () => {
                         </div>
                         <div className="flex justify-between items-center pt-4">
                             <span className="text-xs font-bold text-gray-500">You Receive</span>
-                            <span className="text-2xl font-black text-[#2da437]">{hideBalance ? '••••••' : `₦ ${(parseFloat(sellAmount) * (selectedCoin?.rate || 0)).toLocaleString()}`}</span>
+                            <span className="text-2xl font-black text-[#2da437]">
+                              <PrivacyText hide={hideBalance}>{`₦ ${(parseFloat(sellAmount) * (selectedCoin?.rate || 0)).toLocaleString()}`}</PrivacyText>
+                            </span>
                         </div>
                       </div>
 
                       <div className="mt-auto space-y-4">
                         <SwipeButton text="Swipe to Sell" onComplete={() => {
                            setOnPinSuccess(() => handleSellCrypto);
+                           setOnPinCancel(() => () => showToast('error', 'Cancelled', 'Action cancelled due to user inability to verify action'));
                            setShowPinModal(true);
                         }} />
                         
@@ -3164,15 +2530,19 @@ export const App = () => {
 
                   <Button 
                     onClick={() => {
-                      setGlobalLoadingMessage('Processing Payment...');
-                      setIsGlobalLoading(true);
-                      setTimeout(() => {
-                        setIsGlobalLoading(false);
-                        setShowScanPaymentModal(false);
-                        setScanAmount('');
-                        setScreen(AppScreen.SELL_SUCCESS); // Reuse success screen or create new one
-                        showToast(`Paid ₦${scanAmount || '0'} to ${scannedData?.name}`);
-                      }, 2000);
+                      setOnPinSuccess(() => () => {
+                        setGlobalLoadingMessage('Processing Payment...');
+                        setIsGlobalLoading(true);
+                        setTimeout(() => {
+                          setIsGlobalLoading(false);
+                          setShowScanPaymentModal(false);
+                          setScanAmount('');
+                          setScreen(AppScreen.SELL_SUCCESS); // Reuse success screen or create new one
+                          showToast(`Paid ₦${scanAmount || '0'} to ${scannedData?.name}`);
+                        }, 2000);
+                      });
+                      setOnPinCancel(() => () => showToast('error', 'Cancelled', 'Action cancelled due to user inability to verify action'));
+                      setShowPinModal(true);
                     }}
                     disabled={!scanAmount}
                     className="!h-10 !text-xs"
@@ -3189,7 +2559,14 @@ export const App = () => {
       case AppScreen.BILL_PAYMENT_DETAILS:
       case AppScreen.BILL_PAYMENT_SUMMARY:
       case AppScreen.BILL_PAYMENT_SUCCESS:
-        return <BillPaymentScreen setIsGlobalLoading={setIsGlobalLoading} setGlobalLoadingMessage={setGlobalLoadingMessage} />;
+        return <BillPaymentScreen 
+            setIsGlobalLoading={setIsGlobalLoading} 
+            setGlobalLoadingMessage={setGlobalLoadingMessage} 
+            setShowPinModal={setShowPinModal} 
+            setOnPinSuccess={setOnPinSuccess}
+            setOnPinCancel={setOnPinCancel}
+            showToast={showToast}
+        />;
 
       case AppScreen.SUGGESTION_BOX:
         return (
@@ -3300,14 +2677,12 @@ export const App = () => {
       case AppScreen.ME:
         return (
           <MeScreen
-            onRefresh={handleRefresh}
             signupData={signupData}
-            kycLevel={kycLevel}
             currency={currency}
             setCurrency={setCurrency}
             walletBalance={walletBalance}
             pendingBalance={pendingBalance}
-            onNavigate={setScreen}
+            onNavigate={handleProtectedNavigation}
             hideBalance={hideBalance}
           />
         );
@@ -3317,7 +2692,7 @@ export const App = () => {
           <div className="flex-1 flex flex-col bg-ghost animate-fade-in items-center">
             <div className="w-full max-w-2xl flex flex-col h-full">
                 <BackHeader title="Notifications" subtitle="Alerts" />
-                <div className="p-3 space-y-2.5 h-full pb-24 overflow-y-auto no-scrollbar">
+                <div className="p-3 space-y-2.5 flex-1 pb-24 overflow-y-auto no-scrollbar">
                   {notifications.length > 0 ? (
                     <>
                       {notifications.map(note => (
@@ -3373,7 +2748,7 @@ export const App = () => {
                       {[
                         { id: 'naira_wallet', title: 'Naira Wallet', desc: 'Fund via your virtual account', icon: <Icons.Wallet />, action: () => setScreen(AppScreen.VIRTUAL_ACCOUNT), active: true },
                         { id: 'ussd', title: 'USSD', desc: 'Dial a code to fund your wallet', icon: <Icons.Phone />, action: () => setScreen(AppScreen.USSD_DEPOSIT), active: true },
-                        { id: 'crypto', title: 'Crypto Invoice', desc: 'Receive crypto via invoice', icon: <Icons.QrCode />, action: () => setScreen(AppScreen.CRYPTO_INVOICE), active: true },
+                        { id: 'crypto', title: 'Crypto Invoice', desc: 'Receive crypto via invoice', icon: <Icons.QrCode />, action: () => setScreen(AppScreen.CRYPTO_INVOICE), active: areCryptoWalletsGenerated },
                         { id: 'intl', title: 'International Add Funds', desc: 'Payment from outside Nigeria', icon: <Icons.Globe />, action: () => {}, active: false },
                         { id: 'card', title: 'Card Add Fund', desc: 'Fund instantly with your debit card', icon: <Icons.CreditCard />, action: () => {}, active: false },
                         { id: 'cash', title: 'Cash Add Fund', desc: 'Add Fund cash at a partner location', icon: <Icons.Bank />, action: () => {}, active: false },
@@ -3409,7 +2784,10 @@ export const App = () => {
          return (
             <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center">
                <div className="w-full max-w-2xl flex flex-col h-full">
-                  <BackHeader title="Naira Wallet" subtitle="Manage your funds" onBack={() => setScreen(AppScreen.ADD_MONEY)} />
+                  <div className="p-6 pt-12 pb-8 z-20 sticky top-0 flex flex-col header-integrated">
+                    <h2 className="text-3xl font-black text-gray-900 tracking-tighter mb-2">Naira Wallet</h2>
+                    <p className="text-gray-500 font-medium text-sm">Manage your funds</p>
+                  </div>
                   <div className="p-6 flex-1 flex flex-col gap-6 overflow-y-auto no-scrollbar pb-24">
                       {/* Balance Card */}
                       <div className="bg-primary p-8 rounded-[40px] text-white shadow-2xl shadow-primary/20 relative overflow-hidden group">
@@ -3420,7 +2798,7 @@ export const App = () => {
                                 <p className="text-[9px] font-black uppercase tracking-[0.3em]">Total Balance</p>
                             </div>
                             <h2 className="text-4xl font-black tracking-tighter mb-8">
-                                ₦ {hideBalance ? '••••••' : walletBalance.toLocaleString()}
+                                ₦ <PrivacyText hide={hideBalance}>{walletBalance.toLocaleString()}</PrivacyText>
                             </h2>
                             
                             <div className="flex gap-3">
@@ -3498,7 +2876,7 @@ export const App = () => {
       case AppScreen.SECURITY:
       case AppScreen.CHANGE_PIN:
       case AppScreen.LOGGED_IN_DEVICES:
-        return <SecurityScreen />;
+        return <SecurityScreen onNavigate={handleProtectedNavigation} />;
 
       case AppScreen.BANK_DETAILS:
         return <BankDetailsScreen />;
@@ -3525,24 +2903,21 @@ export const App = () => {
                            <div className="flex justify-between items-center">
                               <span className="text-[10px] font-bold text-gray-500">Current Level</span>
                               <span className="text-[10px] font-black text-primary uppercase tracking-widest">
-                                {kycLevel >= 3 ? 'Advanced' : kycLevel >= 2 ? 'Tier 2' : 'Tier 1'}
+                                Advanced
                               </span>
                            </div>
                            <div className="flex justify-between items-center">
                               <span className="text-[10px] font-bold text-gray-500">Daily Withdrawal</span>
-                              <span className="text-[10px] font-black text-gray-900">₦ {kycLevel >= 3 ? 'Unlimited' : kycLevel >= 2 ? '5,000,000' : '500,000'}</span>
+                              <span className="text-[10px] font-black text-gray-900">Unlimited</span>
                            </div>
                            <div className="w-full bg-gray-100 h-1 rounded-full overflow-hidden">
-                              <div className={`bg-primary h-full rounded-full transition-all duration-500 ${kycLevel >= 3 ? 'w-full' : kycLevel >= 2 ? 'w-2/3' : 'w-1/3'}`}></div>
+                              <div className="bg-primary h-full rounded-full transition-all duration-500 w-full"></div>
                            </div>
                            <div className="flex justify-between items-center">
                               <span className="text-[10px] font-bold text-gray-500">Daily Crypto Sell</span>
                               <span className="text-[10px] font-black text-gray-900">Unlimited</span>
                            </div>
                         </div>
-                        {kycLevel < 3 && (
-                          <Button variant="outline" className="w-full mt-4 !h-8 !text-[10px]" onClick={() => setScreen(AppScreen.KYC_INTRO)}>Upgrade to Advanced Level</Button>
-                        )}
                      </div>
 
                      <div className="bg-white p-4 rounded-[16px] border border-gray-100 space-y-4 shadow-sm">
@@ -3750,23 +3125,20 @@ export const App = () => {
                            onChange={(e) => {
                               if (e.target.value === 'DELETE') {
                                  showToast("Account Scheduled for Deletion");
-                                 setTimeout(() => setScreen(AppScreen.SPLASH), 1500);
+                                 setTimeout(() => setScreen(AppScreen.LOGIN), 1500);
                               }
                            }}
                         />
                      </div>
 
                      <div className="mt-auto flex flex-col gap-1.5">
-                        <Button variant="danger" onClick={() => { showToast("Account Scheduled for Deletion"); setTimeout(() => setScreen(AppScreen.SPLASH), 1500); }} className="!h-9 !text-xs">Yes, delete my account</Button>
+                        <Button variant="danger" onClick={() => { showToast("Account Scheduled for Deletion"); setTimeout(() => setScreen(AppScreen.LOGIN), 1500); }} className="!h-9 !text-xs">Yes, delete my account</Button>
                         <Button variant="ghost" className="!text-gray-500 !h-9 !text-xs" onClick={() => setScreen(AppScreen.ME)}>Cancel, keep my account</Button>
                      </div>
                   </div>
                </div>
             </div>
          );
-
-      case AppScreen.SUPPORT:
-         return null;
 
       case AppScreen.RATES:
          return <RatesScreen areCryptoWalletsGenerated={areCryptoWalletsGenerated} onProtectedNavigation={handleProtectedNavigation} onSell={(coin) => {
@@ -3805,6 +3177,9 @@ export const App = () => {
           <WithdrawScreen 
             setIsGlobalLoading={setIsGlobalLoading}
             setGlobalLoadingMessage={setGlobalLoadingMessage}
+            onProtectedNavigation={handleProtectedNavigation}
+            setShowPinModal={setShowPinModal}
+            setOnPinSuccess={setOnPinSuccess}
           />
         );
 
@@ -3827,8 +3202,10 @@ export const App = () => {
           <SendScreen
             setShowPinModal={setShowPinModal}
             setOnPinSuccess={setOnPinSuccess}
+            setOnPinCancel={setOnPinCancel}
             setGlobalLoadingMessage={setGlobalLoadingMessage}
             setIsGlobalLoading={setIsGlobalLoading}
+            showToast={showToast}
           />
         );
 
@@ -3849,60 +3226,341 @@ export const App = () => {
           />
         );
 
-      default: {
-        if (screenToRender && screenToRender.toString().startsWith('KYC')) {
-           const kycSteps = [
-             { id: 1, title: 'Tier 1', desc: 'Phone, Bank & PIN', status: kycLevel >= 1 ? 'Completed' : 'Pending' },
-             { id: 2, title: 'Tier 2', desc: 'Govt ID & Face Capture', status: kycLevel >= 2 ? 'Completed' : kycLevel === 1 ? 'Next' : 'Locked' },
-             { id: 3, title: 'Tier 3', desc: 'Utility Bill', status: kycLevel >= 3 ? 'Completed' : kycLevel === 2 ? 'Next' : 'Locked' }
-           ];
+      case AppScreen.GIFT_CARD_TRADE_OPTIONS:
+        return (
+          <div className="p-6 pb-10">
+            <div className="w-12 h-1 bg-gray-200 rounded-full mx-auto mb-8" />
+            <h3 className="text-xl font-black text-gray-900 mb-2 text-center">Trade Giftcards</h3>
+            <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest text-center mb-8">Select an option to continue</p>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <button 
+                onClick={() => {
+                  setGiftCardTradeType('SELL');
+                  setScreen(AppScreen.GIFT_CARD_LIST);
+                }}
+                className="p-6 rounded-[24px] bg-orange-50 border border-orange-100 flex flex-col items-center gap-4 active:scale-95 transition-all group"
+              >
+                <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-md text-orange-500 group-hover:scale-110 transition-transform">
+                  <Icons.Gift className="w-7 h-7" />
+                </div>
+                <div className="text-center">
+                  <p className="font-black text-orange-900 text-sm">Sell Giftcards</p>
+                  <p className="text-[9px] font-bold text-orange-400 uppercase tracking-widest mt-1">Cash out fast</p>
+                </div>
+              </button>
 
-           return (
+              <button 
+                onClick={() => {
+                  setGiftCardTradeType('BUY');
+                  setScreen(AppScreen.GIFT_CARD_LIST);
+                }}
+                className="p-6 rounded-[24px] bg-primary/5 border border-primary/10 flex flex-col items-center gap-4 active:scale-95 transition-all group"
+              >
+                <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-md text-primary group-hover:scale-110 transition-transform">
+                  <Icons.ShoppingBag className="w-7 h-7" />
+                </div>
+                <div className="text-center">
+                  <p className="font-black text-primary text-sm">Buy Giftcards</p>
+                  <p className="text-[9px] font-bold text-primary/40 uppercase tracking-widest mt-1">Shop globally</p>
+                </div>
+              </button>
+            </div>
+          </div>
+        );
+
+      case AppScreen.GIFT_CARD_LIST:
+      case AppScreen.GIFT_CARD_TYPE_SELECTION:
+      case AppScreen.GIFT_CARD_COUNTRY:
+      case AppScreen.GIFT_CARD_DETAILS:
+      case AppScreen.GIFT_CARD_CONFIRMATION:
+      case AppScreen.GIFT_CARD_TRADE_CHAT:
+        return <GiftCardScreen />;
+
+      case AppScreen.KYC_INTRO:
+         return (
             <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center">
                <div className="w-full max-w-2xl flex flex-col h-full">
-                  <BackHeader title="Verification" subtitle="KYC Status" onBack={() => setScreen(AppScreen.HOME)} />
+                  <BackHeader title="Identity Verification" subtitle="KYC Level 1" onBack={() => setScreen(AppScreen.ME)} />
                   <div className="p-4 flex-1 flex flex-col">
-                    <div className="flex-1 flex flex-col items-center justify-center text-center">
-                        <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center text-3xl mb-4 p-4 text-primary">
-                          <Icons.Shield />
+                     <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
+                        <div className="w-20 h-20 bg-primary/10 rounded-[32px] flex items-center justify-center mb-6 shadow-sm border border-primary/20">
+                           <div className="w-10 h-10 text-primary"><Icons.ShieldCheck /></div>
                         </div>
-                        <h2 className="text-xl font-black text-gray-900 mb-1">Account Verification</h2>
-                        <p className="text-gray-500 text-xs px-4 mb-6">Complete verification tiers to unlock higher limits and features.</p>
-                        
-                        <div className="w-full space-y-3 text-left">
-                          {kycSteps.map((step) => (
-                              <div key={step.id} className={`flex items-center justify-between p-3 bg-white rounded-2xl border ${step.status === 'Completed' ? 'border-green-200 bg-green-50' : step.status === 'Next' ? 'border-primary shadow-md' : 'border-gray-100 opacity-60'}`}>
-                                <div className="flex items-center gap-3">
-                                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${step.status === 'Completed' ? 'bg-green-200 text-green-700' : 'bg-gray-100 text-gray-400'}`}>
-                                      {step.status === 'Completed' ? '✓' : step.id}
-                                    </div>
-                                    <div>
-                                      <span className="font-bold text-gray-900 text-xs block">{step.title}</span>
-                                      <span className="text-[9px] text-gray-500 font-medium">{step.desc}</span>
-                                    </div>
-                                </div>
-                                {step.status === 'Next' && <span className="text-[9px] font-bold text-primary uppercase bg-primary/10 px-2 py-0.5 rounded">Start</span>}
+                        <h2 className="text-xl font-black text-gray-900 mb-2">Verify Your Identity</h2>
+                        <p className="text-[11px] text-gray-500 leading-relaxed mb-8 max-w-[280px]">
+                           To comply with financial regulations and protect your account, we need to verify your identity. This process takes less than 2 minutes.
+                        </p>
+
+                        <div className="w-full space-y-3 mb-8">
+                           {[
+                              { icon: <Icons.FileText />, title: "BVN Verification", desc: "Bank Verification Number" },
+                              { icon: <Icons.User />, title: "NIN Verification", desc: "National Identity Number" },
+                              { icon: <Icons.Camera />, title: "Selfie Verification", desc: "A clear photo of your face" }
+                           ].map((item, i) => (
+                              <div key={i} className="flex items-center gap-3 p-3 bg-white rounded-[20px] border border-gray-100 shadow-sm text-left">
+                                 <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-primary">
+                                    <div className="w-5 h-5">{item.icon}</div>
+                                 </div>
+                                 <div>
+                                    <h4 className="text-xs font-black text-gray-900">{item.title}</h4>
+                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">{item.desc}</p>
+                                 </div>
                               </div>
-                          ))}
+                           ))}
                         </div>
-                    </div>
-                    <Button onClick={() => {
-                        const nextLevel = kycLevel + 1;
-                        if (nextLevel <= 3) {
-                          setKycLevel(nextLevel);
-                          showToast(`Tier ${nextLevel} Verified Successfully!`);
-                        } else {
-                          showToast("You are fully verified!");
-                        }
-                        setScreen(AppScreen.HOME);
-                    }} className="!h-10 !text-xs">
-                        {kycLevel >= 3 ? 'Fully Verified' : `Verify Tier ${kycLevel + 1}`}
-                    </Button>
+                     </div>
+
+                     <div className="mt-auto pt-4 flex flex-col items-center">
+                        <Button 
+                           isLoading={isKycLoading}
+                           onClick={() => {
+                              setIsKycLoading(true);
+                              setTimeout(() => {
+                                 setIsKycLoading(false);
+                                 setScreen(AppScreen.KYC_BVN);
+                              }, 1000);
+                           }} 
+                           className="!h-11 !text-xs"
+                        >
+                           Start Verification
+                        </Button>
+                        <p className="text-[9px] text-gray-400 text-center mt-4 font-bold uppercase tracking-widest">Your data is encrypted and secure</p>
+                     </div>
                   </div>
                </div>
             </div>
-           );
-        }
+         );
+
+      case AppScreen.KYC_BVN:
+         return (
+            <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center">
+               <div className="w-full max-w-2xl flex flex-col h-full">
+                  <BackHeader title="BVN Verification" subtitle="Step 1 of 3" onBack={() => setScreen(AppScreen.KYC_INTRO)} />
+                  <div className="p-4 flex-1 flex flex-col">
+                     <div className="bg-blue-50 p-3.5 rounded-[20px] border border-blue-100 mb-6 flex gap-3 shadow-sm">
+                        <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center shrink-0">
+                           <div className="w-4 h-4"><Icons.Info /></div>
+                        </div>
+                        <p className="text-[10px] text-blue-800 leading-relaxed font-medium">
+                           Dial <span className="font-black">*565*0#</span> on your registered phone number to retrieve your BVN.
+                        </p>
+                     </div>
+
+                     <div className="space-y-4">
+                        <Input 
+                           label="Bank Verification Number (BVN)"
+                           placeholder="222XXXXXXXX"
+                           value={kycData.bvn}
+                           variant="glass-light"
+                           inputClassName="!h-12 !text-sm font-bold tracking-[0.2em]"
+                           onChange={(e) => setKycData({...kycData, bvn: e.target.value.replace(/\D/g, '').slice(0, 11)})}
+                        />
+                        <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest ml-1">Must be 11 digits</p>
+                     </div>
+
+                     <div className="mt-auto pt-6 flex flex-col items-center">
+                        <Button 
+                           isLoading={isKycLoading}
+                           disabled={kycData.bvn.length !== 11}
+                           onClick={() => {
+                              setIsKycLoading(true);
+                              setTimeout(() => {
+                                 setIsKycLoading(false);
+                                 setScreen(AppScreen.KYC_NIN);
+                              }, 1000);
+                           }} 
+                           className="!h-11 !text-xs"
+                        >
+                           Continue
+                        </Button>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         );
+
+      case AppScreen.KYC_NIN:
+         return (
+            <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center">
+               <div className="w-full max-w-2xl flex flex-col h-full">
+                  <BackHeader title="NIN Verification" subtitle="Step 2 of 3" onBack={() => setScreen(AppScreen.KYC_BVN)} />
+                  <div className="p-4 flex-1 flex flex-col">
+                     <div className="bg-blue-50 p-3.5 rounded-[20px] border border-blue-100 mb-6 flex gap-3 shadow-sm">
+                        <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center shrink-0">
+                           <div className="w-4 h-4"><Icons.Info /></div>
+                        </div>
+                        <p className="text-[10px] text-blue-800 leading-relaxed font-medium">
+                           Enter your 11-digit National Identification Number (NIN).
+                        </p>
+                     </div>
+
+                     <div className="space-y-4">
+                        <Input 
+                           label="National Identity Number (NIN)"
+                           placeholder="123XXXXXXXX"
+                           value={kycData.nin}
+                           variant="glass-light"
+                           inputClassName="!h-12 !text-sm font-bold tracking-[0.2em]"
+                           onChange={(e) => setKycData({...kycData, nin: e.target.value.replace(/\D/g, '').slice(0, 11)})}
+                        />
+                        <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest ml-1">Must be 11 digits</p>
+                     </div>
+
+                     <div className="mt-auto pt-6 flex flex-col items-center">
+                        <Button 
+                           isLoading={isKycLoading}
+                           disabled={kycData.nin.length !== 11}
+                           onClick={() => {
+                              setIsKycLoading(true);
+                              setTimeout(() => {
+                                 setIsKycLoading(false);
+                                 setScreen(AppScreen.KYC_SELFIE);
+                              }, 1000);
+                           }} 
+                           className="!h-11 !text-xs"
+                        >
+                           Continue
+                        </Button>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         );
+
+      case AppScreen.KYC_SELFIE:
+         return (
+            <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center">
+               <div className="w-full max-w-2xl flex flex-col h-full">
+                  <BackHeader title="Selfie Verification" subtitle="Final Step" onBack={() => setScreen(AppScreen.KYC_NIN)} />
+                  <div className="p-4 flex-1 flex flex-col">
+                     <div className="flex-1 flex flex-col items-center justify-center py-6">
+                        <div className="relative w-64 h-64 mb-8">
+                           {/* Face Guide Overlay */}
+                           <div className="absolute inset-0 border-4 border-dashed border-primary/30 rounded-full animate-spin-slow" />
+                           <div className="absolute inset-4 border-2 border-primary/20 rounded-full" />
+                           
+                           <div className="absolute inset-0 rounded-full overflow-hidden bg-gray-100 border-4 border-white shadow-xl">
+                              {kycData.selfie ? (
+                                 <img src={kycData.selfie} alt="Selfie" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                              ) : (
+                                 <div className="w-full h-full flex flex-col items-center justify-center text-gray-300">
+                                    <div className="w-20 h-20 mb-2 opacity-20"><Icons.User /></div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest">Position Face Here</p>
+                                 </div>
+                              )}
+                           </div>
+
+                           {!kycData.selfie && (
+                              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-primary text-white px-4 py-1.5 rounded-full shadow-lg text-[10px] font-black uppercase tracking-widest animate-bounce">
+                                 Look Straight
+                              </div>
+                           )}
+                        </div>
+
+                        <div className="text-center max-w-[240px]">
+                           <h3 className="text-sm font-black text-gray-900 mb-2">Take a clear selfie</h3>
+                           <p className="text-[10px] text-gray-500 leading-relaxed">
+                              Ensure your face is well-lit and clearly visible. No glasses or hats.
+                           </p>
+                        </div>
+                     </div>
+
+                     <div className="mt-auto pt-6 flex flex-col items-center gap-3">
+                        {!kycData.selfie ? (
+                           <Button 
+                              isLoading={isKycLoading}
+                              onClick={() => {
+                                 setIsKycLoading(true);
+                                 setTimeout(() => {
+                                    setIsKycLoading(false);
+                                    setKycData({...kycData, selfie: 'https://picsum.photos/seed/selfie/400/400'});
+                                    showToast("Selfie Captured!");
+                                 }, 1000);
+                              }} 
+                              className="!h-11 !text-xs"
+                           >
+                              Capture Selfie
+                           </Button>
+                        ) : (
+                           <>
+                              <Button 
+                                 isLoading={isKycLoading}
+                                 onClick={() => {
+                                    setIsKycLoading(true);
+                                    setTimeout(() => {
+                                       setIsKycLoading(false);
+                                       setKycData(prev => ({ ...prev, status: 'PENDING' }));
+                                       triggerReview({
+                                          title: 'KYC Verification',
+                                          message: 'Our team is reviewing your identity documents. This usually takes 24-48 hours.',
+                                          notificationTitle: 'KYC Verified',
+                                          notificationDesc: 'Your identity has been successfully verified.',
+                                          onComplete: () => setKycData(prev => ({ ...prev, status: 'VERIFIED' })),
+                                          nextScreen: AppScreen.KYC_SUCCESS
+                                       });
+                                    }, 2000);
+                                 }} 
+                                 className="!h-11 !text-xs"
+                              >
+                                 Submit for Review
+                              </Button>
+                              <Button 
+                                 variant="ghost" 
+                                 onClick={() => setKycData({...kycData, selfie: null})} 
+                                 className="!h-11 !text-xs !text-gray-500"
+                              >
+                                 Retake Photo
+                              </Button>
+                           </>
+                        )}
+                     </div>
+                  </div>
+               </div>
+            </div>
+         );
+
+      case AppScreen.KYC_SUCCESS:
+         return (
+            <div className="flex-1 flex flex-col bg-ghost animate-fade-in items-center">
+               <div className="w-full max-w-2xl flex flex-col h-full">
+                  <div className="p-6 flex-1 flex flex-col items-center justify-center text-center">
+                     <div className="w-24 h-24 bg-primary/10 rounded-[40px] flex items-center justify-center mb-8 animate-epic-bounce shadow-sm border border-primary/20">
+                        <div className="w-12 h-12 text-primary"><Icons.ShieldCheck /></div>
+                     </div>
+                     <h2 className="text-2xl font-black text-gray-900 mb-3">Verification Submitted!</h2>
+                     <p className="text-xs text-gray-500 leading-relaxed mb-10 max-w-[260px]">
+                        Your identity verification documents have been submitted successfully. Our team will review them within 24-48 hours.
+                     </p>
+
+                     <div className="w-full bg-white p-5 rounded-[28px] border border-gray-100 shadow-sm mb-10 text-left">
+                        <div className="flex items-center justify-between mb-4">
+                           <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Status</span>
+                           <span className="px-3 py-1 bg-orange-50 text-orange-500 rounded-full text-[9px] font-black uppercase tracking-widest border border-orange-100">Under Review</span>
+                        </div>
+                        <div className="space-y-3">
+                           <div className="flex items-center gap-3">
+                              <div className="w-2 h-2 bg-primary rounded-full" />
+                              <span className="text-[11px] text-gray-600 font-medium">BVN Verification Received</span>
+                           </div>
+                           <div className="flex items-center gap-3">
+                              <div className="w-2 h-2 bg-primary rounded-full" />
+                              <span className="text-[11px] text-gray-600 font-medium">NIN Verification Received</span>
+                           </div>
+                           <div className="flex items-center gap-3">
+                              <div className="w-2 h-2 bg-primary rounded-full" />
+                              <span className="text-[11px] text-gray-600 font-medium">Selfie Verification Received</span>
+                           </div>
+                        </div>
+                     </div>
+
+                     <Button onClick={() => setScreen(AppScreen.HOME)} className="!h-11 !text-xs">Back to Home</Button>
+                  </div>
+               </div>
+            </div>
+         );
+
+      default: {
         return <div className="p-20 text-center font-black opacity-20 uppercase tracking-widest">Gogreen Hub</div>;
       }
     }
@@ -3912,25 +3570,39 @@ export const App = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-ghost flex font-sans">
+      <div className="h-screen bg-ghost flex font-sans overflow-hidden">
       {/* Sidebar / Navbar - Conditional Rendering */}
       {showNavbar && (
         <>
-          <FloatingNavBar currentScreen={screen} onNavigate={(s) => {
-            if (s === AppScreen.TRANSACTION_HISTORY) navigateToHistory();
-            else handleProtectedNavigation(s);
-          }} />
-          <Navbar id="nav-bar" currentScreen={screen} onNavigate={(s) => {
-            if (s === AppScreen.TRANSACTION_HISTORY) navigateToHistory();
-            else handleProtectedNavigation(s);
+          <FloatingNavBar currentScreen={screen} activeTab={activeTab} onNavigate={(s, isFromNavBar) => {
+            if (s === AppScreen.CHAT) {
+              setSupportInitialView('CHAT_HISTORY');
+              handleProtectedNavigation(s, isFromNavBar);
+            } else if (s === AppScreen.SUPPORT) {
+              setSupportInitialView('HELP_CENTER');
+              handleProtectedNavigation(s, isFromNavBar);
+            } else if (s === AppScreen.TRANSACTION_HISTORY) {
+              navigateToHistory();
+            } else handleProtectedNavigation(s, isFromNavBar);
+          }} disabled={showPinModal} />
+          <Navbar id="nav-bar" currentScreen={screen} activeTab={activeTab} onNavigate={(s, isFromNavBar) => {
+            if (s === AppScreen.CHAT) {
+              setSupportInitialView('CHAT_HISTORY');
+              handleProtectedNavigation(s, isFromNavBar);
+            } else if (s === AppScreen.SUPPORT) {
+              setSupportInitialView('HELP_CENTER');
+              handleProtectedNavigation(s, isFromNavBar);
+            } else if (s === AppScreen.TRANSACTION_HISTORY) {
+              navigateToHistory();
+            } else handleProtectedNavigation(s, isFromNavBar);
           }} />
         </>
       )}
 
       {/* Main Content Area */}
-      <main className={`flex-1 min-h-screen relative flex flex-col ${showNavbar ? 'md:pl-64 lg:pl-0 lg:pt-20' : ''}`}>
+      <main className={`flex-1 h-screen relative flex flex-col overflow-hidden ${showNavbar ? 'md:pb-0 md:pl-64 lg:pl-0 lg:pt-20' : ''} ${showPinModal ? 'pointer-events-none opacity-50' : ''}`}>
         <div 
-          className={`flex-1 w-full max-w-md mx-auto flex flex-col relative bg-white shadow-2xl overflow-hidden ${isModal ? 'scale-[0.98] rounded-[32px] transition-all duration-300' : 'scale-100 rounded-none transition-all duration-300'}`}
+          className={`flex-1 w-full flex flex-col relative bg-white shadow-2xl overflow-hidden ${isModal ? 'scale-[0.98] rounded-[32px] transition-all duration-300' : 'scale-100 rounded-none transition-all duration-300'}`}
         >
           <ErrorBoundary>
             {renderScreenContent(isModal ? activeTab : screen)}
@@ -3946,13 +3618,19 @@ export const App = () => {
       {/* Global Overlay Layer */}
       {globalOverlay && (
         <div className="fixed inset-0 z-[100] bg-white animate-fade-in">
-          {globalOverlay === AppScreen.SUPPORT && <SupportScreen onBack={() => setGlobalOverlay(null)} />}
           {globalOverlay === AppScreen.GUIDES_AND_TUTORIALS && <GuidesAndTutorialsScreen onNavigate={(s) => { setScreen(s); setGlobalOverlay(null); }} />}
         </div>
       )}
 
       {/* Transaction PIN Modal - Moved outside main to be on top of everything */}
-      <BottomSheet isOpen={showPinModal} onClose={() => { setShowPinModal(false); setPinInput(''); }} title="Enter PIN">
+      <BottomSheet isOpen={showPinModal} onClose={() => { 
+        setShowPinModal(false); 
+        setPinInput(''); 
+        if (onPinCancel) {
+          onPinCancel();
+          setOnPinCancel(null);
+        }
+      }} title="Enter PIN">
          <div className="p-6 text-center">
             <div className="w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-4">
                <Icons.Lock />
@@ -3980,16 +3658,6 @@ export const App = () => {
             </div>
          </div>
       </BottomSheet>
-
-      {showTutorial && (
-        <TutorialOverlay 
-          onNavigate={setScreen}
-          onComplete={() => {
-            setShowTutorial(false);
-            markScreenSeen('welcome_tour');
-          }}
-        />
-      )}
 
       {/* Global Loading Modal - Placed at the very end to be on top of everything */}
       <BottomSheet isOpen={isGlobalLoading} onClose={() => {}}>
@@ -4034,22 +3702,28 @@ export const App = () => {
           <h3 className="text-base font-black text-gray-900 mb-3 text-center">Confirm Withdrawal</h3>
           <div className="space-y-2 text-center">
             <p className="text-[11px] text-gray-500">You are about to withdraw:</p>
-            <h2 className="text-2xl font-black text-primary">₦ {hideBalance ? '••••••' : referralBalance.toLocaleString()}</h2>
+            <h2 className="text-2xl font-black text-primary">
+              ₦ <PrivacyText hide={hideBalance}>{referralBalance.toLocaleString()}</PrivacyText>
+            </h2>
             <p className="text-[9px] text-gray-400 max-w-[200px] mx-auto">These funds will be transferred to your Naira Wallet immediately.</p>
           </div>
           <div className="mt-5 flex gap-2.5">
             <Button variant="secondary" className="flex-1 !bg-gray-50 !text-gray-900 !border-gray-200 !h-9 !text-xs" onClick={() => setShowReferralWithdrawModal(false)}>Cancel</Button>
             <Button className="flex-1 !h-9 !text-xs" onClick={() => {
                 if (referralBalance >= 3000) {
-                    setGlobalLoadingMessage('Processing Withdrawal...');
-                    setIsGlobalLoading(true);
-                    setTimeout(() => {
-                        setWalletBalance(prev => prev + referralBalance);
-                        setReferralBalance(0);
-                        setIsGlobalLoading(false);
-                        showToast("Referral Earnings Withdrawn to Wallet!");
-                        setShowReferralWithdrawModal(false);
-                    }, 2000);
+                    setOnPinSuccess(() => () => {
+                        setGlobalLoadingMessage('Processing Withdrawal...');
+                        setIsGlobalLoading(true);
+                        setTimeout(() => {
+                            setWalletBalance(prev => prev + referralBalance);
+                            setReferralBalance(0);
+                            setIsGlobalLoading(false);
+                            showToast("Referral Earnings Withdrawn to Wallet!");
+                            setShowReferralWithdrawModal(false);
+                        }, 2000);
+                    });
+                    setOnPinCancel(() => () => showToast('error', 'Cancelled', 'Action cancelled due to user inability to verify action'));
+                    setShowPinModal(true);
                 } else {
                     showToast("Minimum withdrawal is ₦3,000");
                     setShowReferralWithdrawModal(false);
@@ -4058,6 +3732,19 @@ export const App = () => {
           </div>
         </div>
       </BottomSheet>
+
+      {/* Support Screen Overlay */}
+      {isSupportOpen && (
+        <div className="fixed inset-0 z-[100] bg-white flex flex-col">
+          <SupportScreen 
+            initialView={supportInitialView} 
+            onBack={() => { 
+              setIsSupportOpen(false); 
+              setSupportInitialView('HELP_CENTER'); 
+            }} 
+          />
+        </div>
+      )}
 
       <style>{`
         @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }

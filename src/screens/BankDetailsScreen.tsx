@@ -45,17 +45,19 @@ export const BankDetailsScreen = () => {
                            <p className="text-[9px] text-gray-400 font-black uppercase tracking-[0.3em] mb-1">Account Name</p>
                            <p className="text-[11px] text-gray-900 font-black uppercase tracking-[0.15em]">{signupData.fullName || 'Hassan Kehinde'}</p>
                          </div>
-                         <button onClick={() => showToast("Default bank cannot be removed")} className="w-10 h-10 rounded-xl bg-gray-50 text-gray-500 flex items-center justify-center hover:bg-gray-100 transition-colors active:scale-90 shadow-sm">
+                         <button onClick={() => showToast("Default bank cannot be removed")} className="w-11 h-11 rounded-xl bg-gray-50 text-gray-500 flex items-center justify-center hover:bg-gray-100 transition-colors active:scale-90 shadow-sm">
                            <Icons.Trash className="w-4.5 h-4.5" />
                          </button>
                        </div>
                     </div>
                  </div>
 
-                 <button onClick={() => setScreen(AppScreen.ADD_BANK)} className="w-full p-8 rounded-[40px] border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-3 text-gray-400 font-black text-xs hover:border-primary hover:text-primary transition-all active:scale-[0.98] bg-white/50 hover:bg-white shadow-xl shadow-gray-200/20 group">
-                    <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-2xl leading-none group-hover:bg-primary/10 transition-all shadow-sm border border-gray-100">+</div>
-                    <span className="uppercase tracking-[0.3em] text-[10px]">Add New Bank Account</span>
-                 </button>
+                 <div className="flex justify-center">
+                    <button onClick={() => setScreen(AppScreen.ADD_BANK)} className="px-12 p-8 rounded-[40px] border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-3 text-gray-400 font-black text-xs hover:border-primary hover:text-primary transition-all active:scale-[0.98] bg-white/50 hover:bg-white shadow-xl shadow-gray-200/20 group">
+                       <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-2xl leading-none group-hover:bg-primary/10 transition-all shadow-sm border border-gray-100">+</div>
+                       <span className="uppercase tracking-[0.3em] text-[10px]">Add New Bank Account</span>
+                    </button>
+                 </div>
               </div>
           </div>
        </div>
@@ -135,7 +137,7 @@ export const BankDetailsScreen = () => {
                                }
                             });
                         }} 
-                        className="w-full !h-16 !rounded-[28px] shadow-2xl shadow-primary/20 !bg-primary !text-white !text-xs font-black uppercase tracking-[0.2em]"
+                        className="mx-auto px-12 !h-16 !rounded-[28px] shadow-2xl shadow-primary/20 !bg-primary !text-white !text-xs font-black uppercase tracking-[0.2em]"
                     >
                         Verify & Link Account
                     </Button>

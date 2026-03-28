@@ -119,15 +119,21 @@ body {
 
 /* Refined Glassmorphism */
 .glass {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .dark .glass {
-  background: rgba(30, 35, 41, 0.85); /* Darker glass */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(11, 14, 17, 0.7); /* Darker glass */
+}
+
+.header-integrated {
+  background: linear-gradient(to bottom, var(--c-app) 0%, var(--c-app) 60%, rgba(255, 255, 255, 0) 100%);
+}
+
+.dark .header-integrated {
+  background: linear-gradient(to bottom, var(--c-app) 0%, var(--c-app) 60%, rgba(11, 14, 17, 0) 100%);
 }
 
 .glass-card {

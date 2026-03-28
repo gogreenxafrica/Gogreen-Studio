@@ -4,6 +4,7 @@ import { AppScreen } from '../../types';
 import { BackHeader } from '../components/BackHeader';
 import { Button } from '../../components/Button';
 import { Icons } from '../../components/Icons';
+import { PrivacyText } from '../../components/PrivacyText';
 
 interface CoinDetailScreenProps {
   selectedCoin: any;
@@ -38,10 +39,10 @@ export const CoinDetailScreen: React.FC<CoinDetailScreenProps> = ({ selectedCoin
             
             <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2 relative z-10">Available Balance</p>
             <h2 className="text-4xl font-black text-gray-900 tracking-tight mb-1 relative z-10">
-              {hideBalance ? '••••••' : `${selectedCoin.balance.toLocaleString(undefined, { maximumFractionDigits: 8 })} ${selectedCoin.symbol}`}
+              <PrivacyText hide={hideBalance}>{`${selectedCoin.balance.toLocaleString(undefined, { maximumFractionDigits: 8 })} ${selectedCoin.symbol}`}</PrivacyText>
             </h2>
             <p className="text-lg font-bold text-gray-400 relative z-10">
-              {hideBalance ? '••••••' : `${currency === 'NGN' ? '₦' : '$'}${balanceInFiat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+              <PrivacyText hide={hideBalance}>{`${currency === 'NGN' ? '₦' : '$'}${balanceInFiat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}</PrivacyText>
             </p>
           </div>
 

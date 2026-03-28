@@ -6,7 +6,7 @@ import { BackHeader } from '../components/BackHeader';
 import { Button } from '../../components/Button';
 import { Icons } from '../../components/Icons';
 
-export const SecurityScreen = () => {
+export const SecurityScreen = ({ onNavigate }: { onNavigate?: (screen: AppScreen) => void }) => {
   const { 
     screen,
     setScreen, 
@@ -14,6 +14,14 @@ export const SecurityScreen = () => {
     setBiometricEnabled,
     setTransactionPin
   } = useAppContext();
+
+  const navigate = (target: AppScreen) => {
+    if (onNavigate) {
+      onNavigate(target);
+    } else {
+      setScreen(target);
+    }
+  };
 
   const [tempPin, setTempPin] = useState<string>('');
 
@@ -27,7 +35,7 @@ export const SecurityScreen = () => {
          <div className="w-full max-w-xl flex flex-col h-full mx-auto">
              <BackHeader title="Security" subtitle="Protect Your Account" onBack={() => setScreen(AppScreen.ME)} />
              <div className="p-6 space-y-4 overflow-y-auto no-scrollbar pb-24">
-                <div className="bg-white p-6 rounded-[32px] border border-gray-100 flex items-center justify-between cursor-pointer active:scale-[0.98] transition-all shadow-xl shadow-gray-200/40 group" onClick={() => setScreen(AppScreen.CHANGE_PIN)}>
+                <div className="bg-white p-6 rounded-[32px] border border-gray-100 flex items-center justify-between cursor-pointer active:scale-[0.98] transition-all shadow-xl shadow-gray-200/40 group" onClick={() => navigate(AppScreen.CHANGE_PIN)}>
                    <div className="flex items-center gap-5">
                       <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary transition-all group-hover:scale-110 group-hover:bg-primary/20 shadow-sm"><Icons.Lock className="w-7 h-7" /></div>
                       <div>
@@ -48,7 +56,7 @@ export const SecurityScreen = () => {
                          <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] mt-1 opacity-60">FaceID / TouchID</p>
                       </div>
                    </div>
-                   <div className="relative inline-block w-14 h-7 align-middle select-none transition duration-200 ease-in">
+                   <div className="relative flex items-center h-11">
                        <input 
                          type="checkbox" 
                          name="toggle" 
@@ -56,14 +64,14 @@ export const SecurityScreen = () => {
                          checked={biometricEnabled}
                          onChange={() => {
                            if (!biometricEnabled) {
-                             setScreen(AppScreen.BIOMETRIC_ENABLE);
+                             navigate(AppScreen.BIOMETRIC_ENABLE);
                            } else {
                              setBiometricEnabled(false);
                            }
                          }}
-                         className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white shadow-md appearance-none cursor-pointer top-0.5 left-0.5 checked:translate-x-7 transition-transform duration-300 ease-in-out z-10" 
+                         className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white shadow-md appearance-none cursor-pointer top-2.5 left-0.5 checked:translate-x-7 transition-transform duration-300 ease-in-out z-10" 
                        />
-                       <label htmlFor="biometric-toggle" className={`toggle-label block overflow-hidden h-7 rounded-full cursor-pointer transition-colors duration-300 ease-in-out ${biometricEnabled ? 'bg-primary shadow-inner shadow-primary/20' : 'bg-gray-200 shadow-inner'}`}></label>
+                       <label htmlFor="biometric-toggle" className={`toggle-label block w-14 h-7 rounded-full cursor-pointer transition-colors duration-300 ease-in-out ${biometricEnabled ? 'bg-primary shadow-inner shadow-primary/20' : 'bg-gray-200 shadow-inner'}`}></label>
                    </div>
                 </div>
 
@@ -80,7 +88,7 @@ export const SecurityScreen = () => {
                    </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-[32px] border border-gray-100 flex items-center justify-between cursor-pointer active:scale-[0.98] transition-all shadow-xl shadow-gray-200/40 group" onClick={() => setScreen(AppScreen.LOGGED_IN_DEVICES)}>
+                <div className="bg-white p-6 rounded-[32px] border border-gray-100 flex items-center justify-between cursor-pointer active:scale-[0.98] transition-all shadow-xl shadow-gray-200/40 group" onClick={() => navigate(AppScreen.LOGGED_IN_DEVICES)}>
                    <div className="flex items-center gap-5">
                       <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-500 transition-all group-hover:scale-110 shadow-sm"><Icons.Smartphone className="w-7 h-7" /></div>
                       <div>
@@ -101,25 +109,27 @@ export const SecurityScreen = () => {
   if (screen === AppScreen.CHANGE_PIN) {
     return (
       <div className="flex-1 flex flex-col bg-green-50/30 animate-slide-up items-center">
-         <div className="w-full max-w-xl flex flex-col h-full mx-auto">
+         <div className="w-full max-w-xl flex flex-col h-full min-h-0 mx-auto">
             <BackHeader title="Change PIN" subtitle="Update Transaction Security" onBack={() => setScreen(AppScreen.SECURITY)} />
-            <div className="p-8 sm:p-12 flex flex-col items-center flex-1 overflow-y-auto no-scrollbar pb-24">
-               <div className="w-24 h-24 bg-primary/10 rounded-[40px] flex items-center justify-center text-primary mb-8 shadow-2xl shadow-primary/10 relative group">
-                  <div className="absolute inset-0 bg-primary/5 rounded-[40px] blur-xl group-hover:blur-2xl transition-all"></div>
-                  <Icons.Lock className="w-12 h-12 relative z-10" />
+            <div className="px-4 py-1 flex flex-col flex-1 min-h-0 overflow-hidden justify-between pb-24 md:pb-8">
+               <div className="flex flex-col items-center">
+                  <div className="w-12 h-12 bg-primary/10 rounded-[20px] flex items-center justify-center text-primary mb-2 shadow-2xl shadow-primary/10 relative group shrink-0">
+                     <div className="absolute inset-0 bg-primary/5 rounded-[20px] blur-xl group-hover:blur-2xl transition-all"></div>
+                     <Icons.Lock className="w-6 h-6 relative z-10" />
+                  </div>
+                  <h2 className="text-lg font-black text-gray-900 mb-0.5 tracking-tighter shrink-0">Set New PIN</h2>
+                  <p className="text-gray-500 text-[9px] mb-2 text-center font-medium max-w-[200px] leading-tight shrink-0">Enter a new 4-digit PIN to secure your transactions and withdrawals.</p>
+                  
+                  <div className="flex gap-2 justify-center mb-2 w-full shrink-0">
+                     {[0, 1, 2, 3].map(i => (
+                        <div key={i} className={`w-10 h-10 rounded-[14px] border-2 flex items-center justify-center text-lg font-black transition-all duration-300 ${tempPin.length > i ? 'border-primary bg-primary text-white shadow-lg shadow-primary/20 scale-105' : 'border-gray-100 bg-white text-gray-900 shadow-md shadow-gray-200/10'}`}>
+                           {tempPin.length > i ? '•' : ''}
+                        </div>
+                     ))}
+                  </div>
                </div>
-               <h2 className="text-3xl font-black text-gray-900 mb-2 tracking-tighter">Set New PIN</h2>
-               <p className="text-gray-500 text-[13px] mb-12 text-center font-medium max-w-[280px] leading-relaxed">Enter a new 4-digit PIN to secure your transactions and withdrawals.</p>
                
-               <div className="flex gap-5 justify-center mb-16 w-full">
-                  {[0, 1, 2, 3].map(i => (
-                     <div key={i} className={`w-16 h-16 rounded-[24px] border-2 flex items-center justify-center text-3xl font-black transition-all duration-300 ${tempPin.length > i ? 'border-primary bg-primary text-white shadow-2xl shadow-primary/30 scale-110' : 'border-gray-100 bg-white text-gray-900 shadow-xl shadow-gray-200/40'}`}>
-                        {tempPin.length > i ? '•' : ''}
-                     </div>
-                  ))}
-               </div>
-               
-               <div className="grid grid-cols-3 gap-5 w-full max-w-[340px] mt-auto">
+               <div className="grid grid-cols-3 gap-1.5 w-full max-w-[260px] mx-auto mb-2">
                   {[1, 2, 3, 4, 5, 6, 7, 8, 9, '', 0, 'del'].map((num, idx) => (
                      <button 
                         key={idx}
@@ -139,9 +149,9 @@ export const SecurityScreen = () => {
                               }
                            }
                         }}
-                        className={`h-16 rounded-[24px] flex items-center justify-center text-xl font-black active:scale-90 transition-all ${num === '' ? 'invisible' : num === 'del' ? 'bg-gray-50 text-gray-500 hover:bg-gray-100 shadow-sm' : 'bg-white shadow-xl shadow-gray-200/40 border border-gray-100 text-gray-900 hover:border-primary/30'}`}
+                        className={`h-12 rounded-[18px] flex items-center justify-center text-lg font-black active:scale-90 transition-all ${num === '' ? 'invisible' : num === 'del' ? 'bg-gray-50 text-gray-500 hover:bg-gray-100 shadow-sm' : 'bg-white shadow-md shadow-gray-200/10 border border-gray-100 text-gray-900 hover:border-primary/30'}`}
                      >
-                        {num === 'del' ? <Icons.Trash className="w-6 h-6" /> : num}
+                        {num === 'del' ? <Icons.Trash className="w-5 h-5" /> : num}
                      </button>
                   ))}
                </div>
@@ -202,10 +212,10 @@ export const SecurityScreen = () => {
                   ))}
                </div>
 
-               <div className="pt-8 px-2">
+               <div className="pt-8 px-2 flex justify-center">
                   <button 
                     onClick={() => showToast("All other sessions logged out")}
-                    className="w-full h-16 rounded-[28px] bg-white border-2 border-red-50 text-gray-500 font-black text-[13px] uppercase tracking-widest hover:bg-gray-50 active:scale-[0.98] transition-all shadow-xl shadow-gray-100/20 flex items-center justify-center gap-3"
+                    className="px-12 h-16 rounded-[28px] bg-white border-2 border-red-50 text-gray-500 font-black text-[13px] uppercase tracking-widest hover:bg-gray-50 active:scale-[0.98] transition-all shadow-xl shadow-gray-100/20 flex items-center justify-center gap-3"
                   >
                     <Icons.Trash className="w-5 h-5" />
                     Log Out All Other Sessions

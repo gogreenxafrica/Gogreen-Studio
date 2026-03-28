@@ -10,7 +10,21 @@ import { BrandPattern } from '../components/BrandPattern';
 import * as Constants from '../../constants';
 import { InsufficientBalanceModal } from '../components/InsufficientBalanceModal';
 
-export const BillPaymentScreen = ({ setIsGlobalLoading, setGlobalLoadingMessage }: { setIsGlobalLoading: (b: boolean) => void, setGlobalLoadingMessage: (m: string) => void }) => {
+export const BillPaymentScreen = ({ 
+  setIsGlobalLoading, 
+  setGlobalLoadingMessage, 
+  setShowPinModal, 
+  setOnPinSuccess, 
+  setOnPinCancel,
+  showToast: showToastProp 
+}: { 
+  setIsGlobalLoading: (b: boolean) => void, 
+  setGlobalLoadingMessage: (m: string) => void, 
+  setShowPinModal: (show: boolean) => void, 
+  setOnPinSuccess: (callback: () => void) => void,
+  setOnPinCancel: (callback: () => void) => void,
+  showToast: (type: string, title: string, message: string) => void
+}) => {
   const { 
     screen,
     setScreen, 
@@ -102,7 +116,7 @@ export const BillPaymentScreen = ({ setIsGlobalLoading, setGlobalLoadingMessage 
                       <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">
                         {selectedBillCategory?.label === 'Airtime' || selectedBillCategory?.label === 'Data' ? 'Phone Number' : 'Customer ID / Meter Number'}
                       </label>
-                      <button onClick={() => setShowRecent(!showRecent)} className="text-[8px] font-black text-primary uppercase tracking-widest">
+                      <button onClick={() => setShowRecent(!showRecent)} className="min-h-[44px] px-2 text-[8px] font-black text-primary uppercase tracking-widest">
                         {showRecent ? 'Hide Recent' : 'Recent'}
                       </button>
                     </div>
@@ -164,7 +178,7 @@ export const BillPaymentScreen = ({ setIsGlobalLoading, setGlobalLoadingMessage 
                               const amtStr = plan.split('₦')[1].replace(',', '');
                               setBillDetails({...billDetails, amount: amtStr, plan: plan});
                             }}
-                            className={`p-3 rounded-2xl border text-[10px] font-black transition-all ${billDetails.plan === plan ? 'bg-primary text-white border-primary shadow-xl shadow-primary/20' : 'bg-white text-gray-900 border-gray-100 shadow-sm hover:border-primary/30 active:scale-95'}`}
+                            className={`h-11 rounded-2xl border text-[10px] font-black transition-all ${billDetails.plan === plan ? 'bg-primary text-white border-primary shadow-xl shadow-primary/20' : 'bg-white text-gray-900 border-gray-100 shadow-sm hover:border-primary/30 active:scale-95'}`}
                           >
                             {plan}
                           </button>
@@ -184,7 +198,7 @@ export const BillPaymentScreen = ({ setIsGlobalLoading, setGlobalLoadingMessage 
                               const amtStr = plan.split('₦')[1].replace(',', '');
                               setBillDetails({...billDetails, amount: amtStr, plan: plan});
                             }}
-                            className={`p-3 rounded-2xl border text-[10px] font-black transition-all ${billDetails.plan === plan ? 'bg-primary text-white border-primary shadow-xl shadow-primary/20' : 'bg-white text-gray-900 border-gray-100 shadow-sm hover:border-primary/30 active:scale-95'}`}
+                            className={`h-11 rounded-2xl border text-[10px] font-black transition-all ${billDetails.plan === plan ? 'bg-primary text-white border-primary shadow-xl shadow-primary/20' : 'bg-white text-gray-900 border-gray-100 shadow-sm hover:border-primary/30 active:scale-95'}`}
                           >
                             {plan}
                           </button>
@@ -216,7 +230,7 @@ export const BillPaymentScreen = ({ setIsGlobalLoading, setGlobalLoadingMessage 
                           <button 
                             key={amt}
                             onClick={() => setBillDetails({...billDetails, amount: amt.toString()})}
-                            className="px-3 py-1.5 rounded-full bg-white border border-gray-100 text-[9px] font-black text-gray-500 hover:border-primary/30 hover:text-primary transition-all active:scale-90"
+                            className="px-3 h-11 rounded-full bg-white border border-gray-100 text-[9px] font-black text-gray-500 hover:border-primary/30 hover:text-primary transition-all active:scale-90"
                           >
                             ₦{amt.toLocaleString()}
                           </button>
@@ -251,11 +265,11 @@ export const BillPaymentScreen = ({ setIsGlobalLoading, setGlobalLoadingMessage 
                     </div>
                 )}
 
-                <div className="mt-auto pt-8">
+                <div className="mt-auto pt-8 flex justify-center">
                     <Button 
                         disabled={!billDetails.provider || !billDetails.customerId || !billDetails.amount || parseFloat(billDetails.amount) <= 0 || (saveBeneficiary && !beneficiaryName)}
                         onClick={() => setScreen(AppScreen.BILL_PAYMENT_SUMMARY)}
-                        className="w-full !h-16 !rounded-[28px] !bg-primary shadow-2xl shadow-primary/10 !text-xs font-black uppercase tracking-[0.2em] group"
+                        className="px-12 !h-16 !rounded-[28px] !bg-primary shadow-2xl shadow-primary/10 !text-xs font-black uppercase tracking-[0.2em] group"
                     >
                         Review Payment
                         <Icons.ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
@@ -307,7 +321,7 @@ export const BillPaymentScreen = ({ setIsGlobalLoading, setGlobalLoadingMessage 
                     <div className="flex justify-between items-center mb-4 px-2">
                         <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Apply Voucher</h4>
                         {selectedVoucher && (
-                            <button onClick={() => setSelectedVoucher(null)} className="text-[10px] font-black uppercase text-gray-500 tracking-[0.2em] hover:opacity-70 transition-opacity">Remove</button>
+                            <button onClick={() => setSelectedVoucher(null)} className="min-h-[44px] px-2 text-[10px] font-black uppercase text-gray-500 tracking-[0.2em] hover:opacity-70 transition-opacity">Remove</button>
                         )}
                     </div>
                     
@@ -367,25 +381,29 @@ export const BillPaymentScreen = ({ setIsGlobalLoading, setGlobalLoadingMessage 
                     </div>
                 </div>
 
-                <div className="mt-auto pt-8">
+                <div className="mt-auto pt-8 flex justify-center">
                     <Button 
                         onClick={() => {
                             if (walletBalance < totalToPay) {
                                 setShowInsufficientModal(true);
                                 return;
                             }
-                            setGlobalLoadingMessage('Processing Payment...');
-                            setIsGlobalLoading(true);
-                            setTimeout(() => {
-                                setWalletBalance(walletBalance - totalToPay);
-                                setIsGlobalLoading(false);
-                                setScreen(AppScreen.BILL_PAYMENT_SUCCESS);
-                                if (selectedBillCategory?.label === 'Airtime') {
-                                  completeChecklistTask('airtime');
-                                }
-                            }, 2000);
+                            setOnPinSuccess(() => {
+                                setGlobalLoadingMessage('Processing Payment...');
+                                setIsGlobalLoading(true);
+                                setTimeout(() => {
+                                    setWalletBalance(walletBalance - totalToPay);
+                                    setIsGlobalLoading(false);
+                                    setScreen(AppScreen.BILL_PAYMENT_SUCCESS);
+                                    if (selectedBillCategory?.label === 'Airtime') {
+                                      completeChecklistTask('airtime');
+                                    }
+                                }, 2000);
+                            });
+                            setOnPinCancel(() => () => showToastProp('error', 'Cancelled', 'Action cancelled due to user inability to verify action'));
+                            setShowPinModal(true);
                         }}
-                        className="w-full !h-16 !rounded-[28px] !bg-primary shadow-2xl shadow-primary/10 !text-xs font-black uppercase tracking-[0.2em]"
+                        className="px-12 !h-16 !rounded-[28px] !bg-primary shadow-2xl shadow-primary/10 !text-xs font-black uppercase tracking-[0.2em]"
                     >
                         Confirm & Pay ₦{totalToPay.toLocaleString()}
                     </Button>
@@ -401,13 +419,17 @@ export const BillPaymentScreen = ({ setIsGlobalLoading, setGlobalLoadingMessage 
             setGlobalLoadingMessage('Auto-swapping and Processing...');
             setIsGlobalLoading(true);
             
-            setTimeout(() => {
-                setIsGlobalLoading(false);
-                setScreen(AppScreen.BILL_PAYMENT_SUCCESS);
-                if (selectedBillCategory?.label === 'Airtime') {
-                  completeChecklistTask('airtime');
-                }
-            }, 2500);
+            setOnPinSuccess(() => async () => {
+                setTimeout(() => {
+                    setIsGlobalLoading(false);
+                    setScreen(AppScreen.BILL_PAYMENT_SUCCESS);
+                    if (selectedBillCategory?.label === 'Airtime') {
+                      completeChecklistTask('airtime');
+                    }
+                }, 2500);
+            });
+            setOnPinCancel(() => () => showToastProp('error', 'Cancelled', 'Action cancelled due to user inability to verify action'));
+            setShowPinModal(true);
           }}
           requiredAmount={totalToPay}
         />
@@ -457,20 +479,20 @@ export const BillPaymentScreen = ({ setIsGlobalLoading, setGlobalLoadingMessage 
             </div>
           </div>
 
-          <div className="space-y-3 pt-4">
+          <div className="space-y-3 pt-4 flex flex-col items-center">
             <Button 
               onClick={() => {
                 setScreen(AppScreen.HOME);
                 setBillDetails({ provider: '', customerId: '', amount: '' });
                 setSelectedVoucher(null);
               }}
-              className="w-full !h-14 !rounded-[24px] !bg-primary shadow-xl shadow-primary/10 !text-xs font-black uppercase tracking-[0.2em]"
+              className="px-12 !h-14 !rounded-[24px] !bg-primary shadow-xl shadow-primary/10 !text-xs font-black uppercase tracking-[0.2em]"
             >
               Back to Home
             </Button>
             <button 
               onClick={() => showToast("Receipt downloaded successfully!")}
-              className="w-full py-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] hover:text-primary transition-colors"
+              className="w-fit px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] hover:text-primary transition-colors"
             >
               Download Receipt
             </button>

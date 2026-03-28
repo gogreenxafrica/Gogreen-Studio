@@ -21,7 +21,7 @@
     "react-hot-toast": "^2.6.0",
     "react-qr-code": "^2.0.18",
     "react-swipeable": "^7.0.2",
-    "recharts": "^3.7.0",
+    "recharts": "^3.8.0",
     "tailwindcss": "^4.2.0"
   },
   "overrides": {

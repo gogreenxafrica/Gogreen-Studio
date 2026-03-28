@@ -7,13 +7,16 @@ import { Input } from '@/components/Input';
 import { Button } from '@/components/Button';
 import { SwipeButton } from '@/components/SwipeButton';
 import { LoadingScreen } from '@/components/LoadingScreen';
+import { PrivacyText } from '../../components/PrivacyText';
 import { getAvatarUrl } from '../constants/avatars';
 
 interface SendScreenProps {
   setShowPinModal: (show: boolean) => void;
   setOnPinSuccess: (callback: () => void) => void;
+  setOnPinCancel: (callback: () => void) => void;
   setGlobalLoadingMessage: (msg: string) => void;
   setIsGlobalLoading: (loading: boolean) => void;
+  showToast: (type: string, title: string, message: string) => void;
 }
 
 import { BrandPattern } from '../components/BrandPattern';
@@ -23,8 +26,10 @@ import { InsufficientBalanceModal } from '../components/InsufficientBalanceModal
 export const SendScreen: React.FC<SendScreenProps> = ({
   setShowPinModal,
   setOnPinSuccess,
+  setOnPinCancel,
   setGlobalLoadingMessage,
-  setIsGlobalLoading
+  setIsGlobalLoading,
+  showToast
 }) => {
   const {
     screen,
@@ -192,10 +197,10 @@ export const SendScreen: React.FC<SendScreenProps> = ({
                    </div>
                    <div className="text-right">
                       <p className="font-bold text-gray-900 text-[13px] tracking-tight tabular-nums">
-                        {hideBalance ? '••••••' : `${coin.balance.toLocaleString()} ${coin.symbol}`}
+                        <PrivacyText hide={hideBalance}>{`${coin.balance.toLocaleString()} ${coin.symbol}`}</PrivacyText>
                       </p>
                       <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5 tabular-nums">
-                        {hideBalance ? '••••••' : `≈ $${((coin.balance * coin.rate) / 1710).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+                        <PrivacyText hide={hideBalance}>{`≈ $${((coin.balance * coin.rate) / 1710).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}</PrivacyText>
                       </p>
                    </div>
                 </div>
@@ -228,7 +233,7 @@ export const SendScreen: React.FC<SendScreenProps> = ({
               <div className="space-y-3 relative z-10">
                   <div className="flex justify-between items-center ml-1">
                     <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Recipient Details</label>
-                    <button onClick={() => setShowRecent(!showRecent)} className="text-[10px] font-bold text-primary hover:text-green-700 transition-colors">
+                    <button onClick={() => setShowRecent(!showRecent)} className="min-h-[44px] px-2 text-[10px] font-bold text-primary hover:text-green-700 transition-colors">
                       {showRecent ? 'Hide Recent' : 'Recent'}
                     </button>
                   </div>
@@ -282,7 +287,7 @@ export const SendScreen: React.FC<SendScreenProps> = ({
                                     setSendRecipientType('address');
                                 }
                             }}
-                            className={`flex-1 py-2.5 rounded-xl text-[11px] font-bold transition-all ${
+                            className={`flex-1 px-4 h-11 rounded-xl text-[11px] font-bold transition-all ${
                                 (sendRecipientType !== 'address' && type.id === 'internal') || 
                                 (sendRecipientType === 'address' && type.id === 'address') 
                                 ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
@@ -314,7 +319,7 @@ export const SendScreen: React.FC<SendScreenProps> = ({
                           rightElement={
                               <button 
                                 onClick={() => setScreen(AppScreen.SCANNER)}
-                                className="w-8 h-8 flex items-center justify-center rounded-xl bg-gray-50 text-gray-400 hover:text-primary hover:bg-primary/5 transition-colors"
+                                className="w-11 h-11 flex items-center justify-center rounded-xl bg-gray-50 text-gray-400 hover:text-primary hover:bg-primary/5 transition-colors"
                               >
                                 <Icons.QrCode className="w-4 h-4" />
                               </button>
@@ -337,7 +342,7 @@ export const SendScreen: React.FC<SendScreenProps> = ({
                                   <button 
                                     key={type.id} 
                                     onClick={() => setSendRecipientType(type.id as any)}
-                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[9px] font-bold uppercase tracking-wider border transition-all duration-300 ${sendRecipientType === type.id ? 'bg-primary/5 text-primary border-primary/20' : 'bg-white border-gray-100 text-gray-400 opacity-60'}`}
+                                    className={`flex items-center gap-1.5 px-3 h-11 rounded-xl text-[9px] font-bold uppercase tracking-wider border transition-all duration-300 ${sendRecipientType === type.id ? 'bg-primary/5 text-primary border-primary/20' : 'bg-white border-gray-100 text-gray-400 opacity-60'}`}
                                   >
                                     <span className="text-[10px]">{type.icon}</span>
                                     {type.label}
@@ -354,7 +359,7 @@ export const SendScreen: React.FC<SendScreenProps> = ({
                             <div className="relative">
                                 <button
                                     onClick={() => setShowNetworkDropdown(!showNetworkDropdown)}
-                                    className={`w-full p-4 rounded-2xl text-left border transition-all flex items-center justify-between ${selectedNetwork ? 'bg-white border-primary/50 shadow-sm ring-1 ring-primary/10' : 'bg-white border-gray-200 hover:border-gray-300'}`}
+                                    className={`w-full min-h-[44px] p-4 rounded-2xl text-left border transition-all flex items-center justify-between ${selectedNetwork ? 'bg-white border-primary/50 shadow-sm ring-1 ring-primary/10' : 'bg-white border-gray-200 hover:border-gray-300'}`}
                                 >
                                     {selectedNetwork ? (
                                         <div className="flex items-center gap-3">
@@ -381,7 +386,7 @@ export const SendScreen: React.FC<SendScreenProps> = ({
                                                     setSelectedNetwork(net);
                                                     setShowNetworkDropdown(false);
                                                 }}
-                                                className="w-full p-4 text-left flex items-center justify-between hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0"
+                                                className="w-full min-h-[44px] p-4 text-left flex items-center justify-between hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0"
                                             >
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-gray-100 text-gray-400">
@@ -450,11 +455,11 @@ export const SendScreen: React.FC<SendScreenProps> = ({
                   </div>
               )}
 
-              <div className="mt-auto pt-6">
+              <div className="mt-auto pt-6 flex justify-center">
                 <Button 
                   disabled={!sendRecipient || sendRecipient.length < 3 || (sendRecipientType === 'address' && (!selectedNetwork || !validateAddressForNetwork(sendRecipient, selectedNetwork))) || (saveBeneficiary && !beneficiaryName)}
                   onClick={() => setScreen(AppScreen.SEND_AMOUNT)}
-                  className="w-full !h-14 !rounded-[24px] !bg-primary shadow-2xl shadow-primary/10 !text-xs font-black uppercase tracking-[0.2em]"
+                  className="px-12 !h-14 !rounded-[24px] !bg-primary shadow-2xl shadow-primary/10 !text-xs font-black uppercase tracking-[0.2em]"
                 >
                     Continue
                 </Button>
@@ -533,7 +538,7 @@ export const SendScreen: React.FC<SendScreenProps> = ({
                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Amount to Send</p>
                     <button 
                       onClick={handleUnitToggle}
-                      className="bg-gray-50 px-2.5 py-1 rounded-lg text-[9px] font-bold text-gray-600 uppercase tracking-wider hover:bg-gray-100 transition-colors flex items-center gap-1 border border-gray-100"
+                      className="bg-gray-50 px-2.5 h-11 rounded-lg text-[9px] font-bold text-gray-600 uppercase tracking-wider hover:bg-gray-100 transition-colors flex items-center gap-1 border border-gray-100"
                     >
                       <Icons.Refresh className="w-3 h-3" />
                       {inputUnit}
@@ -561,7 +566,7 @@ export const SendScreen: React.FC<SendScreenProps> = ({
                   </div>
                   
                   <p className="text-[11px] font-bold text-gray-400 mb-8 uppercase tracking-wider bg-gray-50 inline-block px-4 py-1.5 rounded-full border border-gray-100 tabular-nums">
-                      {hideBalance ? '••••••' : equivalentText}
+                      <PrivacyText hide={hideBalance}>{equivalentText}</PrivacyText>
                   </p>
 
                   <div className="grid grid-cols-4 gap-3">
@@ -583,7 +588,7 @@ export const SendScreen: React.FC<SendScreenProps> = ({
                                 setDisplayAmount((targetCoinAmount * (sendAsset?.rate || 0)).toFixed(2));
                               }
                             }}
-                            className={`py-3 rounded-xl text-[10px] font-bold transition-all active:scale-95 border shadow-sm ${label === 'MAX' ? 'bg-primary/10 text-primary border-primary/20 hover:bg-primary hover:text-white' : 'bg-white text-gray-500 border-gray-100 hover:border-primary hover:text-primary'}`}
+                            className={`h-11 rounded-xl text-[10px] font-bold transition-all active:scale-95 border shadow-sm ${label === 'MAX' ? 'bg-primary/10 text-primary border-primary/20 hover:bg-primary hover:text-white' : 'bg-white text-gray-500 border-gray-100 hover:border-primary hover:text-primary'}`}
                           >
                               {label}
                           </button>
@@ -591,18 +596,18 @@ export const SendScreen: React.FC<SendScreenProps> = ({
                   </div>
               </div>
 
-              <div className="mt-auto space-y-4">
+              <div className="mt-auto space-y-4 flex flex-col items-center">
                   <div className="flex justify-between items-center px-5 py-4 bg-white rounded-2xl border border-gray-100 shadow-sm">
                       <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Available Balance</span>
-                      <span className="text-[12px] font-bold text-gray-900 tabular-nums">{hideBalance ? '••••••' : `${sendAsset?.balance.toLocaleString()} ${sendAsset?.symbol}`}</span>
+                      <span className="text-[12px] font-bold text-gray-900 tabular-nums"><PrivacyText hide={hideBalance}>{`${sendAsset?.balance.toLocaleString()} ${sendAsset?.symbol}`}</PrivacyText></span>
                   </div>
-                  <Button 
-                    disabled={!sendAmount || parseFloat(sendAmount) <= 0 || parseFloat(sendAmount) > (sendAsset?.balance || 0)}
-                    onClick={() => setScreen(AppScreen.SEND_CONFIRM)}
-                    className="w-full !h-14 !rounded-2xl !bg-primary shadow-lg shadow-primary/10 !text-xs font-bold uppercase tracking-wider"
-                  >
-                      Review Transfer
-                  </Button>
+                    <Button 
+                      disabled={!sendAmount || parseFloat(sendAmount) <= 0 || parseFloat(sendAmount) > (sendAsset?.balance || 0)}
+                      onClick={() => setScreen(AppScreen.SEND_CONFIRM)}
+                      className="px-12 !h-14 !rounded-2xl !bg-primary shadow-lg shadow-primary/10 !text-xs font-bold uppercase tracking-wider"
+                    >
+                        Review Transfer
+                    </Button>
               </div>
           </div>
         </div>
@@ -641,7 +646,7 @@ export const SendScreen: React.FC<SendScreenProps> = ({
                   <div className="text-center pb-6 border-b border-gray-50">
                       <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-3">Recipient Gets</p>
                       <h2 className="text-3xl font-display font-bold text-gray-900 mb-2 tracking-tight tabular-nums">{actualSent} {sendAsset?.symbol}</h2>
-                      <p className="text-[11px] font-bold text-primary uppercase tracking-wider bg-primary/5 inline-block px-4 py-1 rounded-full tabular-nums">≈ {hideBalance ? '••••••' : `$${(actualSent * (sendAsset?.rate / 1710)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}</p>
+                      <p className="text-[11px] font-bold text-primary uppercase tracking-wider bg-primary/5 inline-block px-4 py-1 rounded-full tabular-nums">≈ <PrivacyText hide={hideBalance}>{`$${(actualSent * (sendAsset?.rate / 1710)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}</PrivacyText></p>
                   </div>
 
                   <div className="space-y-4">
@@ -671,7 +676,7 @@ export const SendScreen: React.FC<SendScreenProps> = ({
                       <div className="flex justify-between items-center pt-6 border-t border-gray-100">
                           <span className="text-[10px] text-gray-900 font-bold uppercase tracking-wider">Total to Deduct</span>
                           <span className="text-lg font-bold text-primary tracking-tight tabular-nums">
-                              {hideBalance ? '••••••' : `${totalDeducted} ${sendAsset?.symbol}`}
+                              <PrivacyText hide={hideBalance}>{`${totalDeducted} ${sendAsset?.symbol}`}</PrivacyText>
                           </span>
                       </div>
                   </div>
@@ -694,13 +699,13 @@ export const SendScreen: React.FC<SendScreenProps> = ({
                     <div className="grid grid-cols-2 gap-2">
                       <button 
                         onClick={() => setFeeDeductionMethod('balance')}
-                        className={`p-3 rounded-xl border text-[10px] font-bold transition-all ${feeDeductionMethod === 'balance' ? 'bg-primary/5 border-primary text-primary' : 'bg-gray-50 border-transparent text-gray-500 hover:bg-gray-100'}`}
+                        className={`px-4 h-11 rounded-xl border text-[10px] font-bold transition-all ${feeDeductionMethod === 'balance' ? 'bg-primary/5 border-primary text-primary' : 'bg-gray-50 border-transparent text-gray-500 hover:bg-gray-100'}`}
                       >
                         Wallet Balance
                       </button>
                       <button 
                         onClick={() => setFeeDeductionMethod('amount')}
-                        className={`p-3 rounded-xl border text-[10px] font-bold transition-all ${feeDeductionMethod === 'amount' ? 'bg-primary/5 border-primary text-primary' : 'bg-gray-50 border-transparent text-gray-500 hover:bg-gray-100'}`}
+                        className={`px-4 h-11 rounded-xl border text-[10px] font-bold transition-all ${feeDeductionMethod === 'amount' ? 'bg-primary/5 border-primary text-primary' : 'bg-gray-50 border-transparent text-gray-500 hover:bg-gray-100'}`}
                       >
                         Withdrawal Amount
                       </button>
@@ -753,14 +758,18 @@ export const SendScreen: React.FC<SendScreenProps> = ({
           onClose={() => setShowInsufficientModal(false)}
           onConfirm={() => {
             setShowInsufficientModal(false);
-            setGlobalLoadingMessage('Auto-swapping and Processing...');
-            setIsGlobalLoading(true);
-            
-            setTimeout(() => {
-                setIsGlobalLoading(false);
-                setScreen(AppScreen.SEND_SUCCESS);
-                completeChecklistTask('request');
-            }, 2500);
+            setOnPinSuccess(() => async () => {
+                setGlobalLoadingMessage('Auto-swapping and Processing...');
+                setIsGlobalLoading(true);
+                
+                setTimeout(() => {
+                    setIsGlobalLoading(false);
+                    setScreen(AppScreen.SEND_SUCCESS);
+                    completeChecklistTask('request');
+                }, 2500);
+            });
+            setOnPinCancel(() => () => showToast('error', 'Cancelled', 'Action cancelled due to user inability to verify action'));
+            setShowPinModal(true);
           }}
           requiredAmount={totalDeducted}
           currency={sendAsset?.symbol}
@@ -824,10 +833,10 @@ export const SendScreen: React.FC<SendScreenProps> = ({
                     </div>
                   </div>
 
-                  <div className="mt-10 space-y-3 relative z-10">
-                    <Button variant="primary" onClick={() => setScreen(AppScreen.HOME)} className="w-full !h-14 !rounded-2xl shadow-lg shadow-primary/20 !text-xs font-bold uppercase tracking-wider">Back to Dashboard</Button>
-                    <div className="flex gap-3">
-                      <Button variant="outline" className="flex-1 !h-12 !rounded-2xl !text-[10px] font-bold uppercase tracking-wider border-gray-100" onClick={() => {
+                  <div className="mt-10 space-y-3 relative z-10 flex flex-col items-center">
+                    <Button variant="primary" onClick={() => setScreen(AppScreen.HOME)} className="px-12 !h-14 !rounded-2xl shadow-lg shadow-primary/20 !text-xs font-bold uppercase tracking-wider">Back to Dashboard</Button>
+                    <div className="flex gap-3 w-full justify-center">
+                      <Button variant="outline" className="px-6 !h-12 !rounded-2xl !text-[10px] font-bold uppercase tracking-wider border-gray-100" onClick={() => {
                         const tx = {
                           id: Date.now().toString(),
                           type: `Sent ${sendAsset?.symbol || 'Crypto'}`,
@@ -850,7 +859,7 @@ export const SendScreen: React.FC<SendScreenProps> = ({
                         setSelectedTx(tx);
                         setScreen(AppScreen.RECEIPT_IMAGE_PREVIEW);
                       }}>View Receipt</Button>
-                      <Button variant="outline" className="flex-1 !h-12 !rounded-2xl !text-[10px] font-bold uppercase tracking-wider border-gray-100" onClick={() => {
+                      <Button variant="outline" className="px-6 !h-12 !rounded-2xl !text-[10px] font-bold uppercase tracking-wider border-gray-100" onClick={() => {
                         const tx = {
                           id: Date.now().toString(),
                           type: `Sent ${sendAsset?.symbol || 'Crypto'}`,
@@ -934,14 +943,14 @@ export const SendScreen: React.FC<SendScreenProps> = ({
               </div>
             </div>
 
-            <div className="mt-auto pt-6">
+            <div className="mt-auto pt-6 flex justify-center">
               <Button 
                 onClick={() => {
                   setSendRecipientType('address');
                   setSendRecipient('Bank Account');
                   setScreen(AppScreen.SEND_SELECT_ASSET);
                 }}
-                className="w-full !h-14 !rounded-2xl shadow-lg shadow-primary/20 !text-xs font-bold uppercase tracking-wider"
+                className="px-12 !h-14 !rounded-2xl shadow-lg shadow-primary/20 !text-xs font-bold uppercase tracking-wider"
               >
                 Continue
               </Button>
@@ -1014,7 +1023,7 @@ export const SendScreen: React.FC<SendScreenProps> = ({
                             const message = encodeURIComponent("Join me on Gogreen! Use my invite code GOGREEN2026 to sign up: https://gogreen.app/invite/GOGREEN2026");
                             window.open(`mailto:?subject=Join Gogreen&body=${message}`, '_blank');
                           }}
-                          className="w-full !h-11 !rounded-xl !text-xs font-bold"
+                          className="px-8 !h-11 !rounded-xl !text-xs font-bold mx-auto"
                         >
                           Send Invite
                         </Button>
@@ -1102,8 +1111,8 @@ export const SendScreen: React.FC<SendScreenProps> = ({
       return (
         <div className="flex-1 flex flex-col bg-white animate-fade-in">
           <LoadingScreen message="Processing Transfer..." />
-          <div className="mt-auto p-6 w-full max-w-md mx-auto">
-            <Button variant="outline" onClick={() => setScreen(AppScreen.HOME)} className="w-full !h-14 !rounded-[24px] !text-xs font-black uppercase tracking-[0.2em]">Back to Dashboard</Button>
+          <div className="mt-auto p-6 w-full max-w-md mx-auto flex justify-center">
+            <Button variant="outline" onClick={() => setScreen(AppScreen.HOME)} className="px-12 !h-14 !rounded-[24px] !text-xs font-black uppercase tracking-[0.2em]">Back to Dashboard</Button>
           </div>
         </div>
       );
@@ -1124,7 +1133,9 @@ export const SendScreen: React.FC<SendScreenProps> = ({
               isFailed ? 'Something went wrong. Please try again later.' : 
               'Your transaction was rejected by the network.'}
            </p>
-           <Button variant="primary" onClick={() => setScreen(AppScreen.HOME)} className="w-full !h-14 !rounded-[24px] shadow-xl shadow-primary/20 !text-xs font-black uppercase tracking-[0.2em]">Back to Dashboard</Button>
+           <div className="w-full flex justify-center">
+             <Button variant="primary" onClick={() => setScreen(AppScreen.HOME)} className="px-12 !h-14 !rounded-[24px] shadow-xl shadow-primary/20 !text-xs font-black uppercase tracking-[0.2em]">Back to Dashboard</Button>
+           </div>
         </div>
     );
   };

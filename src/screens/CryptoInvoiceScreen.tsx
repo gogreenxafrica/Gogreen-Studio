@@ -53,9 +53,9 @@ export const CryptoInvoiceScreen: React.FC = () => {
                   <div>
                       <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3 block">Network</label>
                       <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-                          <div className="px-4 py-2 bg-primary text-white rounded-full text-xs font-bold whitespace-nowrap cursor-pointer">TRC20 (Tron)</div>
-                          <div className="px-4 py-2 bg-white border border-brand-gray/50 text-gray-500 rounded-full text-xs font-bold whitespace-nowrap cursor-pointer hover:border-gray-400 transition-colors">ERC20 (Ethereum)</div>
-                          <div className="px-4 py-2 bg-white border border-brand-gray/50 text-gray-500 rounded-full text-xs font-bold whitespace-nowrap cursor-pointer hover:border-gray-400 transition-colors">BEP20 (BSC)</div>
+                          <div className="px-4 h-11 flex items-center bg-primary text-white rounded-full text-xs font-bold whitespace-nowrap cursor-pointer">TRC20 (Tron)</div>
+                          <div className="px-4 h-11 flex items-center bg-white border border-brand-gray/50 text-gray-500 rounded-full text-xs font-bold whitespace-nowrap cursor-pointer hover:border-gray-400 transition-colors">ERC20 (Ethereum)</div>
+                          <div className="px-4 h-11 flex items-center bg-white border border-brand-gray/50 text-gray-500 rounded-full text-xs font-bold whitespace-nowrap cursor-pointer hover:border-gray-400 transition-colors">BEP20 (BSC)</div>
                       </div>
                   </div>
                   
@@ -69,9 +69,9 @@ export const CryptoInvoiceScreen: React.FC = () => {
                   </div>
               </div>
 
-              <div className="mt-auto pt-8">
+              <div className="mt-auto pt-8 flex justify-center">
                   <Button 
-                     className="w-full !h-14 !rounded-2xl !bg-primary !text-white text-sm font-bold shadow-lg shadow-primary/20"
+                     className="px-12 !h-14 !rounded-2xl !bg-primary !text-white text-sm font-bold shadow-lg shadow-primary/20"
                      onClick={() => toast.success("Invoice generated successfully!")}
                   >
                       Generate QR & Link

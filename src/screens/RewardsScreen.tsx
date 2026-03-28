@@ -54,11 +54,11 @@ export const RewardsScreen = () => {
                       toast.error("Minimum withdrawal is ₦3,000");
                     }
                   }}
-                  className="bg-white text-gray-900 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm active:scale-95 transition-transform flex items-center gap-1"
+                  className="bg-white text-gray-900 px-4 h-11 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm active:scale-95 transition-transform flex items-center gap-1"
                 >
                   Claim <Icons.ArrowRight className="w-3 h-3" />
                 </button>
-                <button className="bg-white/20 text-white px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm active:scale-95 transition-transform flex items-center gap-1 backdrop-blur-sm">
+                <button className="bg-white/20 text-white px-4 h-11 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm active:scale-95 transition-transform flex items-center gap-1 backdrop-blur-sm">
                   History <Icons.FileText className="w-3 h-3" />
                 </button>
               </div>
@@ -77,7 +77,7 @@ export const RewardsScreen = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`px-4 py-2 rounded-full text-[11px] font-black tracking-widest uppercase whitespace-nowrap transition-all ${activeTab === tab.id ? 'bg-primary text-white shadow-md shadow-primary/20' : 'bg-white text-gray-500 border border-gray-100 hover:border-primary/30'}`}
+              className={`px-4 h-11 rounded-full text-[11px] font-black tracking-widest uppercase whitespace-nowrap transition-all ${activeTab === tab.id ? 'bg-primary text-white shadow-md shadow-primary/20' : 'bg-white text-gray-500 border border-gray-100 hover:border-primary/30'}`}
             >
               {tab.label}
             </button>
@@ -108,17 +108,17 @@ export const RewardsScreen = () => {
                       value="https://referral.gogreen.com/WzbV/i?referr..." 
                       className="flex-1 bg-transparent border-none text-[11px] font-medium text-gray-600 px-2 outline-none truncate min-w-0"
                     />
-                    <button onClick={() => toast.success('Link copied!')} className="w-8 h-8 bg-gray-100 rounded-xl flex items-center justify-center text-gray-900 active:scale-95 transition-transform shrink-0">
+                    <button onClick={() => toast.success('Link copied!')} className="w-11 h-11 bg-gray-100 rounded-xl flex items-center justify-center text-gray-900 active:scale-95 transition-transform shrink-0">
                       <Icons.Copy className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
 
-                <div className="flex gap-2 mt-4">
-                  <button className="flex-1 bg-primary text-white py-3 rounded-[16px] text-[11px] font-black uppercase tracking-widest shadow-sm flex items-center justify-center gap-2 active:scale-95 transition-transform">
+                <div className="flex gap-2 mt-4 justify-center">
+                  <button className="px-6 bg-primary text-white h-11 rounded-[16px] text-[11px] font-black uppercase tracking-widest shadow-sm flex items-center justify-center gap-2 active:scale-95 transition-transform">
                     <Icons.Share className="w-4 h-4" /> Share
                   </button>
-                  <button className="flex-1 bg-white text-gray-600 py-3 rounded-[16px] text-[11px] font-black uppercase tracking-widest shadow-sm flex items-center justify-center gap-2 active:scale-95 transition-transform border border-gray-100">
+                  <button className="px-6 bg-white text-gray-600 h-11 rounded-[16px] text-[11px] font-black uppercase tracking-widest shadow-sm flex items-center justify-center gap-2 active:scale-95 transition-transform border border-gray-100">
                     <Icons.FileText className="w-4 h-4" /> T & C's
                   </button>
                 </div>
@@ -128,7 +128,7 @@ export const RewardsScreen = () => {
               <div className="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="font-black text-gray-900 text-[14px]">Your invite history</h3>
-                  <button className="text-[11px] font-black text-primary">See all invites</button>
+                  <button className="min-h-[44px] px-2 text-[11px] font-black text-primary">See all invites</button>
                 </div>
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
@@ -208,7 +208,7 @@ export const RewardsScreen = () => {
                     <button
                       key={cat}
                       onClick={() => setTaskCategory(cat as any)}
-                      className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all ${taskCategory === cat ? 'bg-primary text-white' : 'bg-white text-gray-500 border border-gray-100'}`}
+                      className={`px-3 h-11 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all ${taskCategory === cat ? 'bg-primary text-white' : 'bg-white text-gray-500 border border-gray-100'}`}
                     >
                       {cat}
                     </button>

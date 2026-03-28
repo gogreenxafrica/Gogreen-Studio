@@ -7,6 +7,7 @@ import { Input } from '../../components/Input';
 import { Button } from '../../components/Button';
 import { SwipeButton } from '../../components/SwipeButton';
 import { Confetti } from '../components/Confetti';
+import { PrivacyText } from '../../components/PrivacyText';
 import { InsufficientBalanceModal } from '../components/InsufficientBalanceModal';
 
 import { BrandPattern } from '../components/BrandPattern';
@@ -125,7 +126,7 @@ export const SwapScreen: React.FC<SwapScreenProps> = ({
         <div className="flex items-center gap-4 mb-4">
           <button 
             onClick={() => { setIsSelecting(null); setSearchQuery(''); }}
-            className="w-10 h-10 rounded-2xl bg-white border border-gray-100 flex items-center justify-center hover:bg-gray-50 transition-all active:scale-90 shadow-sm"
+            className="w-11 h-11 rounded-2xl bg-white border border-gray-100 flex items-center justify-center hover:bg-gray-50 transition-all active:scale-90 shadow-sm"
           >
             <Icons.ArrowLeft className="w-5 h-5 text-gray-900" />
           </button>
@@ -166,10 +167,10 @@ export const SwapScreen: React.FC<SwapScreenProps> = ({
             </div>
             <div className="text-right">
               <p className="font-black text-gray-900 text-[13px] tracking-tight">
-                {hideBalance ? '••••••' : coin.balance.toLocaleString()}
+                <PrivacyText hide={hideBalance}>{coin.balance.toLocaleString()}</PrivacyText>
               </p>
               <p className="text-[9px] text-gray-400 font-black uppercase tracking-widest mt-0.5">
-                {hideBalance ? '••••••' : `≈ $${(coin.balance * coin.rate / 1710).toLocaleString(undefined, { maximumFractionDigits: 2 })}`}
+                <PrivacyText hide={hideBalance}>{`≈ $${(coin.balance * coin.rate / 1710).toLocaleString(undefined, { maximumFractionDigits: 2 })}`}</PrivacyText>
               </p>
             </div>
           </div>
@@ -180,13 +181,13 @@ export const SwapScreen: React.FC<SwapScreenProps> = ({
 
   if (screen === AppScreen.SWAP_AMOUNT || screen === AppScreen.SWAP_SELECT_ASSET_FROM || screen === AppScreen.SWAP_SELECT_ASSET_TO) {
     return (
-      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in relative overflow-hidden items-center">
+      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in relative items-center">
         {isSelecting && <AssetSelectionModal />}
         
         <div className="w-full max-w-xl flex flex-col h-full mx-auto">
           <BackHeader title="Swap" subtitle="Trade Assets" onBack={() => setScreen(AppScreen.HOME)} />
           
-          <div className="flex-1 p-4 sm:p-6 flex flex-col">
+          <div className="flex-1 p-4 sm:p-6 flex flex-col overflow-y-auto no-scrollbar">
             {/* Swap Card */}
             <div className="bg-white rounded-[40px] p-5 sm:p-7 shadow-2xl shadow-gray-200/40 border border-gray-100 relative mb-8">
               
@@ -197,7 +198,7 @@ export const SwapScreen: React.FC<SwapScreenProps> = ({
                     <span className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">You Pay</span>
                     <button 
                       onClick={handleUnitToggle}
-                      className="bg-white px-2 py-1 rounded-md text-[9px] font-black text-gray-600 uppercase tracking-widest hover:bg-gray-100 transition-colors flex items-center gap-1 border border-gray-100 shadow-sm"
+                      className="bg-white px-2 h-11 rounded-md text-[9px] font-black text-gray-600 uppercase tracking-widest hover:bg-gray-100 transition-colors flex items-center gap-1 border border-gray-100 shadow-sm"
                     >
                       <Icons.Refresh className="w-3 h-3" />
                       {inputUnit}
@@ -217,9 +218,9 @@ export const SwapScreen: React.FC<SwapScreenProps> = ({
                           setDisplayAmount((targetCoinAmount * (swapFromAsset?.rate || 0)).toFixed(2));
                         }
                       }}
-                      className="text-[10px] font-black text-primary hover:underline active:scale-95 transition-all bg-primary/5 px-2 py-0.5 rounded-full"
+                      className="text-[10px] font-black text-primary hover:underline active:scale-95 transition-all bg-primary/5 px-2 min-h-[44px] flex items-center rounded-full"
                     >
-                      {hideBalance ? '••••••' : `${swapFromAsset?.balance.toLocaleString()} ${swapFromAsset?.symbol}`}
+                      <PrivacyText hide={hideBalance}>{`${swapFromAsset?.balance.toLocaleString()} ${swapFromAsset?.symbol}`}</PrivacyText>
                     </button>
                   </div>
                 </div>
@@ -239,7 +240,7 @@ export const SwapScreen: React.FC<SwapScreenProps> = ({
                   />
                   <button 
                     onClick={() => setIsSelecting('from')}
-                    className="flex items-center gap-2.5 bg-white pl-2.5 pr-4 py-2 rounded-[20px] border border-gray-100 shadow-sm hover:bg-gray-50 transition-all active:scale-95 shrink-0"
+                    className="flex items-center gap-2.5 bg-white pl-2.5 pr-4 h-11 rounded-[20px] border border-gray-100 shadow-sm hover:bg-gray-50 transition-all active:scale-95 shrink-0"
                   >
                     <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-2xl flex items-center justify-center text-white text-xs sm:text-sm font-black shadow-sm" style={{ backgroundColor: swapFromAsset?.color || '#ccc' }}>
                       {swapFromAsset?.symbol?.[0]}
@@ -249,13 +250,13 @@ export const SwapScreen: React.FC<SwapScreenProps> = ({
                   </button>
                 </div>
                 <div className="mt-2 text-[11px] font-black text-gray-400 uppercase tracking-widest">
-                  {hideBalance ? '••••••' : (
-                    inputUnit === 'coin' 
+                  <PrivacyText hide={hideBalance}>
+                    {inputUnit === 'coin' 
                       ? `≈ $${(parseFloat(swapAmount || '0') * (swapFromAsset?.rate || 0) / 1710).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
                       : inputUnit === 'usd'
                       ? `≈ ${parseFloat(swapAmount || '0').toLocaleString(undefined, { maximumFractionDigits: 6 })} ${swapFromAsset?.symbol}`
-                      : `≈ ${parseFloat(swapAmount || '0').toLocaleString(undefined, { maximumFractionDigits: 6 })} ${swapFromAsset?.symbol}`
-                  )}
+                      : `≈ ${parseFloat(swapAmount || '0').toLocaleString(undefined, { maximumFractionDigits: 6 })} ${swapFromAsset?.symbol}`}
+                  </PrivacyText>
                 </div>
               </div>
 
@@ -263,7 +264,7 @@ export const SwapScreen: React.FC<SwapScreenProps> = ({
               <div className="flex justify-center -my-4 relative z-10">
                 <button 
                   onClick={handleSwapAssets}
-                  className="w-12 h-12 bg-white rounded-[20px] border-8 border-white flex items-center justify-center text-primary shadow-xl hover:scale-110 active:scale-90 transition-all group ring-1 ring-gray-100"
+                  className="w-12 h-12 bg-white rounded-[20px] border-8 border-white flex items-center justify-center text-primary shadow-xl hover:scale-110 active:scale-90 transition-all group ring-1 ring-gray-100 min-h-[44px]"
                 >
                   <Icons.Refresh className="w-6 h-6 group-hover:rotate-180 transition-transform duration-500" />
                 </button>
@@ -284,7 +285,7 @@ export const SwapScreen: React.FC<SwapScreenProps> = ({
                   />
                   <button 
                     onClick={() => setIsSelecting('to')}
-                    className="flex items-center gap-2.5 bg-white pl-2.5 pr-4 py-2 rounded-[20px] border border-gray-100 shadow-sm hover:bg-gray-50 transition-all active:scale-95 shrink-0"
+                    className="flex items-center gap-2.5 bg-white pl-2.5 pr-4 h-11 rounded-[20px] border border-gray-100 shadow-sm hover:bg-gray-50 transition-all active:scale-95 shrink-0"
                   >
                     <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-2xl flex items-center justify-center text-white text-xs sm:text-sm font-black shadow-sm" style={{ backgroundColor: swapToAsset?.color || '#ccc' }}>
                       {swapToAsset?.symbol?.[0]}
@@ -294,7 +295,7 @@ export const SwapScreen: React.FC<SwapScreenProps> = ({
                   </button>
                 </div>
                 <div className="mt-2 text-[11px] font-black text-gray-400 uppercase tracking-widest">
-                  ≈ {hideBalance ? '••••••' : `$${(parseFloat(getEstimatedReceive()) * (swapToAsset?.rate || 0) / 1710).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+                  ≈ <PrivacyText hide={hideBalance}>{`$${(parseFloat(getEstimatedReceive()) * (swapToAsset?.rate || 0) / 1710).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}</PrivacyText>
                 </div>
               </div>
 
@@ -313,11 +314,11 @@ export const SwapScreen: React.FC<SwapScreenProps> = ({
               )}
             </div>
 
-            <div className="mt-auto pt-4">
+            <div className="mt-auto pt-4 flex justify-center">
               <Button 
                 disabled={!swapAmount || parseFloat(swapAmount) <= 0 || parseFloat(swapAmount) > (swapFromAsset?.balance || 0)}
                 onClick={() => setScreen(AppScreen.SWAP_CONFIRM)}
-                className="w-full !h-15 !text-xs font-black uppercase tracking-[0.2em] !rounded-[28px] !bg-primary shadow-2xl shadow-primary/10"
+                className="px-12 !h-15 !text-xs font-black uppercase tracking-[0.2em] !rounded-[28px] !bg-primary shadow-2xl shadow-primary/10"
               >
                 {!swapAmount ? 'Enter Amount' : 
                  parseFloat(swapAmount) > (swapFromAsset?.balance || 0) ? 'Insufficient Balance' : 
@@ -483,10 +484,10 @@ export const SwapScreen: React.FC<SwapScreenProps> = ({
                     </div>
                   </div>
 
-                  <div className="mt-10 space-y-3 relative z-10">
-                    <Button variant="primary" onClick={() => setScreen(AppScreen.HOME)} className="w-full !h-14 !rounded-[24px] !bg-primary shadow-xl shadow-primary/20 !text-xs font-black uppercase tracking-[0.2em]">Back to Dashboard</Button>
-                    <div className="flex gap-3">
-                      <Button variant="outline" className="flex-1 !h-12 !rounded-2xl !text-[10px] font-black uppercase tracking-widest border-gray-100" onClick={() => {
+                  <div className="mt-10 space-y-3 relative z-10 flex flex-col items-center">
+                    <Button variant="primary" onClick={() => setScreen(AppScreen.HOME)} className="px-12 !h-14 !rounded-[24px] !bg-primary shadow-xl shadow-primary/20 !text-xs font-black uppercase tracking-[0.2em]">Back to Dashboard</Button>
+                    <div className="flex gap-3 w-full justify-center">
+                      <Button variant="outline" className="px-6 !h-12 !rounded-2xl !text-[10px] font-black uppercase tracking-widest border-gray-100" onClick={() => {
                         const tx = {
                           id: Date.now().toString(),
                           type: `Swapped ${swapFromAsset?.symbol}`,
@@ -509,7 +510,7 @@ export const SwapScreen: React.FC<SwapScreenProps> = ({
                         setSelectedTx(tx);
                         setScreen(AppScreen.RECEIPT_IMAGE_PREVIEW);
                       }}>View Receipt</Button>
-                      <Button variant="outline" className="flex-1 !h-12 !rounded-2xl !text-[10px] font-black uppercase tracking-widest border-gray-100" onClick={() => {
+                      <Button variant="outline" className="px-6 !h-12 !rounded-2xl !text-[10px] font-black uppercase tracking-widest border-gray-100" onClick={() => {
                         const tx = {
                           id: Date.now().toString(),
                           type: `Swapped ${swapFromAsset?.symbol}`,

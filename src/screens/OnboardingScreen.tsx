@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowDown, Smartphone, Tv, Send, Building2, CheckCircle2, Gift } from 'lucide-react';
 import { Logo } from '../../components/Logo';
+import { Button } from '../../components/Button';
 
 interface OnboardingStep {
   title: string;
@@ -175,7 +176,7 @@ export const OnboardingScreen: React.FC<{ onComplete: () => void, onLogin: () =>
   const step = steps[currentStep];
 
   return (
-    <div className={`fixed inset-0 flex flex-col transition-colors duration-500 ${step.isDark ? 'bg-gray-900' : 'bg-green-50/30'}`}>
+    <div className={`fixed inset-0 flex flex-col transition-colors duration-500 ${step.isDark ? 'bg-primary' : 'bg-green-50/30'}`}>
       {/* Progress Bar */}
       <div className="pt-12 px-6 flex gap-2">
         {steps.map((_, idx) => (
@@ -241,23 +242,25 @@ export const OnboardingScreen: React.FC<{ onComplete: () => void, onLogin: () =>
       </div>
 
       {/* Footer Actions */}
-      <div className={`px-6 sm:px-8 pb-8 pt-4 flex flex-col items-center gap-3 shrink-0 ${step.isDark ? 'bg-gray-900' : 'bg-green-50/30'}`}>
-        <button 
+      <div className={`px-6 sm:px-8 pb-8 pt-4 flex flex-col items-center gap-3 shrink-0 ${step.isDark ? 'bg-primary' : 'bg-green-50/30'}`}>
+        <Button 
           onClick={onComplete}
-          className={`w-full max-w-[300px] py-3.5 sm:py-4 rounded-2xl font-bold transition-all active:scale-[0.98] ${
-            step.isDark ? 'bg-white text-gray-900' : 'bg-primary text-white'
-          }`}
+          variant={step.isDark ? 'white' : 'primary'}
+          fullWidth
+          className="max-w-[300px] !py-3.5 sm:!py-4 !rounded-2xl !text-xs"
         >
           I'm new to Gogreen
-        </button>
-        <button 
+        </Button>
+        <Button 
           onClick={onLogin}
-          className={`w-full max-w-[300px] py-3.5 sm:py-4 rounded-2xl font-bold transition-all active:scale-[0.98] border-2 ${
-            step.isDark ? 'border-white/20 text-white hover:bg-white/10' : 'border-gray-900/20 text-gray-900 hover:bg-gray-900/5'
+          variant="ghost"
+          fullWidth
+          className={`max-w-[300px] !py-3.5 sm:!py-4 !rounded-2xl !text-xs border-2 ${
+            step.isDark ? 'border-white/20 !text-white hover:!bg-white/10' : 'border-gray-900/20 !text-gray-900 hover:!bg-gray-900/5'
           }`}
         >
           I already have an account
-        </button>
+        </Button>
       </div>
     </div>
   );

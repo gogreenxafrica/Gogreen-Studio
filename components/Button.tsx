@@ -6,11 +6,13 @@ interface ButtonProps {
   onClick?: () => void;
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'glass' | 'black' | 'white' | 'danger';
   disabled?: boolean;
+  isLoading?: boolean;
   noShine?: boolean;
   className?: string;
   type?: 'button' | 'submit' | 'reset';
   style?: React.CSSProperties;
   id?: string;
+  fullWidth?: boolean;
 }
 
 export const Button = ({
@@ -18,14 +20,17 @@ export const Button = ({
   onClick,
   variant = 'primary',
   disabled = false,
+  isLoading = false,
   noShine = false,
   className = '',
   type = 'button',
   style,
-  id
+  id,
+  fullWidth = false
 }: ButtonProps) => {
   // Updated radius to 24px for smoother liquid feel
-  const baseStyles = "w-full py-3 rounded-[20px] font-black transition-all duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-[0.15em] text-[9px] overflow-hidden relative active:scale-[0.95] hover:scale-[1.02] hover:shadow-lg";
+  // Changed w-full to w-fit and added px-8 to hug content by default
+  const baseStyles = `${fullWidth ? 'w-full' : 'w-fit px-8'} py-3 rounded-[20px] font-black transition-all duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-[0.15em] text-[9px] overflow-hidden relative active:scale-[0.95] hover:scale-[1.02] hover:shadow-lg`;
   
   const variants = {
     // iPhone 17 Liquid Glass Primary: Deep gradient, top inner highlight, soft glow
@@ -58,7 +63,7 @@ export const Button = ({
       id={id}
       type={type}
       onClick={onClick}
-      disabled={disabled}
+      disabled={disabled || isLoading}
       className={`${baseStyles} ${variants[variant]} ${className}`}
       style={style}
     >
@@ -71,7 +76,17 @@ export const Button = ({
           )}
         </>
       )}
-      <span className="relative z-10 flex items-center justify-center gap-2 w-full px-4">{children}</span>
+      <span className="relative z-10 flex items-center justify-center gap-2 w-full px-4">
+        {isLoading ? (
+          <img 
+            src="/assets/logos/gogreen-white-logomark.png" 
+            alt="Loading..." 
+            className={`w-5 h-5 animate-spin object-contain ${variant === 'secondary' || variant === 'white' || variant === 'outline' ? 'filter invert' : ''}`} 
+          />
+        ) : (
+          children
+        )}
+      </span>
     </button>
   );
 };

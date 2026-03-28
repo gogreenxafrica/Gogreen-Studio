@@ -55,7 +55,7 @@ export const USSDDepositScreen: React.FC<USSDDepositScreenProps> = ({ onBack, ac
             <span className="text-[11px] font-medium text-gray-600 uppercase tracking-wide">Copy Gogreen Account Number</span>
             <button 
               onClick={handleCopy}
-              className="flex items-center gap-2 text-gray-900 transition-colors active:scale-95"
+              className="flex items-center gap-2 text-gray-900 transition-colors active:scale-95 min-h-[44px] px-2"
             >
               <div className="w-4 h-4 bg-gray-900 rounded-md flex items-center justify-center text-white"><Icons.FileText className="w-2.5 h-2.5" /></div>
               <span className="font-bold text-[14px]">{accountNumber}</span>

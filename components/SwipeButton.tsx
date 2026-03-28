@@ -92,15 +92,23 @@ export const SwipeButton = ({ onComplete, text }: SwipeButtonProps) => {
         }}
         className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white shadow-lg shadow-primary/30 cursor-grab active:cursor-grabbing relative z-20 group-hover:scale-[1.02] transition-transform"
       >
-        <svg 
-          className={`w-5 h-5 transition-transform duration-300 ${isDragging ? 'scale-110' : ''}`} 
-          fill="none" 
-          stroke="currentColor" 
-          strokeWidth="3" 
-          viewBox="0 0 24 24"
-        >
-          <path d="M13 17l5-5-5-5M6 17l5-5-5-5" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
+        {isFinished ? (
+          <img 
+            src="/assets/logos/gogreen-white-logomark.png" 
+            alt="Processing..." 
+            className="w-6 h-6 animate-spin object-contain" 
+          />
+        ) : (
+          <svg 
+            className={`w-5 h-5 transition-transform duration-300 ${isDragging ? 'scale-110' : ''}`} 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="3" 
+            viewBox="0 0 24 24"
+          >
+            <path d="M13 17l5-5-5-5M6 17l5-5-5-5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        )}
       </div>
 
       {/* Text track */}

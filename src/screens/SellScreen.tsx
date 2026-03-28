@@ -5,6 +5,7 @@ import { useAppContext } from '../../AppContext';
 import { BackHeader } from '../components/BackHeader';
 import { Button } from '../../components/Button';
 import { Icons } from '../../components/Icons';
+import { PrivacyText } from '../../components/PrivacyText';
 
 interface SellScreenProps {
   selectedCoin: any;
@@ -110,7 +111,7 @@ export const SellScreen: React.FC<SellScreenProps> = ({
   return (
      <div className="flex-1 flex flex-col bg-green-50/30 animate-slide-up items-center">
         <div className="w-full max-w-2xl flex flex-col h-full">
-           <BackHeader title={`What would you like to sell?`} subtitle={`${selectedCoin?.name} Balance: ${hideBalance ? '••••••' : selectedCoin?.balance} ${selectedCoin?.symbol}`} onBack={() => setScreen(AppScreen.COIN_DETAIL)} />
+           <BackHeader title={`What would you like to sell?`} subtitle={<span>{selectedCoin?.name} Balance: <PrivacyText hide={hideBalance}>{selectedCoin?.balance}</PrivacyText> {selectedCoin?.symbol}</span>} onBack={() => setScreen(AppScreen.COIN_DETAIL)} />
            
            <div className="flex-1 flex flex-col items-center justify-center p-6">
                <div className="text-center mb-8">
@@ -118,7 +119,7 @@ export const SellScreen: React.FC<SellScreenProps> = ({
                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">1 {selectedCoin?.symbol} = ₦{rate.toLocaleString()}</p>
                      <button 
                        onClick={handleUnitToggle}
-                       className="bg-gray-100 px-2 py-1 rounded-md text-[9px] font-black text-gray-600 uppercase tracking-widest hover:bg-gray-200 transition-colors flex items-center gap-1"
+                       className="bg-gray-100 px-2 h-11 rounded-md text-[9px] font-black text-gray-600 uppercase tracking-widest hover:bg-gray-200 transition-colors flex items-center gap-1"
                      >
                        <Icons.Refresh className="w-3 h-3" />
                        {inputUnit}
@@ -127,7 +128,9 @@ export const SellScreen: React.FC<SellScreenProps> = ({
                    <h2 className="text-5xl font-black text-gray-900 tracking-tighter flex items-center justify-center gap-2">
                        {displayAmount || '0'} <span className="text-2xl text-gray-400">{inputUnit === 'coin' ? selectedCoin?.symbol : inputUnit === 'usd' ? 'USD' : 'NGN'}</span>
                    </h2>
-                   <p className="text-xl font-bold text-primary mt-2">{hideBalance ? '••••••' : equivalentText}</p>
+                   <p className="text-xl font-bold text-primary mt-2">
+                     <PrivacyText hide={hideBalance}>{equivalentText}</PrivacyText>
+                   </p>
                    
                    <button 
                        onClick={() => {
@@ -141,7 +144,7 @@ export const SellScreen: React.FC<SellScreenProps> = ({
                              setDisplayAmount((targetCoinAmount * rate).toFixed(2));
                            }
                        }}
-                       className="mt-6 px-4 py-1.5 bg-primary/10 text-primary rounded-full text-xs font-bold active:scale-95 transition-transform"
+                       className="mt-6 px-4 h-11 flex items-center bg-primary/10 text-primary rounded-full text-xs font-bold active:scale-95 transition-transform"
                    >
                        Use Max
                    </button>
@@ -161,8 +164,9 @@ export const SellScreen: React.FC<SellScreenProps> = ({
                    ))}
                </div>
                
-               <Button 
-                  className="w-full !h-14 !rounded-2xl !bg-primary !text-white text-sm font-bold shadow-lg shadow-primary/20"
+                <div className="flex justify-center">
+                    <Button 
+                       className="px-12 !h-14 !rounded-2xl !bg-primary !text-white text-sm font-bold shadow-lg shadow-primary/20"
                   onClick={() => {
                       if (amount > 0 && amount <= (selectedCoin?.balance || 0)) {
                           setScreen(AppScreen.SELL_SUMMARY);
@@ -174,7 +178,8 @@ export const SellScreen: React.FC<SellScreenProps> = ({
                   }}
                >
                    Continue
-               </Button>
+                </Button>
+            </div>
            </div>
         </div>
      </div>

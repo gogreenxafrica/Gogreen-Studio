@@ -8,16 +8,22 @@ import { Button } from '../../components/Button';
 import { Icons } from '../../components/Icons';
 import { BrandPattern } from '../components/BrandPattern';
 import { Confetti } from '../components/Confetti';
-import { InsufficientBalanceModal } from '../components/InsufficientBalanceModal';
+import { PrivacyText } from '../../components/PrivacyText';
 
 interface WithdrawScreenProps {
   setIsGlobalLoading: (loading: boolean) => void;
   setGlobalLoadingMessage: (msg: string) => void;
+  onProtectedNavigation?: (screen: AppScreen) => void;
+  setShowPinModal: (show: boolean) => void;
+  setOnPinSuccess: (callback: () => void) => void;
 }
 
 export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
   setIsGlobalLoading,
-  setGlobalLoadingMessage
+  setGlobalLoadingMessage,
+  onProtectedNavigation,
+  setShowPinModal,
+  setOnPinSuccess
 }) => {
   const { 
     screen,
@@ -38,14 +44,6 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
   const [newAccountNumber, setNewAccountNumber] = useState('');
   const [saveBeneficiary, setSaveBeneficiary] = useState(false);
   const [beneficiaryName, setBeneficiaryName] = useState('');
-  const [showInsufficientModal, setShowInsufficientModal] = useState(false);
-  
-  interface SwapDetail {
-    fromCoin: string;
-    amount: string;
-    value: string;
-  }
-  const [swapDetails, setSwapDetails] = useState<SwapDetail[]>([]);
   
   const [selectedBank, setSelectedBank] = useState({
     id: '1', name: 'Kuda Bank', account: '201****890', owner: 'Hassan Kehinde', icon: 'K'
@@ -72,7 +70,7 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
         <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-8 relative">
           <div className="absolute inset-0 border-4 border-primary/20 rounded-full animate-ping"></div>
           <div className="absolute inset-0 border-4 border-t-primary border-r-primary border-b-transparent border-l-transparent rounded-full animate-spin"></div>
-          <Icons.Bank className="w-10 h-10 text-primary animate-pulse" />
+          <img src="/assets/logos/gogreen-dark-green-logomark.png" alt="Processing..." className="w-12 h-12 object-contain animate-pulse" />
         </div>
         <h2 className="text-2xl font-black text-gray-900 tracking-tighter mb-2">Processing Withdrawal</h2>
         <p className="text-gray-500 font-medium text-sm max-w-xs mx-auto">Sending funds to your bank account. This usually takes a few seconds...</p>
@@ -90,14 +88,20 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
         <h2 className="text-2xl font-black text-gray-900 tracking-tighter mb-2">Withdrawal Failed</h2>
         <p className="text-gray-500 font-medium text-sm max-w-xs mx-auto mb-8">We couldn't process your withdrawal at this time. Please try again or contact support.</p>
         
-        <div className="w-full max-w-xs space-y-3">
+        <div className="w-full max-w-xs space-y-3 flex flex-col items-center">
           <Button 
-            onClick={() => setScreen(AppScreen.WITHDRAW_MONEY)}
-            className="w-full !h-14 !rounded-[24px] !bg-gray-500 shadow-xl shadow-gray-500/20 !text-xs font-black uppercase tracking-[0.2em]"
+            onClick={() => {
+              if (onProtectedNavigation) {
+                onProtectedNavigation(AppScreen.WITHDRAW_MONEY);
+              } else {
+                setScreen(AppScreen.WITHDRAW_MONEY);
+              }
+            }}
+            className="px-12 !h-14 !rounded-[24px] !bg-gray-500 shadow-xl shadow-gray-500/20 !text-xs font-black uppercase tracking-[0.2em]"
           >
             Try Again
           </Button>
-          <button onClick={() => setScreen(AppScreen.HOME)} className="w-full py-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] hover:text-gray-600 transition-colors">
+          <button onClick={() => setScreen(AppScreen.HOME)} className="w-fit px-6 h-11 text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] hover:text-gray-600 transition-colors">
             Cancel
           </button>
         </div>
@@ -115,14 +119,20 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
         <h2 className="text-2xl font-black text-gray-900 tracking-tighter mb-2">Withdrawal Rejected</h2>
         <p className="text-gray-500 font-medium text-sm max-w-xs mx-auto mb-8">Your withdrawal was rejected by the bank. Please check your details and try again.</p>
         
-        <div className="w-full max-w-xs space-y-3">
+        <div className="w-full max-w-xs space-y-3 flex flex-col items-center">
           <Button 
-            onClick={() => setScreen(AppScreen.WITHDRAW_MONEY)}
-            className="w-full !h-14 !rounded-[24px] !bg-gray-500 shadow-xl shadow-orange-500/20 !text-xs font-black uppercase tracking-[0.2em]"
+            onClick={() => {
+              if (onProtectedNavigation) {
+                onProtectedNavigation(AppScreen.WITHDRAW_MONEY);
+              } else {
+                setScreen(AppScreen.WITHDRAW_MONEY);
+              }
+            }}
+            className="px-12 !h-14 !rounded-[24px] !bg-gray-500 shadow-xl shadow-orange-500/20 !text-xs font-black uppercase tracking-[0.2em]"
           >
             Edit Details
           </Button>
-          <button onClick={() => setScreen(AppScreen.HOME)} className="w-full py-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] hover:text-gray-600 transition-colors">
+          <button onClick={() => setScreen(AppScreen.HOME)} className="w-fit px-6 h-11 text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] hover:text-gray-600 transition-colors">
             Back to Home
           </button>
         </div>
@@ -166,17 +176,17 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
             </div>
           </div>
 
-          <div className="space-y-3 pt-4">
+          <div className="space-y-3 pt-4 flex flex-col items-center">
             <Button 
               onClick={() => {
                 setScreen(AppScreen.HOME);
                 setWithdrawAmount('');
               }}
-              className="w-full !h-14 !rounded-[24px] shadow-xl shadow-primary/20 !text-xs font-black uppercase tracking-[0.2em]"
+              className="px-12 !h-14 !rounded-[24px] shadow-xl shadow-primary/20 !text-xs font-black uppercase tracking-[0.2em]"
             >
               Back to Home
             </Button>
-            <button className="w-full py-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] hover:text-primary transition-colors">
+            <button className="w-fit px-6 h-11 text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] hover:text-primary transition-colors">
               Download Receipt
             </button>
           </div>
@@ -210,7 +220,7 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
                       </div>
                   </div>
               ))}
-              <button onClick={() => setScreen(AppScreen.ADD_BANK)} className="w-full p-6 rounded-[32px] border-2 border-dashed border-gray-200 flex items-center justify-center gap-3 text-gray-400 font-black text-xs hover:border-primary hover:text-primary transition-all active:scale-[0.98] bg-white/50 hover:bg-white shadow-sm mt-4">
+              <button onClick={() => setScreen(AppScreen.ADD_BANK)} className="mx-auto px-8 py-6 rounded-[32px] border-2 border-dashed border-gray-200 flex items-center justify-center gap-3 text-gray-400 font-black text-xs hover:border-primary hover:text-primary transition-all active:scale-[0.98] bg-white/50 hover:bg-white shadow-sm mt-4">
                   <div className="w-8 h-8 bg-gray-100 rounded-xl flex items-center justify-center text-xl leading-none">+</div>
                   <span className="uppercase tracking-[0.3em] text-[10px]">Add New Bank</span>
               </button>
@@ -221,7 +231,7 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center">
+    <div className="flex-1 flex flex-col bg-white animate-fade-in items-center">
       <div className="w-full max-w-xl flex flex-col h-full mx-auto">
           <BackHeader title="Withdraw" subtitle="Send Funds to Bank" onBack={() => setScreen(AppScreen.HOME)} />
           
@@ -230,7 +240,7 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
               <div className="bg-white p-6 rounded-[40px] shadow-2xl shadow-gray-200/40 border border-gray-100 text-center relative overflow-hidden group">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl group-hover:bg-primary/10 transition-all"></div>
                   <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 mb-2">Available Balance</p>
-                  <h2 className="text-3xl font-black text-gray-900 tracking-tighter">₦ {hideBalance ? '••••••' : walletBalance.toLocaleString()}</h2>
+                  <h2 className="text-3xl font-black text-gray-900 tracking-tighter">₦ <PrivacyText hide={hideBalance}>{walletBalance.toLocaleString()}</PrivacyText></h2>
               </div>
 
               {/* Input Section */}
@@ -253,7 +263,7 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
                           rightElement={
                             <button 
                               onClick={() => setWithdrawAmount(walletBalance.toString())}
-                              className="text-[10px] font-black text-primary uppercase tracking-[0.2em] bg-primary/10 px-4 py-2 rounded-2xl active:scale-90 transition-all hover:bg-primary/20"
+                              className="text-[10px] font-black text-primary uppercase tracking-[0.2em] bg-primary/10 px-4 h-11 flex items-center rounded-2xl active:scale-90 transition-all hover:bg-primary/20"
                             >
                               Max
                             </button>
@@ -264,7 +274,7 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
                           <button 
                             key={amt}
                             onClick={() => setWithdrawAmount(amt.toString())}
-                            className="px-4 py-2 rounded-full bg-white border border-gray-100 text-[10px] font-black text-gray-500 hover:border-primary/30 hover:text-primary transition-all active:scale-90"
+                            className="px-4 h-11 rounded-full bg-white border border-gray-100 text-[10px] font-black text-gray-500 hover:border-primary/30 hover:text-primary transition-all active:scale-90"
                           >
                             ₦{amt.toLocaleString()}
                           </button>
@@ -276,7 +286,7 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
                   <div className="space-y-3">
                     <div className="flex justify-between items-center ml-2">
                       <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Destination Bank</label>
-                      <button onClick={() => setIsNewBeneficiary(!isNewBeneficiary)} className="text-[8px] font-black text-primary uppercase tracking-widest">
+                      <button onClick={() => setIsNewBeneficiary(!isNewBeneficiary)} className="min-h-[44px] px-2 text-[8px] font-black text-primary uppercase tracking-widest">
                         {isNewBeneficiary ? 'Saved Banks' : 'New Bank'}
                       </button>
                     </div>
@@ -337,7 +347,7 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
                               <h4 className="font-black text-[13px] text-gray-900 tracking-tight">{selectedBank.name}</h4>
                               <p className="text-[9px] text-gray-400 font-black uppercase tracking-[0.15em] mt-0.5 opacity-60">{selectedBank.account} • {selectedBank.owner}</p>
                           </div>
-                          <button className="w-9 h-9 rounded-xl bg-white border border-gray-100 flex items-center justify-center text-gray-400 group-hover:bg-primary/10 group-hover:text-primary transition-all shadow-sm">
+                          <button className="w-11 h-11 rounded-xl bg-white border border-gray-100 flex items-center justify-center text-gray-400 group-hover:bg-primary/10 group-hover:text-primary transition-all shadow-sm">
                             <Icons.ChevronRight className="w-4 h-4" />
                           </button>
                       </div>
@@ -353,12 +363,12 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
                     </div>
                     <div className="flex justify-between items-center pt-4 border-t border-white/20 relative z-10">
                       <span className="text-[10px] text-white/80 font-black uppercase tracking-[0.3em]">Total to Receive</span>
-                      <span className="text-xl font-black text-white tracking-tighter">₦ {hideBalance ? '••••••' : totalToReceive.toLocaleString()}</span>
+                      <span className="text-xl font-black text-white tracking-tighter">₦ <PrivacyText hide={hideBalance}>{totalToReceive.toLocaleString()}</PrivacyText></span>
                     </div>
                   </div>
               </div>
 
-              <div className="mt-auto pt-8">
+              <div className="mt-auto pt-8 flex flex-col items-center gap-4">
                   <Button 
                       disabled={!withdrawAmount || amount < 1000 || (isNewBeneficiary && (!newBankName || newAccountNumber.length < 10 || (saveBeneficiary && !beneficiaryName)))}
                       onClick={() => {
@@ -376,68 +386,38 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
                           }
 
                           if (amount > walletBalance) {
-                              if (!areCryptoWalletsGenerated) {
-                                  toast.error("Please generate your crypto wallet addresses first to enable auto-swap.", {
-                                      style: { background: '#EF4444', color: '#fff', fontSize: '12px', fontWeight: 'bold' }
-                                  });
-                                  return;
-                              }
-
-                              // Calculate what to swap
-                              let deficit = amount - walletBalance;
-                              const details: SwapDetail[] = [];
-                              
-                              // Sort coins by value descending to use largest assets first
-                              const cryptoCoins = coins
-                                  .filter(c => c.id !== 'ngn' && c.balance > 0)
-                                  .sort((a, b) => (b.balance * b.rate) - (a.balance * a.rate));
-                              
-                              for (const coin of cryptoCoins) {
-                                  if (deficit <= 0) break;
-                                  const coinValue = coin.balance * coin.rate;
-                                  const takeValue = Math.min(deficit, coinValue);
-                                  const takeAmount = takeValue / coin.rate;
-                                  
-                                  // Use up to 8 decimal places, removing trailing zeros if possible
-                                  const formattedAmount = takeAmount.toFixed(8).replace(/\.?0+$/, "");
-                                  
-                                  details.push({
-                                      fromCoin: coin.symbol,
-                                      amount: formattedAmount,
-                                      value: `₦${takeValue.toLocaleString(undefined, { maximumFractionDigits: 2 })}`
-                                  });
-                                  
-                                  deficit -= takeValue;
-                              }
-                              
-                              setSwapDetails(details);
-                              setShowInsufficientModal(true);
+                              toast.error("Insufficient balance in your Naira wallet.", {
+                                  style: { background: '#EF4444', color: '#fff', fontSize: '12px', fontWeight: 'bold' }
+                              });
                               return;
                           }
 
                           if (amount < 1000) return;
                           
-                          setScreen(AppScreen.WITHDRAW_PROCESSING);
-                          
-                          setTimeout(() => {
-                              // Simulate random outcome
-                              const rand = Math.random();
-                              if (rand > 0.3) {
-                                  setWalletBalance(walletBalance - amount);
-                                  setScreen(AppScreen.WITHDRAW_SUCCESS);
-                                  completeChecklistTask('withdraw');
-                              } else if (rand > 0.15) {
-                                  setScreen(AppScreen.WITHDRAW_FAILED);
-                              } else {
-                                  setScreen(AppScreen.WITHDRAW_REJECTED);
-                              }
-                          }, 3000);
+                          setOnPinSuccess(() => {
+                              setScreen(AppScreen.WITHDRAW_PROCESSING);
+                              
+                              setTimeout(() => {
+                                  // Simulate random outcome
+                                  const rand = Math.random();
+                                  if (rand > 0.3) {
+                                      setWalletBalance(walletBalance - amount);
+                                      setScreen(AppScreen.WITHDRAW_SUCCESS);
+                                      completeChecklistTask('withdraw');
+                                  } else if (rand > 0.15) {
+                                      setScreen(AppScreen.WITHDRAW_FAILED);
+                                  } else {
+                                      setScreen(AppScreen.WITHDRAW_REJECTED);
+                                  }
+                              }, 3000);
+                          });
+                          setShowPinModal(true);
                       }}
-                      className="w-full !h-16 !rounded-[28px] !bg-primary shadow-2xl shadow-primary/10 !text-xs font-black uppercase tracking-[0.2em] relative overflow-hidden"
+                      className="px-12 !h-16 !rounded-[28px] !bg-primary shadow-2xl shadow-primary/10 !text-xs font-black uppercase tracking-[0.2em] relative overflow-hidden w-full max-w-xs"
                   >
                       {amount < 1000 ? 'Min Withdrawal: ₦1,000' : 'Confirm Withdrawal'}
                   </Button>
-                  <div className="flex items-center justify-center gap-2 mt-4 opacity-40">
+                  <div className="flex items-center justify-center gap-2 opacity-40">
                     <Icons.Shield className="w-3 h-3" />
                     <p className="text-[9px] text-gray-500 font-black uppercase tracking-[0.3em]">
                       Secure Instant Settlement
@@ -446,23 +426,6 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
               </div>
           </div>
       </div>
-      
-      <InsufficientBalanceModal 
-        isOpen={showInsufficientModal}
-        onClose={() => setShowInsufficientModal(false)}
-        onConfirm={() => {
-          setShowInsufficientModal(false);
-          setScreen(AppScreen.WITHDRAW_PROCESSING);
-          
-          setTimeout(() => {
-              setWalletBalance(walletBalance - amount);
-              setScreen(AppScreen.WITHDRAW_SUCCESS);
-              completeChecklistTask('withdraw');
-          }, 3000);
-        }}
-        requiredAmount={amount}
-        swapDetails={swapDetails}
-      />
     </div>
   );
 };

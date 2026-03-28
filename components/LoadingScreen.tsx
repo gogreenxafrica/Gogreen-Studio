@@ -37,7 +37,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ message = 'Process
             }}
             className="absolute text-primary/10"
           >
-            <Logo className="w-12 h-12" variant="icon" />
+            <img src="/assets/logos/gogreen-dark-green-logomark.png" alt="GoGreen Particle" className="w-12 h-12 object-contain opacity-50" />
           </motion.div>
         ))}
       </div>
@@ -70,7 +70,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ message = 'Process
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             className="w-14 h-14"
           >
-            <Logo className="w-14 h-14" variant="color" />
+            <img src="/assets/logos/gogreen-dark-green-logomark.png" alt="GoGreen Logo" className="w-full h-full object-contain" />
           </motion.div>
           
           {/* Shine Effect */}

@@ -6,30 +6,32 @@ import { BrandPattern } from '../src/components/BrandPattern';
 interface NavbarProps {
   id?: string;
   currentScreen: AppScreen;
-  onNavigate: (screen: AppScreen) => void;
+  activeTab: AppScreen;
+  onNavigate: (screen: AppScreen, isFromNavBar?: boolean) => void;
 }
 
-export const Navbar = ({ id, currentScreen, onNavigate }: NavbarProps) => {
+export const Navbar = ({ id, currentScreen, activeTab, onNavigate }: NavbarProps) => {
   const tabs = [
     { id: AppScreen.HOME, label: 'Home', icon: (color: string) => (
       <svg className="w-6 h-6" fill="none" stroke={color} strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
     )},
-    { id: AppScreen.COIN_DETAIL, label: 'Coin', icon: (color: string) => (
+    { id: AppScreen.SERVICES, label: 'Services', icon: (color: string) => (
       <svg className="w-6 h-6" fill="none" stroke={color} strokeWidth="2.5" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10"></circle>
-        <path d="M12 8v8M8 12h8"></path>
-      </svg>
-    )},
-    { id: AppScreen.SEND_DESTINATION, label: 'Send', icon: (color: string) => (
-      <svg className="w-6 h-6" fill="none" stroke={color} strokeWidth="2.5" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="22" y1="2" x2="11" y2="13"></line>
-        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        <rect x="3" y="3" width="7" height="7"></rect>
+        <rect x="14" y="3" width="7" height="7"></rect>
+        <rect x="14" y="14" width="7" height="7"></rect>
+        <rect x="3" y="14" width="7" height="7"></rect>
       </svg>
     )},
     { id: AppScreen.TRANSACTION_HISTORY, label: 'History', icon: (color: string) => (
       <svg className="w-6 h-6" fill="none" stroke={color} strokeWidth="2.5" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
         <path d="M12 8v4l3 3"></path>
         <circle cx="12" cy="12" r="10"></circle>
+      </svg>
+    )},
+    { id: AppScreen.CHAT, label: 'Chat', icon: (color: string) => (
+      <svg className="w-6 h-6" fill="none" stroke={color} strokeWidth="2.5" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
       </svg>
     )},
     { id: AppScreen.ME, label: 'More', icon: (color: string) => (
@@ -48,7 +50,7 @@ export const Navbar = ({ id, currentScreen, onNavigate }: NavbarProps) => {
         
         <div className="flex-1 flex flex-col gap-2 px-4 relative z-10">
            {tabs.map((tab) => {
-             const isActive = currentScreen === tab.id;
+             const isActive = activeTab === tab.id;
              // Use scanner icon for desktop list, standard button look
              const color = isActive ? '#FFFFFF' : '#9CA3AF';
              const bgClass = isActive ? 'bg-primary shadow-md shadow-primary/20' : 'hover:bg-gray-50';
@@ -56,7 +58,7 @@ export const Navbar = ({ id, currentScreen, onNavigate }: NavbarProps) => {
              return (
                 <button 
                   key={tab.id} 
-                  onClick={() => onNavigate(tab.id)} 
+                  onClick={() => onNavigate(tab.id, true)} 
                   className={`flex items-center gap-4 px-6 py-4 rounded-[20px] transition-all duration-200 group relative overflow-hidden ${bgClass}`}
                 >
                   {isActive && (
@@ -80,7 +82,10 @@ export const Navbar = ({ id, currentScreen, onNavigate }: NavbarProps) => {
         <div className="px-8 relative z-10">
            <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Need Help?</p>
-              <button className="text-xs font-bold text-primary flex items-center gap-2">
+              <button 
+                onClick={() => onNavigate(AppScreen.SUPPORT, false)}
+                className="text-xs font-bold text-primary flex items-center gap-2"
+              >
                  Contact Support 
                  <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" /></svg>
               </button>
@@ -96,14 +101,14 @@ export const Navbar = ({ id, currentScreen, onNavigate }: NavbarProps) => {
            
            <div className="flex items-center gap-2">
               {tabs.map((tab) => {
-                const isActive = currentScreen === tab.id;
+                const isActive = activeTab === tab.id;
                 const color = isActive ? '#FFFFFF' : '#6B7280';
                 const bgClass = isActive ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900';
                 
                 return (
                    <button 
                      key={tab.id} 
-                     onClick={() => onNavigate(tab.id)} 
+                     onClick={() => onNavigate(tab.id, true)} 
                      className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-200 relative overflow-hidden ${bgClass}`}
                    >
                      {isActive && (

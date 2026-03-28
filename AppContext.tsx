@@ -14,8 +14,6 @@ interface AppContextType {
   setPendingBalance: (balance: number) => void;
   signupData: SignupData;
   setSignupData: (data: SignupData | ((prev: SignupData) => SignupData)) => void;
-  kycLevel: number;
-  setKycLevel: (level: number) => void;
   signupStep: number;
   setSignupStep: (step: number) => void;
   loginData: any;
@@ -111,11 +109,6 @@ interface AppContextType {
   transactionPin: string;
   setTransactionPin: (pin: string) => void;
 
-  // Tutorial State
-  seenScreens: Record<string, boolean>;
-  markScreenSeen: (screenName: string) => void;
-  resetScreenSeen: (screenName: string) => void;
-
   // Checklist State
   checklist: { id: string; completed: boolean }[];
   completeChecklistTask: (id: string) => void;
@@ -128,8 +121,6 @@ interface AppContextType {
   // Wallet Generation State
   areCryptoWalletsGenerated: boolean;
   setAreCryptoWalletsGenerated: (val: boolean) => void;
-  areBankAccountsGenerated: boolean;
-  setAreBankAccountsGenerated: (val: boolean) => void;
   
   // Beneficiaries
   savedBeneficiaries: any[];
@@ -149,15 +140,42 @@ interface AppContextType {
   underReviewData: { title: string, message: string } | null;
   setUnderReviewData: (data: { title: string, message: string } | null) => void;
   
+  // Support State
+  isSupportOpen: boolean;
+  setIsSupportOpen: (isOpen: boolean) => void;
+  supportInitialView: 'HELP_CENTER' | 'COMPLAINT_FORM' | 'CHAT' | 'CHAT_HISTORY';
+  setSupportInitialView: (view: 'HELP_CENTER' | 'COMPLAINT_FORM' | 'CHAT' | 'CHAT_HISTORY') => void;
+  
   // Rewards
   points: number;
   setPoints: (points: number) => void;
+
+  // Gift Card State
+  giftCardTradeType: 'BUY' | 'SELL' | null;
+  setGiftCardTradeType: (type: 'BUY' | 'SELL' | null) => void;
+  selectedGiftCard: any;
+  setSelectedGiftCard: (card: any) => void;
+  selectedGiftCardCountry: any;
+  setSelectedGiftCardCountry: (country: any) => void;
+  giftCardAmount: string;
+  setGiftCardAmount: (amount: string) => void;
+  giftCardCodeType: 'ECODE' | 'PHYSICAL' | null;
+  setGiftCardCodeType: (type: 'ECODE' | 'PHYSICAL' | null) => void;
+
+  // KYC State
+  kycData: {
+    bvn: string;
+    nin: string;
+    selfie: string | null;
+    status: 'PENDING' | 'VERIFIED' | 'REJECTED' | 'NONE';
+  };
+  setKycData: (data: any) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
-  const [screen, setScreen] = useState<AppScreen>(AppScreen.SPLASH);
+  const [screen, setScreen] = useState<AppScreen>(AppScreen.LOGIN);
   const [previousScreen, setPreviousScreen] = useState<AppScreen | null>(null);
   const [walletBalance, setWalletBalance] = useState<number>(1326890);
   const [pendingBalance, setPendingBalance] = useState<number>(45000);
@@ -179,7 +197,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     phone: '',
     autoWithdrawToBank: false
   });
-  const [kycLevel, setKycLevel] = useState<number>(1);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   
   // Navigation State
@@ -192,7 +209,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [hideBalance, setHideBalance] = useState<boolean>(false);
   const [bonusClaimed, setBonusClaimed] = useState<boolean>(false);
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState<boolean>(true);
-  const [quickAccessIds, setQuickAccessIds] = useState<string[]>(['withdraw', 'history', 'rewards', 'rates']);
+  const [quickAccessIds, setQuickAccessIds] = useState<string[]>(['withdraw', 'rewards', 'rates', 'pay_bills']);
   const [showQuickAccessDropdown, setShowQuickAccessDropdown] = useState<boolean>(true);
   const [isTxLoading, setIsTxLoading] = useState<boolean>(false);
   const [selectedTx, setSelectedTx] = useState<any>(null);
@@ -206,9 +223,22 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showSplash, setShowSplash] = useState<boolean>(true);
   const [areCryptoWalletsGenerated, setAreCryptoWalletsGenerated] = useState<boolean>(false);
-  const [areBankAccountsGenerated, setAreBankAccountsGenerated] = useState<boolean>(false);
   const [savedBeneficiaries, setSavedBeneficiaries] = useState<any[]>([]);
   const [underReviewData, setUnderReviewData] = useState<{ title: string, message: string } | null>(null);
+  const [isSupportOpen, setIsSupportOpen] = useState<boolean>(false);
+  const [supportInitialView, setSupportInitialView] = useState<'HELP_CENTER' | 'COMPLAINT_FORM' | 'CHAT' | 'CHAT_HISTORY'>('HELP_CENTER');
+  
+  const [giftCardTradeType, setGiftCardTradeType] = useState<'BUY' | 'SELL' | null>(null);
+  const [selectedGiftCard, setSelectedGiftCard] = useState<any>(null);
+  const [selectedGiftCardCountry, setSelectedGiftCardCountry] = useState<any>(null);
+  const [giftCardAmount, setGiftCardAmount] = useState<string>('');
+  const [giftCardCodeType, setGiftCardCodeType] = useState<'ECODE' | 'PHYSICAL' | null>(null);
+  const [kycData, setKycData] = useState({
+    bvn: '',
+    nin: '',
+    selfie: null,
+    status: 'NONE' as const
+  });
   const [notifications, setNotifications] = useState<any[]>(COINS.map((_, i) => ({
     id: i + 1,
     title: 'Welcome to Gogreen',
@@ -237,27 +267,21 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     nextScreen?: AppScreen
   }) => {
     setUnderReviewData({ title: options.title, message: options.message });
-    setScreen(AppScreen.KYC_UPLOADING);
+    setScreen(options.nextScreen || AppScreen.UNDER_REVIEW);
     
-    // 1. Show uploading screen for 4 seconds
+    // Simulate partner webhook after a longer delay (e.g., 15 seconds)
+    // The user can navigate away during this time, and the upgrade will happen in the background.
     setTimeout(() => {
-      // 2. Go to the under review screen
-      setScreen(options.nextScreen || AppScreen.UNDER_REVIEW);
-      
-      // 3. Simulate KYC partner webhook after a longer delay (e.g., 15 seconds)
-      // The user can navigate away during this time, and the upgrade will happen in the background.
-      setTimeout(() => {
-        options.onComplete();
-        addNotification({
-          title: options.notificationTitle,
-          desc: options.notificationDesc,
-          type: 'system'
-        });
-        toast.success(options.notificationTitle, {
-          style: { background: '#10B981', color: '#fff', fontSize: '12px', fontWeight: 'bold' }
-        });
-      }, 15000);
-    }, 4000);
+      options.onComplete();
+      addNotification({
+        title: options.notificationTitle,
+        desc: options.notificationDesc,
+        type: 'system'
+      });
+      toast.success(options.notificationTitle, {
+        style: { background: '#10B981', color: '#fff', fontSize: '12px', fontWeight: 'bold' }
+      });
+    }, 15000);
   };
  
   // Send Flow State
@@ -283,38 +307,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [biometricEnabled, setBiometricEnabled] = useState<boolean>(false);
   const [transactionPin, setTransactionPin] = useState<string>('');
  
-  // Tutorial State
-  const [seenScreens, setSeenScreens] = useState<Record<string, boolean>>(() => {
-    try {
-      const stored = localStorage.getItem('gogreen_seen_screens');
-      return stored ? JSON.parse(stored) : {};
-    } catch (e) {
-      return {};
-    }
-  });
- 
-  const markScreenSeen = (screenName: string) => {
-    setSeenScreens(prev => {
-      const next = { ...prev, [screenName]: true };
-      try { localStorage.setItem('gogreen_seen_screens', JSON.stringify(next)); } catch (e) {}
-      return next;
-    });
-  };
- 
-  const resetScreenSeen = (screenName: string) => {
-    setSeenScreens(prev => {
-      const newScreens = { ...prev };
-      delete newScreens[screenName];
-      try { localStorage.setItem('gogreen_seen_screens', JSON.stringify(newScreens)); } catch (e) {}
-      return newScreens;
-    });
-  };
- 
   // Checklist State
   const [checklist, setChecklist] = useState<{ id: string; completed: boolean }[]>([
     { id: 'fund', completed: false },
     { id: 'airtime', completed: false },
-    { id: 'advanced_kyc', completed: false },
     { id: 'sell_crypto', completed: false },
   ]);
 
@@ -331,8 +327,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   // Auto-update checklist based on state
   React.useEffect(() => {
     if (walletBalance > 0) completeChecklistTask('fund');
-    if (kycLevel >= 3) completeChecklistTask('advanced_kyc');
-  }, [kycLevel, walletBalance]);
+  }, [walletBalance]);
 
   const toggleTheme = () => {
     setTheme(prev => prev === 'light' ? 'dark' : 'light');
@@ -364,7 +359,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       walletBalance, setWalletBalance,
       pendingBalance, setPendingBalance,
       signupData, setSignupData,
-      kycLevel, setKycLevel,
       signupStep, setSignupStep,
       loginData, setLoginData,
       isCaptchaVerified, setIsCaptchaVerified,
@@ -405,25 +399,34 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       biometricEnabled, setBiometricEnabled,
       transactionPin, setTransactionPin,
       checklist, completeChecklistTask,
-      seenScreens, markScreenSeen, resetScreenSeen,
       favoriteCoinIds, toggleFavoriteCoin,
       areCryptoWalletsGenerated, setAreCryptoWalletsGenerated,
-      areBankAccountsGenerated, setAreBankAccountsGenerated,
       savedBeneficiaries, setSavedBeneficiaries,
       underReviewData, setUnderReviewData,
+      isSupportOpen, setIsSupportOpen,
+      supportInitialView, setSupportInitialView,
+      giftCardTradeType, setGiftCardTradeType,
+      selectedGiftCard, setSelectedGiftCard,
+      selectedGiftCardCountry, setSelectedGiftCardCountry,
+      giftCardAmount, setGiftCardAmount,
+      giftCardCodeType, setGiftCardCodeType,
+      kycData, setKycData,
       notifications, addNotification,
       triggerReview,
       points, setPoints
   }), [
-      screen, walletBalance, pendingBalance, signupData, kycLevel, signupStep, loginData, isCaptchaVerified,
+      screen, walletBalance, pendingBalance, signupData, signupStep, loginData, isCaptchaVerified,
       theme, activeTab, activeModal, globalOverlay, currency, hideBalance, bonusClaimed, hasUnreadNotifications,
       quickAccessIds, showQuickAccessDropdown, isTxLoading, selectedTx,
       showReceiptOptionsModal, receiptTheme, showReferralWithdrawModal, pushNotificationsEnabled,
       pin, confirmPin, pinError, isLoading, showSplash, coins, coinsMap, sendAsset, sendRecipient,
       sendRecipientType, sendAmount, swapFromAsset, swapToAsset, swapAmount, withdrawAmount,
       referralBalance, selectedBillCategory, billDetails, selectedVoucher, biometricEnabled,
-      transactionPin, checklist, seenScreens, favoriteCoinIds, areCryptoWalletsGenerated,
-      areBankAccountsGenerated, savedBeneficiaries, underReviewData, points, notifications
+      transactionPin, checklist, favoriteCoinIds, areCryptoWalletsGenerated,
+      savedBeneficiaries, underReviewData, isSupportOpen, supportInitialView,
+      giftCardTradeType, selectedGiftCard, selectedGiftCardCountry, giftCardAmount, giftCardCodeType,
+      kycData,
+      points, notifications
   ]);
 
   return (
