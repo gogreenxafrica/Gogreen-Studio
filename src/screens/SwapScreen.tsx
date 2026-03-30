@@ -13,15 +13,11 @@ import { InsufficientBalanceModal } from '../components/InsufficientBalanceModal
 import { BrandPattern } from '../components/BrandPattern';
 
 interface SwapScreenProps {
-  setShowPinModal: (show: boolean) => void;
-  setOnPinSuccess: (callback: () => void) => void;
   setGlobalLoadingMessage: (message: string) => void;
   setIsGlobalLoading: (loading: boolean) => void;
 }
 
 export const SwapScreen: React.FC<SwapScreenProps> = ({
-  setShowPinModal,
-  setOnPinSuccess,
   setGlobalLoadingMessage,
   setIsGlobalLoading
 }) => {
@@ -37,7 +33,9 @@ export const SwapScreen: React.FC<SwapScreenProps> = ({
     setSwapAmount,
     hideBalance,
     setSelectedTx,
-    setShowReceiptOptionsModal
+    setShowReceiptOptionsModal,
+    setShowPinModal,
+    setOnPinSuccess
   } = useAppContext();
 
   const [isSelecting, setIsSelecting] = useState<'from' | 'to' | null>(null);
@@ -181,13 +179,13 @@ export const SwapScreen: React.FC<SwapScreenProps> = ({
 
   if (screen === AppScreen.SWAP_AMOUNT || screen === AppScreen.SWAP_SELECT_ASSET_FROM || screen === AppScreen.SWAP_SELECT_ASSET_TO) {
     return (
-      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in relative items-center">
+      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in relative items-center w-full h-full overflow-hidden min-h-0">
         {isSelecting && <AssetSelectionModal />}
         
-        <div className="w-full max-w-xl flex flex-col h-full mx-auto">
+        <div className="w-full max-w-xl flex flex-col flex-1 min-h-0 mx-auto">
           <BackHeader title="Swap" subtitle="Trade Assets" onBack={() => setScreen(AppScreen.HOME)} />
           
-          <div className="flex-1 p-4 sm:p-6 flex flex-col overflow-y-auto no-scrollbar">
+          <div className="flex-1 p-4 sm:p-6 flex flex-col overflow-y-auto no-scrollbar min-h-0">
             {/* Swap Card */}
             <div className="bg-white rounded-[40px] p-5 sm:p-7 shadow-2xl shadow-gray-200/40 border border-gray-100 relative mb-8">
               
@@ -335,12 +333,12 @@ export const SwapScreen: React.FC<SwapScreenProps> = ({
     const receiveAmt = getEstimatedReceive();
           
     return (
-      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center relative overflow-hidden">
+      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center relative overflow-hidden w-full h-full min-h-0">
         <BrandPattern opacity={0.03} size={60} animate={true} className="absolute inset-0 pointer-events-none" />
-        <div className="w-full max-w-xl flex flex-col h-full mx-auto relative z-10">
+        <div className="w-full max-w-xl flex flex-col flex-1 min-h-0 mx-auto relative z-10">
           <BackHeader title="Confirm Swap" subtitle="Review Details" onBack={() => setScreen(AppScreen.SWAP_AMOUNT)} />
           
-          <div className="p-4 sm:p-6 space-y-5 flex-1 flex flex-col">
+          <div className="p-4 sm:p-6 space-y-5 flex-1 flex flex-col overflow-y-auto no-scrollbar pb-24 min-h-0">
             <div className="bg-white p-6 sm:p-8 rounded-[40px] shadow-2xl shadow-gray-200/40 border border-gray-100 space-y-8 relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary via-emerald-500 to-green-400"></div>
                 
@@ -427,7 +425,7 @@ export const SwapScreen: React.FC<SwapScreenProps> = ({
 
   if (screen === AppScreen.SWAP_SUCCESS) {
     return (
-      <div className="flex-1 flex flex-col bg-green-50/30 items-center animate-fade-in relative overflow-hidden">
+      <div className="flex-1 flex flex-col bg-green-50/30 items-center animate-fade-in relative overflow-hidden w-full h-full min-h-0">
            <Confetti />
            <BrandPattern opacity={0.05} size={80} animate={true} className="absolute inset-0 pointer-events-none" />
            {/* Success Header with Gradient Background */}
@@ -446,7 +444,7 @@ export const SwapScreen: React.FC<SwapScreenProps> = ({
            </div>
 
            {/* Details Card - Floating */}
-           <div className="w-full max-w-md px-4 -mt-12 relative z-20">
+           <div className="w-full max-w-md px-4 -mt-12 relative z-20 flex-1 overflow-y-auto no-scrollbar pb-24 min-h-0">
                <div className="bg-white rounded-[40px] p-6 shadow-2xl shadow-gray-200/60 border border-gray-100 relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
                   

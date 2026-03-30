@@ -5,7 +5,8 @@ import {
   Rocket, Headphones, LogOut, ArrowDownLeft, TrendingUp, History, Plus, Bell, Eye, 
   EyeOff, Wifi, Monitor, Flame, Link, Trash2, Hourglass, Receipt, ArrowLeftRight,
   MoreHorizontal, ShoppingBag, MessageCircle, Paperclip, Download, Home, Grid, Scan, Wallet, Gift, MessageSquare,
-  Search, Filter, ArrowLeft, ArrowDown, Play, GraduationCap, Mail, Facebook, Instagram, Twitter, ChevronDown, Send
+  Search, Filter, ArrowLeft, ArrowDown, Play, GraduationCap, Mail, Facebook, Instagram, Twitter, ChevronDown, Send,
+  CheckCircle, Activity, Fingerprint, Camera
 } from 'lucide-react';
 
 export const Icons = {
@@ -161,5 +162,9 @@ export const Icons = {
   Monitor,
   Flame,
   Link,
-  MoreHorizontal
+  MoreHorizontal,
+  CheckCircle,
+  Activity,
+  Fingerprint,
+  Camera
 };

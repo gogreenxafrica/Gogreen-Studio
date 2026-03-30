@@ -109,8 +109,8 @@ export const SellScreen: React.FC<SellScreenProps> = ({
   }
 
   return (
-     <div className="flex-1 flex flex-col bg-green-50/30 animate-slide-up items-center">
-        <div className="w-full max-w-2xl flex flex-col h-full">
+     <div className="flex-1 flex flex-col bg-green-50/30 animate-slide-up items-center w-full h-full overflow-hidden min-h-0">
+        <div className="w-full max-w-2xl flex flex-col flex-1 min-h-0">
            <BackHeader title={`What would you like to sell?`} subtitle={<span>{selectedCoin?.name} Balance: <PrivacyText hide={hideBalance}>{selectedCoin?.balance}</PrivacyText> {selectedCoin?.symbol}</span>} onBack={() => setScreen(AppScreen.COIN_DETAIL)} />
            
            <div className="flex-1 flex flex-col items-center justify-center p-6">

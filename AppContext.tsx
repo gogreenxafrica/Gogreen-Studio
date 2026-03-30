@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode, useMemo } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useMemo, useCallback } from 'react';
 import { AppScreen, SignupData } from './types';
 import { COINS } from './constants';
 import toast from 'react-hot-toast';
@@ -30,6 +30,21 @@ interface AppContextType {
   setActiveModal: (modal: AppScreen | null) => void;
   globalOverlay: AppScreen | null;
   setGlobalOverlay: (overlay: AppScreen | null) => void;
+  
+  // Navigation Logic State
+  scannerTab: 'scan' | 'receive';
+  setScannerTab: (tab: 'scan' | 'receive') => void;
+  pendingRoute: AppScreen | null;
+  setPendingRoute: (route: AppScreen | null) => void;
+  navigate: (target: AppScreen, isFromNavBar?: boolean) => void;
+  
+  // PIN Modal State
+  showPinModal: boolean;
+  setShowPinModal: (show: boolean) => void;
+  onPinSuccess: (() => void) | null;
+  setOnPinSuccess: (callback: (() => void) | null) => void;
+  onPinCancel: (() => void) | null;
+  setOnPinCancel: (callback: (() => void) | null) => void;
   
   // New states
   currency: 'NGN' | 'USD';
@@ -175,8 +190,30 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
-  const [screen, setScreen] = useState<AppScreen>(AppScreen.LOGIN);
+  const [screen, _setScreen] = useState<AppScreen>(AppScreen.LOGIN);
   const [previousScreen, setPreviousScreen] = useState<AppScreen | null>(null);
+  
+  const setScreen = useCallback((newScreen: AppScreen) => {
+    _setScreen(prev => {
+      if (prev !== newScreen) {
+        setPreviousScreen(prev);
+      }
+      return newScreen;
+    });
+  }, []);
+
+  const [showPinModal, setShowPinModal] = useState<boolean>(false);
+  const [onPinSuccess, _setOnPinSuccess] = useState<(() => void) | null>(null);
+  const [onPinCancel, _setOnPinCancel] = useState<(() => void) | null>(null);
+
+  const setOnPinSuccess = useCallback((callback: (() => void) | null) => {
+    _setOnPinSuccess(() => callback);
+  }, []);
+
+  const setOnPinCancel = useCallback((callback: (() => void) | null) => {
+    _setOnPinCancel(() => callback);
+  }, []);
+
   const [walletBalance, setWalletBalance] = useState<number>(1326890);
   const [pendingBalance, setPendingBalance] = useState<number>(45000);
   const [referralBalance, setReferralBalance] = useState<number>(15000);
@@ -204,6 +241,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [activeModal, setActiveModal] = useState<AppScreen | null>(null);
   const [globalOverlay, setGlobalOverlay] = useState<AppScreen | null>(null);
  
+  // Navigation Logic State
+  const [scannerTab, setScannerTab] = useState<'scan' | 'receive'>('scan');
+  const [pendingRoute, setPendingRoute] = useState<AppScreen | null>(null);
+
   // New states
   const [currency, setCurrency] = useState<'NGN' | 'USD'>('NGN');
   const [hideBalance, setHideBalance] = useState<boolean>(false);
@@ -247,6 +288,61 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     type: 'system',
     unread: i === 0
   })));
+
+  const navigate = useCallback((target: AppScreen, isFromNavBar: boolean = false) => {
+    if (target === AppScreen.SUPPORT) {
+      if (screen === AppScreen.WELCOME_BACK || screen === AppScreen.LOGIN || screen === AppScreen.SIGNUP) {
+        setIsSupportOpen(true);
+      } else {
+        setScreen(target);
+        if (isFromNavBar) setActiveTab(AppScreen.SUPPORT);
+      }
+      return;
+    }
+
+    if (target === AppScreen.CHAT) {
+      setScreen(AppScreen.CHAT);
+      if (isFromNavBar) setActiveTab(AppScreen.CHAT);
+      return;
+    }
+    
+    if (isFromNavBar) setActiveTab(target);
+
+    let finalTarget = target;
+
+    // Crypto Wallet Generation Check
+    if ([AppScreen.COIN_SELECTION, AppScreen.SWAP_AMOUNT, AppScreen.SWAP_SELECT_ASSET_FROM, AppScreen.SWAP_SELECT_ASSET_TO, AppScreen.SEND_SELECT_ASSET, AppScreen.COIN_DETAIL, AppScreen.CRYPTO_INVOICE].includes(finalTarget) && !areCryptoWalletsGenerated) {
+       finalTarget = AppScreen.CRYPTO_WALLET_SETUP;
+    }
+
+    if (finalTarget === AppScreen.SCANNER) {
+       setScannerTab('receive');
+    }
+
+    // PIN Verification Check for sensitive screens
+    const requiresPin = [
+      AppScreen.PAYMENT_SETTINGS,
+      AppScreen.ACCOUNT_SETTINGS,
+      AppScreen.SECURITY_SETTINGS,
+      AppScreen.CHANGE_PIN,
+      AppScreen.EDIT_PROFILE,
+      AppScreen.DELETE_ACCOUNT,
+      AppScreen.REFERRAL_WITHDRAW_CONFIRM,
+      AppScreen.BANK_DETAILS,
+      AppScreen.WITHDRAW_MONEY, // Added Withdraw to protected screens
+    ];
+
+    if (requiresPin.includes(finalTarget)) {
+      setPendingRoute(finalTarget);
+      setOnPinSuccess(() => {
+        setScreen(finalTarget);
+      });
+      setShowPinModal(true);
+      return;
+    }
+
+    setScreen(finalTarget);
+  }, [screen, areCryptoWalletsGenerated, setScreen, setActiveTab, setIsSupportOpen, setOnPinSuccess, setShowPinModal]);
 
   const addNotification = (notification: any) => {
     setNotifications(prev => [{
@@ -356,6 +452,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const contextValue = useMemo(() => ({
       screen, setScreen,
       previousScreen, setPreviousScreen,
+      navigate,
+      scannerTab, setScannerTab,
+      pendingRoute, setPendingRoute,
+      showPinModal, setShowPinModal,
+      onPinSuccess, setOnPinSuccess,
+      onPinCancel, setOnPinCancel,
       walletBalance, setWalletBalance,
       pendingBalance, setPendingBalance,
       signupData, setSignupData,
@@ -415,7 +517,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       triggerReview,
       points, setPoints
   }), [
-      screen, walletBalance, pendingBalance, signupData, signupStep, loginData, isCaptchaVerified,
+      screen, previousScreen, navigate, scannerTab, pendingRoute, showPinModal, onPinSuccess, onPinCancel,
+      walletBalance, pendingBalance, signupData, signupStep, loginData, isCaptchaVerified,
       theme, activeTab, activeModal, globalOverlay, currency, hideBalance, bonusClaimed, hasUnreadNotifications,
       quickAccessIds, showQuickAccessDropdown, isTxLoading, selectedTx,
       showReceiptOptionsModal, receiptTheme, showReferralWithdrawModal, pushNotificationsEnabled,

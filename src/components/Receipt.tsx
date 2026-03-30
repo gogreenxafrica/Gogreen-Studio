@@ -28,7 +28,7 @@ export const Receipt = ({ theme, tx, username, email }: ReceiptProps) => {
         <div className="text-center mb-6 z-10">
         <p className={`${subTextColor} text-[9px] font-bold uppercase tracking-[0.2em] mb-1`}>Total Amount</p>
         <h1 className={`text-3xl font-black ${textColor} tracking-tight`}>{tx.fiatAmount}</h1>
-        {tx.cryptoAmount && tx.cryptoAmount !== tx.fiatAmount && (
+        {tx.cryptoAmount && tx.cryptoAmount !== tx.fiatAmount && tx.cryptoAmount !== 'N/A' && (
           <p className={`${subTextColor} text-xs font-bold mt-1 tracking-tight`}>{tx.cryptoAmount}</p>
         )}
         <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full mt-3 ${tx.status === 'Success' ? 'bg-green-500/20 text-green-400' : tx.status === 'Pending' ? 'bg-gray-500/20 text-gray-400' : 'bg-gray-500/20 text-gray-400'}`}>

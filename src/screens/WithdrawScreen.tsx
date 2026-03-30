@@ -14,16 +14,14 @@ interface WithdrawScreenProps {
   setIsGlobalLoading: (loading: boolean) => void;
   setGlobalLoadingMessage: (msg: string) => void;
   onProtectedNavigation?: (screen: AppScreen) => void;
-  setShowPinModal: (show: boolean) => void;
-  setOnPinSuccess: (callback: () => void) => void;
+  isModal?: boolean;
 }
 
 export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
   setIsGlobalLoading,
   setGlobalLoadingMessage,
   onProtectedNavigation,
-  setShowPinModal,
-  setOnPinSuccess
+  isModal,
 }) => {
   const { 
     screen,
@@ -35,7 +33,9 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
     hideBalance,
     completeChecklistTask,
     coins,
-    areCryptoWalletsGenerated
+    areCryptoWalletsGenerated,
+    setShowPinModal,
+    setOnPinSuccess
   } = useAppContext();
 
   const [isSelectingBank, setIsSelectingBank] = useState(false);
@@ -65,7 +65,7 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
 
   if (screen === AppScreen.WITHDRAW_PROCESSING) {
     return (
-      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center justify-center p-6 text-center relative overflow-hidden">
+      <div className={`flex-1 flex flex-col ${isModal ? 'bg-white' : 'bg-green-50/30'} animate-fade-in items-center justify-center p-6 text-center relative overflow-hidden w-full h-full min-h-0`}>
         <BrandPattern opacity={0.05} size={80} animate={true} className="absolute inset-0 pointer-events-none" />
         <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-8 relative">
           <div className="absolute inset-0 border-4 border-primary/20 rounded-full animate-ping"></div>
@@ -80,7 +80,7 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
 
   if (screen === AppScreen.WITHDRAW_FAILED) {
     return (
-      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center justify-center p-6 text-center relative overflow-hidden">
+      <div className={`flex-1 flex flex-col ${isModal ? 'bg-white' : 'bg-green-50/30'} animate-fade-in items-center justify-center p-6 text-center relative overflow-hidden w-full h-full min-h-0`}>
         <BrandPattern opacity={0.05} size={80} animate={true} className="absolute inset-0 pointer-events-none" />
         <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-8 animate-shake">
           <Icons.Alert className="w-10 h-10 text-gray-500" />
@@ -111,7 +111,7 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
 
   if (screen === AppScreen.WITHDRAW_REJECTED) {
     return (
-      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center justify-center p-6 text-center relative overflow-hidden">
+      <div className={`flex-1 flex flex-col ${isModal ? 'bg-white' : 'bg-green-50/30'} animate-fade-in items-center justify-center p-6 text-center relative overflow-hidden w-full h-full min-h-0`}>
         <BrandPattern opacity={0.05} size={80} animate={true} className="absolute inset-0 pointer-events-none" />
         <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-8">
           <Icons.Alert className="w-10 h-10 text-gray-500" />
@@ -142,7 +142,7 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
 
   if (screen === AppScreen.WITHDRAW_SUCCESS) {
     return (
-      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center justify-center p-6 text-center relative overflow-hidden">
+      <div className={`flex-1 flex flex-col ${isModal ? 'bg-white' : 'bg-green-50/30'} animate-fade-in items-center justify-center p-6 text-center relative overflow-hidden w-full h-full min-h-0`}>
         <Confetti />
         <BrandPattern opacity={0.05} size={80} animate={true} className="absolute inset-0 pointer-events-none" />
         <div className="w-full max-w-md space-y-8 relative z-10">
@@ -197,9 +197,20 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
 
   if (isSelectingBank) {
     return (
-      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center">
-        <div className="w-full max-w-xl flex flex-col h-full mx-auto">
-            <BackHeader title="Select Bank" subtitle="Choose Destination" onBack={() => setIsSelectingBank(false)} />
+      <div className={`flex-1 flex flex-col ${isModal ? 'bg-white' : 'bg-green-50/30'} animate-fade-in items-center w-full h-full overflow-hidden min-h-0`}>
+        <div className="w-full max-w-xl flex flex-col flex-1 min-h-0 mx-auto">
+            {!isModal && <BackHeader title="Select Bank" subtitle="Choose Destination" onBack={() => setIsSelectingBank(false)} />}
+            {isModal && (
+              <div className="px-6 pt-8 pb-4 flex justify-between items-center">
+                <div>
+                  <h2 className="text-xl font-black text-gray-900 tracking-tight">Select Bank</h2>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mt-1">Choose Destination</p>
+                </div>
+                <button onClick={() => setIsSelectingBank(false)} className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
+                  <Icons.X className="w-5 h-5" />
+                </button>
+              </div>
+            )}
             <div className="p-6 flex-1 flex flex-col gap-4 overflow-y-auto no-scrollbar pb-24">
               {savedBanks.map((bank, index) => (
                   <div 
@@ -231,9 +242,16 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-white animate-fade-in items-center">
-      <div className="w-full max-w-xl flex flex-col h-full mx-auto">
-          <BackHeader title="Withdraw" subtitle="Send Funds to Bank" onBack={() => setScreen(AppScreen.HOME)} />
+    <div className={`flex-1 flex flex-col ${isModal ? 'bg-white' : 'bg-white'} animate-fade-in items-center w-full h-full overflow-hidden min-h-0`}>
+      <div className="w-full max-w-xl flex flex-col flex-1 min-h-0 mx-auto">
+          {!isModal && <BackHeader title="Withdraw" subtitle="Send Funds to Bank" onBack={() => setScreen(AppScreen.HOME)} />}
+          
+          {isModal && (
+            <div className="px-6 pt-8 pb-4">
+              <h2 className="text-xl font-black text-gray-900 tracking-tight">Withdraw</h2>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mt-1">Send Funds to Bank</p>
+            </div>
+          )}
           
           <div className="p-6 flex-1 flex flex-col gap-6 overflow-y-auto no-scrollbar pb-24">
               {/* Balance Card */}

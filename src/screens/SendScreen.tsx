@@ -11,9 +11,6 @@ import { PrivacyText } from '../../components/PrivacyText';
 import { getAvatarUrl } from '../constants/avatars';
 
 interface SendScreenProps {
-  setShowPinModal: (show: boolean) => void;
-  setOnPinSuccess: (callback: () => void) => void;
-  setOnPinCancel: (callback: () => void) => void;
   setGlobalLoadingMessage: (msg: string) => void;
   setIsGlobalLoading: (loading: boolean) => void;
   showToast: (type: string, title: string, message: string) => void;
@@ -24,9 +21,6 @@ import { Confetti } from '../components/Confetti';
 import { InsufficientBalanceModal } from '../components/InsufficientBalanceModal';
 
 export const SendScreen: React.FC<SendScreenProps> = ({
-  setShowPinModal,
-  setOnPinSuccess,
-  setOnPinCancel,
   setGlobalLoadingMessage,
   setIsGlobalLoading,
   showToast
@@ -48,7 +42,10 @@ export const SendScreen: React.FC<SendScreenProps> = ({
     setSelectedTx,
     setShowReceiptOptionsModal,
     savedBeneficiaries,
-    setSavedBeneficiaries
+    setSavedBeneficiaries,
+    setShowPinModal,
+    setOnPinSuccess,
+    setOnPinCancel
   } = useAppContext();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -157,8 +154,8 @@ export const SendScreen: React.FC<SendScreenProps> = ({
     });
 
     return (
-      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center">
-        <div className="w-full flex flex-col h-full">
+      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center w-full h-full overflow-hidden min-h-0">
+        <div className="w-full flex flex-col flex-1 min-h-0">
           <BackHeader title="Send Crypto" subtitle="Select Asset" onBack={() => setScreen(AppScreen.HOME)} />
           
           <div className="px-4 pt-2 pb-2">
@@ -172,7 +169,7 @@ export const SendScreen: React.FC<SendScreenProps> = ({
             />
           </div>
 
-          <div className="p-4 space-y-3 overflow-y-auto no-scrollbar">
+          <div className="p-4 space-y-3 overflow-y-auto no-scrollbar min-h-0">
             {sendableCoins.map((coin, index) => (
                 <div 
                    key={coin.id} 
@@ -213,11 +210,11 @@ export const SendScreen: React.FC<SendScreenProps> = ({
 
   const renderRecipient = () => {
     return (
-      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center">
-        <div className="w-full flex flex-col h-full">
+      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center w-full h-full overflow-hidden min-h-0">
+        <div className="w-full flex flex-col flex-1 min-h-0">
           <BackHeader title={`Send ${sendAsset?.symbol}`} subtitle="Recipient Details" onBack={() => setScreen(AppScreen.SEND_SELECT_ASSET)} />
           
-          <div className="p-4 sm:p-6 space-y-5 flex-1 flex flex-col">
+          <div className="p-4 sm:p-6 space-y-5 flex-1 flex flex-col overflow-y-auto no-scrollbar pb-24 min-h-0">
               <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden">
                   <div className="flex items-center gap-4 relative z-10">
                       <div className="w-12 h-12 rounded-full flex items-center justify-center text-white text-lg font-bold shadow-md" style={{ backgroundColor: sendAsset?.color }}>
@@ -306,7 +303,7 @@ export const SendScreen: React.FC<SendScreenProps> = ({
                               if (sendRecipientType !== 'address') {
                                   if (val.includes('@') && val.includes('.')) {
                                       setSendRecipientType('email');
-                                  } else if (val.startsWith('@')) {
+                                  } else if (val.startsWith('₦')) {
                                       setSendRecipientType('username');
                                   } else if (/^\d+$/.test(val)) {
                                       setSendRecipientType('gogreen_id');
@@ -335,7 +332,7 @@ export const SendScreen: React.FC<SendScreenProps> = ({
                             </div>
                             <div className="flex gap-2 justify-center">
                                 {[
-                                  { id: 'username', label: 'Username', icon: '@' },
+                                  { id: 'username', label: 'Username', icon: '₦' },
                                   { id: 'email', label: 'Email', icon: '✉' },
                                   { id: 'gogreen_id', label: 'User ID', icon: '#' }
                                 ].map(type => (
@@ -528,11 +525,11 @@ export const SendScreen: React.FC<SendScreenProps> = ({
     }
 
     return (
-      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center">
-        <div className="w-full flex flex-col h-full">
+      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center w-full h-full overflow-hidden min-h-0">
+        <div className="w-full flex flex-col flex-1 min-h-0">
           <BackHeader title="Send Crypto" subtitle="Enter Amount" onBack={() => setScreen(AppScreen.SEND_RECIPIENT)} />
           
-          <div className="p-4 sm:p-6 flex-1 flex flex-col gap-5">
+          <div className="p-4 sm:p-6 flex-1 flex flex-col gap-5 overflow-y-auto no-scrollbar pb-24 min-h-0">
               <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 text-center relative overflow-hidden">
                   <div className="flex justify-center items-center gap-2 mb-6">
                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Amount to Send</p>
@@ -636,11 +633,11 @@ export const SendScreen: React.FC<SendScreenProps> = ({
     }
 
     return (
-      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center relative overflow-hidden">
-        <div className="w-full flex flex-col h-full relative z-10">
+      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center relative overflow-hidden w-full h-full min-h-0">
+        <div className="w-full flex flex-col flex-1 min-h-0 relative z-10">
           <BackHeader title="Confirm Send" subtitle="Review Details" onBack={() => setScreen(AppScreen.SEND_AMOUNT)} />
           
-          <div className="p-4 sm:p-6 space-y-5 flex-1 flex flex-col overflow-y-auto no-scrollbar">
+          <div className="p-4 sm:p-6 space-y-5 flex-1 flex flex-col overflow-y-auto no-scrollbar min-h-0">
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 space-y-6 relative overflow-hidden shrink-0">
                   <div className="absolute top-0 left-0 w-full h-1 bg-primary"></div>
                   <div className="text-center pb-6 border-b border-gray-50">
@@ -781,7 +778,7 @@ export const SendScreen: React.FC<SendScreenProps> = ({
 
   const renderSuccess = () => {
     return (
-        <div className="flex-1 flex flex-col bg-green-50/30 items-center animate-fade-in relative overflow-hidden">
+        <div className="flex-1 flex flex-col bg-green-50/30 items-center animate-fade-in relative overflow-hidden w-full h-full min-h-0">
            <Confetti />
            {/* Success Header with Gradient Background */}
            <div className="w-full bg-gray-900 pt-12 pb-20 px-6 text-center relative overflow-hidden">
@@ -799,7 +796,7 @@ export const SendScreen: React.FC<SendScreenProps> = ({
            </div>
 
            {/* Details Card - Floating */}
-           <div className="w-full px-4 -mt-12 relative z-20">
+           <div className="w-full px-4 -mt-12 relative z-20 flex-1 overflow-y-auto no-scrollbar pb-24 min-h-0">
                <div className="bg-white rounded-[40px] p-6 shadow-2xl shadow-gray-200/60 border border-gray-100 relative overflow-hidden">
                   <div className="border-2 border-dashed border-primary/50 rounded-[32px] p-8 text-center mb-8 relative z-10 bg-primary/5">
                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-2">Total Sent</p>
@@ -892,11 +889,11 @@ export const SendScreen: React.FC<SendScreenProps> = ({
 
   const renderBankAccount = () => {
     return (
-      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center">
-        <div className="w-full flex flex-col h-full">
+      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center w-full h-full overflow-hidden min-h-0">
+        <div className="w-full flex flex-col flex-1 min-h-0">
           <BackHeader title="Send money" onBack={() => setScreen(AppScreen.SEND_DESTINATION)} />
           
-          <div className="p-4 sm:p-6 space-y-6 flex-1 flex flex-col">
+          <div className="p-4 sm:p-6 space-y-6 flex-1 flex flex-col overflow-y-auto no-scrollbar pb-24 min-h-0">
             <h2 className="text-lg font-medium text-gray-900 mb-2">Enter receiver details</h2>
             
             <div className="space-y-4">
@@ -965,14 +962,14 @@ export const SendScreen: React.FC<SendScreenProps> = ({
     const hasHistory = savedBeneficiaries.some(b => b.type !== 'address');
 
     return (
-      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center">
-        <div className="w-full flex flex-col h-full">
+      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center w-full h-full overflow-hidden min-h-0">
+        <div className="w-full flex flex-col flex-1 min-h-0">
           <BackHeader 
             title="Send money" 
             onBack={() => setScreen(hasHistory ? AppScreen.SEND_NEW_RECEIVER : AppScreen.SEND_DESTINATION)} 
           />
           
-          <div className="p-4 sm:p-6 space-y-6 flex-1 flex flex-col">
+          <div className="p-4 sm:p-6 space-y-6 flex-1 flex flex-col overflow-y-auto no-scrollbar pb-24 min-h-0">
             <h2 className="text-lg font-medium text-gray-900 mb-2">Enter receiver details</h2>
             
             <div className="space-y-4">
@@ -1044,11 +1041,11 @@ export const SendScreen: React.FC<SendScreenProps> = ({
     const gogreenBeneficiaries = savedBeneficiaries.filter(b => b.type !== 'address');
 
     return (
-      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center">
-        <div className="w-full flex flex-col h-full">
+      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center w-full h-full overflow-hidden min-h-0">
+        <div className="w-full flex flex-col flex-1 min-h-0">
           <BackHeader title="Gogreen tag" onBack={() => setScreen(AppScreen.SEND_DESTINATION)} />
           
-          <div className="p-4 sm:p-6 space-y-6 flex-1 flex flex-col">
+          <div className="p-4 sm:p-6 space-y-6 flex-1 flex flex-col overflow-y-auto no-scrollbar pb-24 min-h-0">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-medium text-gray-900">Saved receivers</h2>
               <button 
@@ -1143,8 +1140,8 @@ export const SendScreen: React.FC<SendScreenProps> = ({
   const renderDestination = () => {
     // This is now the Main Options screen
     return (
-      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center">
-        <div className="w-full flex flex-col h-full">
+      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center w-full h-full overflow-hidden min-h-0">
+        <div className="w-full flex flex-col flex-1 min-h-0">
           <BackHeader title="Send money" onBack={() => setScreen(AppScreen.HOME)} />
           
           <div className="p-4 sm:p-6 space-y-6 flex-1 flex flex-col">

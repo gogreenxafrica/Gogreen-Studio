@@ -6,22 +6,15 @@ import { BackHeader } from '../components/BackHeader';
 import { Button } from '../../components/Button';
 import { Icons } from '../../components/Icons';
 
-export const SecurityScreen = ({ onNavigate }: { onNavigate?: (screen: AppScreen) => void }) => {
+export const SecurityScreen = () => {
   const { 
     screen,
     setScreen, 
+    navigate,
     biometricEnabled, 
     setBiometricEnabled,
     setTransactionPin
   } = useAppContext();
-
-  const navigate = (target: AppScreen) => {
-    if (onNavigate) {
-      onNavigate(target);
-    } else {
-      setScreen(target);
-    }
-  };
 
   const [tempPin, setTempPin] = useState<string>('');
 
@@ -31,7 +24,7 @@ export const SecurityScreen = ({ onNavigate }: { onNavigate?: (screen: AppScreen
 
   if (screen === AppScreen.SECURITY) {
     return (
-      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center">
+      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center w-full h-full overflow-hidden min-h-0">
          <div className="w-full max-w-xl flex flex-col h-full mx-auto">
              <BackHeader title="Security" subtitle="Protect Your Account" onBack={() => setScreen(AppScreen.ME)} />
              <div className="p-6 space-y-4 overflow-y-auto no-scrollbar pb-24">
@@ -108,7 +101,7 @@ export const SecurityScreen = ({ onNavigate }: { onNavigate?: (screen: AppScreen
 
   if (screen === AppScreen.CHANGE_PIN) {
     return (
-      <div className="flex-1 flex flex-col bg-green-50/30 animate-slide-up items-center">
+      <div className="flex-1 flex flex-col bg-green-50/30 animate-slide-up items-center w-full h-full overflow-hidden min-h-0">
          <div className="w-full max-w-xl flex flex-col h-full min-h-0 mx-auto">
             <BackHeader title="Change PIN" subtitle="Update Transaction Security" onBack={() => setScreen(AppScreen.SECURITY)} />
             <div className="px-4 py-1 flex flex-col flex-1 min-h-0 overflow-hidden justify-between pb-24 md:pb-8">
@@ -169,7 +162,7 @@ export const SecurityScreen = ({ onNavigate }: { onNavigate?: (screen: AppScreen
     ];
 
     return (
-      <div className="flex-1 flex flex-col bg-green-50/30 animate-slide-up items-center">
+      <div className="flex-1 flex flex-col bg-green-50/30 animate-slide-up items-center w-full h-full overflow-hidden min-h-0">
          <div className="w-full max-w-xl flex flex-col h-full mx-auto">
             <BackHeader title="Recent Devices" subtitle="Manage Active Sessions" onBack={() => setScreen(AppScreen.SECURITY)} />
             <div className="p-6 space-y-4 overflow-y-auto no-scrollbar pb-24">

@@ -29,8 +29,8 @@ export const USSDDepositScreen: React.FC<USSDDepositScreenProps> = ({ onBack, ac
   ];
 
   return (
-    <div className="flex-1 flex flex-col bg-green-50/30 animate-slide-up items-center">
-      <div className="w-full max-w-2xl flex flex-col h-full">
+    <div className="flex-1 flex flex-col bg-green-50/30 animate-slide-up items-center w-full h-full overflow-hidden min-h-0">
+      <div className="w-full max-w-2xl flex flex-col flex-1 min-h-0">
         <BackHeader title="Add By USSD" onBack={onBack} />
         
         <div className="p-6 flex-1 flex flex-col overflow-y-auto pb-24">

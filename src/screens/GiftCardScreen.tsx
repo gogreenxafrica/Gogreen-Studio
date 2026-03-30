@@ -8,33 +8,18 @@ import { BackHeader } from '../components/BackHeader';
 import { useAppContext } from '../../AppContext';
 import { AppScreen } from '../../types';
 
-const GIFT_CARDS = [
-  { id: 'itunes', name: 'iTunes', color: '#FA57C1', icon: '🍎' },
-  { id: 'amazon', name: 'Amazon', color: '#FF9900', icon: '📦' },
-  { id: 'steam', name: 'Steam', color: '#171a21', icon: '🎮' },
-  { id: 'googleplay', name: 'Google Play', color: '#34A853', icon: '▶️' },
-  { id: 'apple', name: 'Apple Store', color: '#000000', icon: '🍏' },
-  { id: 'ebay', name: 'eBay', color: '#E53238', icon: '🛒' },
-  { id: 'vanilla', name: 'Vanilla Visa', color: '#0047BB', icon: '💳' },
-  { id: 'sephora', name: 'Sephora', color: '#000000', icon: '💄' },
-  { id: 'nordstrom', name: 'Nordstrom', color: '#000000', icon: '👗' },
-  { id: 'razer', name: 'Razer Gold', color: '#00FF00', icon: '🐍' },
-];
+import { GIFT_CARDS, COUNTRIES } from '../../constants';
 
-const COUNTRIES = [
-  { id: 'usa', name: 'United States', flag: '🇺🇸', currency: 'USD', symbol: '$' },
-  { id: 'uk', name: 'United Kingdom', flag: '🇬🇧', currency: 'GBP', symbol: '£' },
-  { id: 'canada', name: 'Canada', flag: '🇨🇦', currency: 'CAD', symbol: 'C$' },
-  { id: 'germany', name: 'Germany', flag: '🇩🇪', currency: 'EUR', symbol: '€' },
-  { id: 'france', name: 'France', flag: '🇫🇷', currency: 'EUR', symbol: '€' },
-  { id: 'australia', name: 'Australia', flag: '🇦🇺', currency: 'AUD', symbol: 'A$' },
-];
+interface GiftCardScreenProps {
+  isModal?: boolean;
+}
 
-export const GiftCardScreen = () => {
+export const GiftCardScreen: React.FC<GiftCardScreenProps> = ({ isModal }) => {
   const { 
     screen, 
     setScreen, 
     giftCardTradeType, 
+    setGiftCardTradeType,
     selectedGiftCard, 
     setSelectedGiftCard,
     selectedGiftCardCountry,
@@ -49,6 +34,10 @@ export const GiftCardScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
+  const [isMultipleCards, setIsMultipleCards] = useState<boolean>(false);
+  const [cardPrefix, setCardPrefix] = useState<string>('');
+  const [frontImage, setFrontImage] = useState<string | null>(null);
+  const [backImage, setBackImage] = useState<string | null>(null);
 
   const tradeMessage = useMemo(() => {
     const action = giftCardTradeType === 'BUY' ? 'I want to buy' : 'I want to sell';
@@ -69,17 +58,72 @@ export const GiftCardScreen = () => {
     );
   }, [searchQuery]);
 
+  const renderOptions = () => (
+    <div className={`flex-1 flex flex-col ${isModal ? 'bg-white' : 'bg-ghost'} animate-fade-in w-full h-full overflow-hidden min-h-0`}>
+      {!isModal && (
+        <BackHeader 
+          title="Trade Giftcards" 
+          subtitle="What would you like to do?" 
+          onBack={() => setScreen(AppScreen.HOME)} 
+        />
+      )}
+      {isModal && (
+        <div className="px-6 pt-8 pb-4 flex justify-between items-center">
+          <div>
+            <h2 className="text-xl font-black text-gray-900 tracking-tight">Trade Giftcards</h2>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mt-1">What would you like to do?</p>
+          </div>
+          <button onClick={() => setActiveModal(null)} className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
+            <Icons.X className="w-5 h-5" />
+          </button>
+        </div>
+      )}
+      <div className="p-4 flex flex-row gap-3 overflow-y-auto custom-scrollbar">
+        <button
+          onClick={() => {
+            setGiftCardTradeType('SELL');
+            setScreen(AppScreen.GIFT_CARD_LIST);
+          }}
+          className="flex-1 bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm flex flex-col items-center gap-4 active:scale-95 transition-all hover:shadow-md group"
+        >
+          <div className="w-14 h-14 rounded-2xl bg-orange-500/10 flex items-center justify-center text-orange-500 group-hover:scale-110 transition-transform">
+            <Icons.TrendingUp className="w-7 h-7" />
+          </div>
+          <div className="text-center">
+            <h4 className="font-black text-gray-900 text-sm">Sell Giftcards</h4>
+            <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mt-1 leading-tight">Convert to cash instantly</p>
+          </div>
+        </button>
+
+        <button
+          onClick={() => {
+            setGiftCardTradeType('BUY');
+            setScreen(AppScreen.GIFT_CARD_LIST);
+          }}
+          className="flex-1 bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm flex flex-col items-center gap-4 active:scale-95 transition-all hover:shadow-md group"
+        >
+          <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+            <Icons.ShoppingBag className="w-7 h-7" />
+          </div>
+          <div className="text-center">
+            <h4 className="font-black text-gray-900 text-sm">Buy Giftcards</h4>
+            <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mt-1 leading-tight">Purchase at best rates</p>
+          </div>
+        </button>
+      </div>
+    </div>
+  );
+
   const renderList = () => (
-    <div className="flex-1 flex flex-col bg-ghost animate-fade-in">
+    <div className={`flex-1 flex flex-col ${isModal ? 'bg-white' : 'bg-ghost'} animate-fade-in w-full h-full overflow-hidden min-h-0`}>
       <BackHeader 
         title={giftCardTradeType === 'SELL' ? 'Sell Giftcards' : 'Buy Giftcards'} 
         subtitle="Select Brand" 
         onBack={() => {
-          setActiveModal(AppScreen.GIFT_CARD_TRADE_OPTIONS);
-          setScreen(AppScreen.GIFT_CARD_TRADE_OPTIONS);
+          setScreen(AppScreen.HOME);
         }} 
       />
-      <div className="p-4 flex-1 flex flex-col">
+      <div className="p-4 flex-1 flex flex-col overflow-y-auto custom-scrollbar">
         <div className="mb-6">
           <Input 
             placeholder="Search giftcards..." 
@@ -114,23 +158,39 @@ export const GiftCardScreen = () => {
   );
 
   const renderTypeSelection = () => (
-    <div className="flex-1 flex flex-col bg-ghost animate-slide-up">
-      <BackHeader 
-        title={selectedGiftCard?.name} 
-        subtitle="Select Card Type" 
-        onBack={() => setScreen(AppScreen.GIFT_CARD_LIST)} 
-      />
-      <div className="p-4 flex-1 flex flex-col gap-4">
+    <div className={`flex-1 flex flex-col ${isModal ? 'bg-white' : 'bg-ghost'} animate-slide-up w-full h-full overflow-hidden min-h-0`}>
+      {!isModal && (
+        <BackHeader 
+          title={selectedGiftCard?.name} 
+          subtitle="Select Card Type" 
+          onBack={() => setScreen(AppScreen.GIFT_CARD_LIST)} 
+        />
+      )}
+      {isModal && (
+        <div className="px-6 pt-8 pb-4 flex justify-between items-center">
+          <div>
+            <h2 className="text-xl font-black text-gray-900 tracking-tight">{selectedGiftCard?.name}</h2>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mt-1">Select Card Type</p>
+          </div>
+          <button onClick={() => setScreen(AppScreen.GIFT_CARD_LIST)} className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
+            <Icons.X className="w-5 h-5" />
+          </button>
+        </div>
+      )}
+      <div className="p-4 flex flex-row gap-3 overflow-y-auto custom-scrollbar">
         <button
           onClick={() => {
             setGiftCardCodeType('ECODE');
             setScreen(AppScreen.GIFT_CARD_COUNTRY);
           }}
-          className="w-full bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm flex items-center gap-4 active:scale-95 transition-all hover:shadow-md"
+          className="flex-1 bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm flex flex-col items-center gap-4 active:scale-95 transition-all hover:shadow-md group"
         >
-          <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-2xl">⚡</div>
-          <div className="text-left">
-            <h4 className="font-black text-gray-900 text-sm">E-code / Digital Code</h4>
+          <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+            <Icons.Zap className="w-7 h-7" />
+          </div>
+          <div className="text-center">
+            <h4 className="font-black text-gray-900 text-sm">E-code</h4>
+            <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mt-1 leading-tight">Digital Code</p>
           </div>
         </button>
         {giftCardTradeType !== 'BUY' && (
@@ -139,11 +199,14 @@ export const GiftCardScreen = () => {
               setGiftCardCodeType('PHYSICAL');
               setScreen(AppScreen.GIFT_CARD_COUNTRY);
             }}
-            className="w-full bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm flex items-center gap-4 active:scale-95 transition-all hover:shadow-md"
+            className="flex-1 bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm flex flex-col items-center gap-4 active:scale-95 transition-all hover:shadow-md group"
           >
-            <div className="w-12 h-12 rounded-2xl bg-orange-500/10 flex items-center justify-center text-2xl">💳</div>
-            <div className="text-left">
-              <h4 className="font-black text-gray-900 text-sm">Physical Card</h4>
+            <div className="w-14 h-14 rounded-2xl bg-orange-500/10 flex items-center justify-center text-orange-500 group-hover:scale-110 transition-transform">
+              <Icons.Card className="w-7 h-7" />
+            </div>
+            <div className="text-center">
+              <h4 className="font-black text-gray-900 text-sm">Physical</h4>
+              <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mt-1 leading-tight">Physical Card</p>
             </div>
           </button>
         )}
@@ -152,22 +215,22 @@ export const GiftCardScreen = () => {
   );
 
   const renderCountry = () => (
-    <div className="flex-1 flex flex-col bg-ghost animate-slide-up">
+    <div className={`flex-1 flex flex-col ${isModal ? 'bg-white' : 'bg-ghost'} animate-slide-up w-full h-full overflow-hidden min-h-0`}>
       <BackHeader 
         title={selectedGiftCard?.name} 
         subtitle="Select Country" 
-        onBack={() => setScreen(AppScreen.GIFT_CARD_LIST)} 
+        onBack={() => setScreen(AppScreen.GIFT_CARD_TYPE_SELECTION)} 
       />
-      <div className="p-4 flex-1 flex flex-col">
+      <div className="p-4 flex-1 flex flex-col overflow-y-auto custom-scrollbar">
         <div className="bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden">
-          {COUNTRIES.map((country, i) => (
+          {selectedGiftCard?.regions.map((country: any, i: number) => (
             <button
               key={country.id}
               onClick={() => {
                 setSelectedGiftCardCountry(country);
-                setScreen(AppScreen.GIFT_CARD_DETAILS);
+                setScreen(AppScreen.GIFT_CARD_QUANTITY);
               }}
-              className={`w-full flex items-center justify-between p-5 ${i !== COUNTRIES.length - 1 ? 'border-b border-gray-50' : ''} hover:bg-gray-50 active:bg-gray-100 transition-colors`}
+              className={`w-full flex items-center justify-between p-5 ${i !== selectedGiftCard.regions.length - 1 ? 'border-b border-gray-50' : ''} hover:bg-gray-50 active:bg-gray-100 transition-colors`}
             >
               <div className="flex items-center gap-4">
                 <span className="text-2xl">{country.flag}</span>
@@ -181,15 +244,55 @@ export const GiftCardScreen = () => {
     </div>
   );
 
+  const renderQuantitySelection = () => (
+    <div className={`flex-1 flex flex-col ${isModal ? 'bg-white' : 'bg-ghost'} animate-slide-up w-full h-full overflow-hidden min-h-0`}>
+      <BackHeader 
+        title={selectedGiftCard?.name} 
+        subtitle="Select Quantity" 
+        onBack={() => setScreen(AppScreen.GIFT_CARD_COUNTRY)} 
+      />
+      <div className="p-4 flex flex-row gap-3 overflow-y-auto custom-scrollbar">
+        <button
+          onClick={() => {
+            setIsMultipleCards(false);
+            setScreen(AppScreen.GIFT_CARD_DETAILS);
+          }}
+          className="flex-1 bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm flex flex-col items-center gap-4 active:scale-95 transition-all hover:shadow-md group"
+        >
+          <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+            <Icons.CreditCard className="w-7 h-7" />
+          </div>
+          <div className="text-center">
+            <h4 className="font-black text-gray-900 text-sm">Single Card</h4>
+          </div>
+        </button>
+        <button
+          onClick={() => {
+            setIsMultipleCards(true);
+            setScreen(AppScreen.GIFT_CARD_DETAILS);
+          }}
+          className="flex-1 bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm flex flex-col items-center gap-4 active:scale-95 transition-all hover:shadow-md group"
+        >
+          <div className="w-14 h-14 rounded-2xl bg-orange-500/10 flex items-center justify-center text-orange-500 group-hover:scale-110 transition-transform">
+            <Icons.ShoppingBag className="w-7 h-7" />
+          </div>
+          <div className="text-center">
+            <h4 className="font-black text-gray-900 text-sm">Multiple Cards</h4>
+          </div>
+        </button>
+      </div>
+    </div>
+  );
+
   const renderDetails = () => (
-    <div className="flex-1 flex flex-col bg-ghost animate-slide-up">
+    <div className={`flex-1 flex flex-col ${isModal ? 'bg-white' : 'bg-ghost'} animate-slide-up w-full h-full overflow-hidden min-h-0`}>
       <BackHeader 
         title={`${selectedGiftCard?.name} (${selectedGiftCardCountry?.flag})`} 
         subtitle="Trade Details" 
         onBack={() => setScreen(AppScreen.GIFT_CARD_COUNTRY)}
         className="bg-white"
       />
-      <div className="p-4 flex-1 flex flex-col">
+      <div className="p-4 flex-1 flex flex-col overflow-y-auto custom-scrollbar">
         <div className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm mb-6">
           <div className="flex items-center gap-4 mb-8">
             <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-inner" style={{ backgroundColor: selectedGiftCard?.color + '20' }}>
@@ -210,11 +313,43 @@ export const GiftCardScreen = () => {
                   placeholder="0.00"
                   value={giftCardAmount}
                   onChange={(e) => setGiftCardAmount(e.target.value)}
-                  className="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl p-4 text-2xl font-black text-gray-900 focus:outline-none focus:border-primary transition-colors"
+                  className={`w-full bg-gray-50 border-2 ${parseFloat(giftCardAmount || '0') < (selectedGiftCardCountry?.minAmount || 0) ? 'border-red-500' : 'border-gray-100'} rounded-2xl p-4 text-2xl font-black text-gray-900 focus:outline-none focus:border-primary transition-colors`}
                 />
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">{selectedGiftCardCountry?.currency}</div>
               </div>
+              {parseFloat(giftCardAmount || '0') < (selectedGiftCardCountry?.minAmount || 0) && (
+                <p className="text-red-500 text-[10px] font-bold mt-1">Minimum amount is {selectedGiftCardCountry?.symbol}{selectedGiftCardCountry?.minAmount}</p>
+              )}
             </div>
+
+            {(giftCardCodeType === 'PHYSICAL' || selectedGiftCard?.isDebit) && selectedGiftCardCountry?.prefixes && (
+              <div>
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 block">First 4 Digits</label>
+                <select
+                  value={cardPrefix}
+                  onChange={(e) => setCardPrefix(e.target.value)}
+                  className="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl p-4 text-sm font-black text-gray-900 focus:outline-none focus:border-primary transition-colors"
+                >
+                  <option value="">Select first 4 digits</option>
+                  {selectedGiftCardCountry.prefixes.map((prefix: string) => (
+                    <option key={prefix} value={prefix}>{prefix}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {selectedGiftCard?.isDebit && (
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 block">Front Image</label>
+                  <input type="file" accept="image/*" onChange={(e) => setFrontImage(e.target.files?.[0] ? URL.createObjectURL(e.target.files[0]) : null)} className="w-full text-xs" />
+                </div>
+                <div>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 block">Back Image</label>
+                  <input type="file" accept="image/*" onChange={(e) => setBackImage(e.target.files?.[0] ? URL.createObjectURL(e.target.files[0]) : null)} className="w-full text-xs" />
+                </div>
+              </div>
+            )}
 
             <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex justify-between items-center">
               <div>
@@ -222,8 +357,8 @@ export const GiftCardScreen = () => {
                 <p className="text-xl font-black text-primary">{giftCardCodeType === 'ECODE' ? 'E-code' : 'Physical'}</p>
               </div>
               <div className="text-right">
-                <p className="text-[9px] font-bold text-primary/60 uppercase tracking-widest mb-1">Country</p>
-                <p className="text-xs font-black text-primary">{selectedGiftCardCountry?.name}</p>
+                <p className="text-[9px] font-bold text-primary/60 uppercase tracking-widest mb-1">Quantity</p>
+                <p className="text-xs font-black text-primary">{isMultipleCards ? 'Multiple' : 'Single'}</p>
               </div>
             </div>
           </div>
@@ -266,13 +401,13 @@ export const GiftCardScreen = () => {
   );
 
   const renderConfirmation = () => (
-    <div className="flex-1 flex flex-col bg-ghost animate-slide-up">
+    <div className={`flex-1 flex flex-col ${isModal ? 'bg-white' : 'bg-ghost'} animate-slide-up w-full h-full overflow-hidden min-h-0`}>
       <BackHeader 
         title="Confirm Trade" 
         subtitle="Review Details" 
         onBack={() => setScreen(AppScreen.GIFT_CARD_DETAILS)} 
       />
-      <div className="p-4 flex-1 flex flex-col">
+      <div className="p-4 flex-1 flex flex-col overflow-y-auto custom-scrollbar">
         <div className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm mb-6 space-y-6">
           <div className="flex justify-between items-center pb-6 border-b border-gray-50">
             <span className="text-gray-400 font-bold text-xs uppercase tracking-widest">Trade Type</span>
@@ -338,13 +473,13 @@ export const GiftCardScreen = () => {
 
   const renderChat = () => {
     return (
-      <div className="flex-1 flex flex-col bg-ghost animate-fade-in">
+      <div className={`flex-1 flex flex-col ${isModal ? 'bg-white' : 'bg-ghost'} animate-fade-in w-full h-full overflow-hidden min-h-0`}>
         <BackHeader 
           title="Trade Chat" 
           subtitle="Active Trade" 
           onBack={() => setScreen(AppScreen.GIFT_CARD_DETAILS)} 
         />
-        <div className="flex-1 flex flex-col p-4">
+        <div className="flex-1 flex flex-col p-4 min-h-0">
           <div className="flex-1 bg-white rounded-[32px] border border-gray-100 shadow-sm p-4 mb-4 overflow-y-auto no-scrollbar">
             <div className="space-y-4">
               <div className="flex justify-center">
@@ -454,9 +589,11 @@ export const GiftCardScreen = () => {
   };
 
   switch (screen) {
+    case AppScreen.GIFT_CARD_TRADE_OPTIONS: return renderOptions();
     case AppScreen.GIFT_CARD_LIST: return renderList();
     case AppScreen.GIFT_CARD_TYPE_SELECTION: return renderTypeSelection();
     case AppScreen.GIFT_CARD_COUNTRY: return renderCountry();
+    case AppScreen.GIFT_CARD_QUANTITY: return renderQuantitySelection();
     case AppScreen.GIFT_CARD_DETAILS: return renderDetails();
     case AppScreen.GIFT_CARD_CONFIRMATION: return renderConfirmation();
     case AppScreen.GIFT_CARD_TRADE_CHAT: return renderChat();

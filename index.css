@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
   /* Brand - A more electric, modern green */
@@ -129,11 +129,11 @@ body {
 }
 
 .header-integrated {
-  background: linear-gradient(to bottom, var(--c-app) 0%, var(--c-app) 60%, rgba(255, 255, 255, 0) 100%);
+  background: linear-gradient(to bottom, var(--c-app) 0%, var(--c-app) 60%, transparent 100%);
 }
 
 .dark .header-integrated {
-  background: linear-gradient(to bottom, var(--c-app) 0%, var(--c-app) 60%, rgba(11, 14, 17, 0) 100%);
+  background: linear-gradient(to bottom, var(--c-app) 0%, var(--c-app) 60%, transparent 100%);
 }
 
 .glass-card {
@@ -158,7 +158,7 @@ body {
 }
 
 .animate-shake {
-  animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+  animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 
 @keyframes shine {

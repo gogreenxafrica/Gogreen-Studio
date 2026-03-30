@@ -29,7 +29,7 @@ export const RewardsScreen = () => {
   const progress = totalTasks > 0 ? (completedCount / totalTasks) * 100 : 0;
 
   return (
-    <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center w-full overflow-x-hidden box-border">
+    <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center w-full h-full overflow-hidden min-h-0 box-border">
       <div className="w-full max-w-full flex flex-col h-full mx-auto overflow-x-hidden box-border">
         <BackHeader title="Earn Money" subtitle="Earn while you transact" onBack={() => setScreen(AppScreen.HOME)} />
         

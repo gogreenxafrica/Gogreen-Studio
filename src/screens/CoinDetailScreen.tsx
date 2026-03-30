@@ -20,8 +20,8 @@ export const CoinDetailScreen: React.FC<CoinDetailScreenProps> = ({ selectedCoin
     : (selectedCoin.balance * selectedCoin.rate) / 1710;
 
   return (
-    <div className="flex-1 flex flex-col bg-green-50/30 animate-slide-up items-center">
-      <div className="w-full max-w-2xl flex flex-col h-full">
+    <div className="flex-1 flex flex-col bg-green-50/30 animate-slide-up items-center w-full h-full overflow-hidden min-h-0">
+      <div className="w-full max-w-2xl flex flex-col flex-1 min-h-0">
         <BackHeader 
           title={selectedCoin.name} 
           subtitle={`${selectedCoin.symbol} Wallet`} 

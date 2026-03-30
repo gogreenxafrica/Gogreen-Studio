@@ -7,9 +7,10 @@ interface BottomSheetProps {
   onClose: () => void;
   children: React.ReactNode;
   title?: string;
+  fullHeight?: boolean;
 }
 
-export const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, children, title }) => {
+export const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, children, title, fullHeight }) => {
   // Prevent body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
@@ -41,7 +42,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, child
           animate={{ y: 0 }}
           exit={{ y: '100%' }}
           transition={{ type: 'spring', damping: 40, stiffness: 300, mass: 1 }}
-          className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-[40px] overflow-hidden shadow-2xl max-h-[92vh] flex flex-col"
+          className={`fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-[40px] overflow-hidden shadow-2xl flex flex-col ${fullHeight ? 'h-[92vh]' : 'max-h-[92vh]'}`}
           style={{ willChange: 'transform' }}
         >
           {/* Header (Optional) */}
@@ -55,7 +56,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, child
           )}
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto no-scrollbar relative">
+          <div className={`flex-1 flex flex-col min-h-0 relative w-full ${fullHeight ? 'overflow-hidden' : 'overflow-y-auto no-scrollbar'}`}>
             {children}
           </div>
         </motion.div>

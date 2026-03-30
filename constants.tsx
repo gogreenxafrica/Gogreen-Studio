@@ -19,10 +19,10 @@ export const DEFAULT_AVATARS = [
 
 export const SIGNUP_STEPS = [
   { key: 'country', label: 'Country of Residence', isDropdown: true },
-  { key: 'email', label: 'Email Address', placeholder: 'hassan@example.com', type: 'email' },
-  { key: 'fullName', label: 'Full Name', placeholder: 'Hassan Kehinde' },
-  { key: 'username', label: 'Choose Username', placeholder: 'kehindevhassan', prefix: '₦' },
-  { key: 'referralCode', label: 'Referral Code (Optional)', placeholder: 'CODE123', prefix: '₦-' },
+  { key: 'email', label: 'Email Address', placeholder: 'johndoe@example.com', type: 'email' },
+  { key: 'otp', label: 'Enter OTP', isOtp: true },
+  { key: 'fullName', label: 'Full Name', placeholder: 'John Doe' },
+  { key: 'username', label: 'Choose Username', placeholder: 'johndoe', prefix: '₦' },
   { key: 'referralSource', label: 'How did you hear about us?', isSourceDropdown: true },
   { key: 'password', label: 'Security Password', placeholder: '••••••••', type: 'password' },
   { key: 'confirmPassword', label: 'Confirm Password', placeholder: '••••••••', type: 'password' },
@@ -47,35 +47,138 @@ export const COINS = [
   { id: 'bnb', name: 'Binance Coin', symbol: 'BNB', network: 'BEP20', rate: 1120400, color: '#F3BA2F', address: 'bnb136ns6lfw4zs5hg4n85vdthaad7hq5m4gtkgf23' }
 ];
 
-export const TRANSACTIONS = [
+export const GIFT_CARDS = [
   { 
-    id: 1, 
-    type: 'Sold USDT', 
-    date: 'Mar 26, 2026', 
-    time: '14:28 PM',
-    fiatAmount: '₦ 770,920.00', 
-    cryptoAmount: '450.53 USDT',
-    status: 'Success', 
-    ref: 'TX-88291045', 
-    icon: <Icons.Coin />, 
-    color: '#26A17B',
-    network: 'TRC20',
-    walletAddress: 'T9yD...zzDX',
-    bankName: 'Kuda Bank',
-    accountNumber: '20****89',
-    platformFee: 'Free',
-    networkFee: '1.00 USDT',
-    exchangeRate: '₦ 1,710 / USDT',
-    coinName: 'Tether',
-    unitAmount: '450.53',
-    addFundDate: 'Mar 26, 2026, 14:20 PM',
-    explorerLink: 'https://tronscan.org/#/transaction/TX-88291045'
+    id: 'amazon', name: 'Amazon', color: '#FF9900', icon: '📦',
+    regions: [
+      { id: 'usa', name: 'USA', minAmount: 25, currency: 'USD', symbol: '$' },
+      { id: 'mexican', name: 'Mexican', minAmount: 100, currency: 'PESOS', symbol: '₱' }
+    ]
   },
   { 
-    id: 2, 
+    id: 'steam', name: 'Steam', color: '#171a21', icon: '🎮',
+    regions: [
+      { id: 'kenyan', name: 'Kenyan', minAmount: 2000, currency: 'KES', symbol: 'KSh' },
+      { id: 'korea', name: 'Korea', minAmount: 0, currency: 'KRW', symbol: '₩' },
+      { id: 'india', name: 'India', minAmount: 0, currency: 'INR', symbol: '₹' },
+      { id: 'uk', name: 'UK', minAmount: 5, currency: 'GBP', symbol: '£' },
+      { id: 'japan', name: 'Japan', minAmount: 0, currency: 'JPY', symbol: '¥' },
+      { id: 'eur', name: 'Eur', minAmount: 10, currency: 'EUR', symbol: '€' }
+    ]
+  },
+  { 
+    id: 'razer', name: 'Razer Gold', color: '#00FF00', icon: '🐍',
+    regions: [
+      { id: 'usa', name: 'USA', minAmount: 10, currency: 'USD', symbol: '$' },
+      { id: 'brazil', name: 'Brazil', minAmount: 0, currency: 'BRL', symbol: 'R$' }
+    ]
+  },
+  { 
+    id: 'nike', name: 'Nike', color: '#000000', icon: '👟',
+    regions: [
+      { id: 'usa', name: 'USA', minAmount: 50, currency: 'USD', symbol: '$' }
+    ]
+  },
+  { 
+    id: 'sephora', name: 'Sephora', color: '#000000', icon: '💄',
+    regions: [
+      { id: 'usa', name: 'USA', minAmount: 25, currency: 'USD', symbol: '$' }
+    ]
+  },
+  { 
+    id: 'itunes', name: 'iTunes', color: '#FA57C1', icon: '🍎',
+    regions: [
+      { id: 'usa', name: 'USA', minAmount: 10, currency: 'USD', symbol: '$' },
+      { id: 'eur', name: 'Eur', minAmount: 10, currency: 'EUR', symbol: '€' },
+      { id: 'uk', name: 'UK', minAmount: 10, currency: 'GBP', symbol: '£' },
+      { id: 'aud', name: 'Australia', minAmount: 10, currency: 'AUD', symbol: 'A$' },
+      { id: 'uae', name: 'UAE', minAmount: 50, currency: 'AED', symbol: 'د.إ' }
+    ]
+  },
+  { 
+    id: 'vapor', name: 'Vapor', color: '#000000', icon: '💨',
+    regions: [
+      { id: 'usa', name: 'USA', minAmount: 10, currency: 'USD', symbol: '$' }
+    ]
+  },
+  { 
+    id: 'xbox', name: 'Xbox', color: '#107C10', icon: '🎮',
+    regions: [
+      { id: 'usa', name: 'USA', minAmount: 10, currency: 'USD', symbol: '$' }
+    ]
+  },
+  { 
+    id: 'debit', name: 'Debit Card', color: '#0047BB', icon: '💳',
+    isDebit: true,
+    prefixes: {
+      'Visa': '4748',
+      'Mastercard': '5253',
+      'American Express': '3751'
+    },
+    minAmount: 50,
+    currency: 'USD',
+    symbol: '$'
+  },
+  { 
+    id: 'walmart', name: 'Walmart', color: '#FFC220', icon: '🛒',
+    isPhysicalOnly: true,
+    prefixes: ['4020', '5181', '61', '62', '63'],
+    minAmount: 0
+  },
+  { 
+    id: 'greendot', name: 'Greendot', color: '#00FF00', icon: '🟢',
+    isPhysicalOnly: true,
+    prefixes: ['4143'],
+    minAmount: 0
+  },
+  { 
+    id: 'milli', name: 'Milli', color: '#000000', icon: '🏦',
+    isPhysicalOnly: true,
+    prefixes: ['4408'],
+    minAmount: 0
+  },
+  { 
+    id: 'go2bank', name: 'GO2BANK', color: '#000000', icon: '🏦',
+    isPhysicalOnly: true,
+    prefixes: ['4819', '4133'],
+    minAmount: 0
+  }
+];
+
+export const COUNTRIES = [
+  { id: 'usa', name: 'United States', flag: '🇺🇸', currency: 'USD', symbol: '$' },
+  { id: 'uk', name: 'United Kingdom', flag: '🇬🇧', currency: 'GBP', symbol: '£' },
+  { id: 'canada', name: 'Canada', flag: '🇨🇦', currency: 'CAD', symbol: 'C$' },
+  { id: 'germany', name: 'Germany', flag: '🇩🇪', currency: 'EUR', symbol: '€' },
+  { id: 'france', name: 'France', flag: '🇫🇷', currency: 'EUR', symbol: '€' },
+  { id: 'australia', name: 'Australia', flag: '🇦🇺', currency: 'AUD', symbol: 'A$' },
+];
+
+export const TRANSACTIONS = [
+  { 
+    id: 0, 
+    type: 'Steam Gift Card', 
+    date: 'Mar 27, 2026', 
+    time: '10:05 AM',
+    fiatAmount: '₦ 90,000.00', 
+    cryptoAmount: '$100.00', 
+    status: 'Failed', 
+    ref: 'GC-11200400', 
+    icon: <Icons.ShoppingBag />, 
+    color: '#EF4444',
+    network: 'USA E-code',
+    walletAddress: 'N/A',
+    bankName: 'N/A',
+    accountNumber: 'N/A',
+    platformFee: '₦ 0.00',
+    networkFee: '₦ 0.00',
+    exchangeRate: '₦ 900 / $'
+  },
+  { 
+    id: 1, 
     type: 'Amazon Gift Card', 
-    date: 'Mar 25, 2026', 
-    time: '11:15 AM',
+    date: 'Mar 26, 2026', 
+    time: '14:28 PM',
     fiatAmount: '₦ 120,000.00', 
     cryptoAmount: '$100.00', 
     status: 'Success', 
@@ -91,62 +194,78 @@ export const TRANSACTIONS = [
     exchangeRate: '₦ 1,200 / $'
   },
   { 
+    id: 2, 
+    type: 'Bank Withdrawal', 
+    date: 'Mar 25, 2026', 
+    time: '11:15 AM',
+    fiatAmount: '₦ 50,000.00', 
+    cryptoAmount: 'N/A', 
+    status: 'Pending', 
+    ref: 'WD-88291045', 
+    icon: <Icons.Bank />, 
+    color: '#10B981',
+    network: 'NIP',
+    walletAddress: 'N/A',
+    bankName: 'Kuda Bank',
+    accountNumber: '20****89',
+    platformFee: '₦ 50.00',
+    networkFee: '₦ 0.00',
+    exchangeRate: 'N/A'
+  },
+  { 
     id: 3, 
-    type: 'Swap BTC to USDT', 
+    type: 'Transfer to ₦johndoe', 
     date: 'Mar 24, 2026', 
     time: '09:42 AM',
-    fiatAmount: '₦ 685,874.50', 
-    cryptoAmount: '0.0041 BTC', 
+    fiatAmount: '₦ 15,000.00', 
+    cryptoAmount: 'N/A', 
     status: 'Success', 
-    ref: 'SW-77382100', 
-    icon: <Icons.ArrowLeftRight />, 
+    ref: 'TR-77382100', 
+    icon: <Icons.Send />, 
     color: '#6366F1',
     network: 'Internal',
     walletAddress: 'N/A',
-    bankName: 'N/A',
-    accountNumber: 'N/A',
-    platformFee: '₦ 100.00',
-    networkFee: '0.00005 BTC',
-    exchangeRate: '₦ 165,432,000 / BTC',
-    coinName: 'Bitcoin',
-    unitAmount: '0.0041',
-    depositDate: 'Mar 24, 2026, 09:30 AM'
+    bankName: 'Greentag',
+    accountNumber: '₦johndoe',
+    platformFee: 'Free',
+    networkFee: '₦ 0.00',
+    exchangeRate: 'N/A'
   },
   { 
     id: 4, 
-    type: 'Ikeja Electricity', 
+    type: 'Steam Gift Card', 
     date: 'Mar 23, 2026', 
     time: '16:30 PM', 
-    fiatAmount: '₦ 15,000.00', 
-    cryptoAmount: '0421***882',
-    status: 'Success', 
-    ref: 'BP-99283111', 
-    icon: <Icons.Zap />, 
-    color: '#FACC15',
-    network: 'IKEDC',
-    walletAddress: 'N/A',
-    bankName: 'N/A',
-    accountNumber: '0421***882',
-    platformFee: '₦ 100.00',
-    networkFee: '₦ 0.00',
-    exchangeRate: '1:1'
-  },
-  { 
-    id: 5, 
-    type: 'Referral Bonus', 
-    date: 'Mar 22, 2026', 
-    time: '10:15 AM', 
-    fiatAmount: '₦ 3,000.00', 
-    cryptoAmount: 'User: kehindev',
-    status: 'Success', 
-    ref: 'RF-8821', 
-    icon: <Icons.Gift />, 
-    color: '#EC4899',
-    network: 'Internal',
+    fiatAmount: '₦ 45,000.00', 
+    cryptoAmount: '$50.00',
+    status: 'Pending', 
+    ref: 'GC-99283111', 
+    icon: <Icons.ShoppingBag />, 
+    color: '#3B82F6',
+    network: 'UK E-code',
     walletAddress: 'N/A',
     bankName: 'N/A',
     accountNumber: 'N/A',
-    platformFee: 'Free',
+    platformFee: '₦ 0.00',
+    networkFee: '₦ 0.00',
+    exchangeRate: '₦ 900 / $'
+  },
+  { 
+    id: 5, 
+    type: 'Bank Withdrawal', 
+    date: 'Mar 22, 2026', 
+    time: '10:15 AM', 
+    fiatAmount: '₦ 200,000.00', 
+    cryptoAmount: 'N/A',
+    status: 'Success', 
+    ref: 'WD-8821', 
+    icon: <Icons.Bank />, 
+    color: '#10B981',
+    network: 'NIP',
+    walletAddress: 'N/A',
+    bankName: 'GTBank',
+    accountNumber: '01****45',
+    platformFee: '₦ 50.00',
     networkFee: '₦ 0.00',
     exchangeRate: 'N/A'
   },
@@ -166,7 +285,7 @@ export const REWARD_HISTORY = [
 ];
 
 export const VOUCHERS = [
-  { id: 1, title: 'Zero Fee Trade', desc: 'On your next USDT sale', color: 'bg-gray-900', minOrderAmount: 5000 },
+  { id: 1, title: 'Zero Fee Trade', desc: 'On your next Gift Card sale', color: 'bg-gray-900', minOrderAmount: 5000 },
   { id: 2, title: 'Airtime Bonus', desc: 'Get 5% back on recharge', color: 'bg-primary', minOrderAmount: 1000 },
 ];
 
@@ -174,11 +293,10 @@ export const RATES = [
   { pair: 'USD / NGN', rate: '1,710', change: '+1.2%', icon: '🇺🇸' },
   { pair: 'GBP / NGN', rate: '2,150', change: '-0.5%', icon: '🇬🇧' },
   { pair: 'EUR / NGN', rate: '1,840', change: '+0.8%', icon: '🇪🇺' },
-  { pair: 'USDT / NGN', rate: '1,715', change: '+0.1%', icon: '💵' },
 ];
 
 export const CHECKLIST_ITEMS = [
   { id: 'fund', title: 'Add money', desc: 'Fund your wallet', completed: false, screen: AppScreen.ADD_MONEY, category: 'Daily' },
   { id: 'airtime', title: 'Buy Airtime', desc: 'Use your 5% bonus voucher', completed: false, screen: AppScreen.PAY_BILLS, category: 'Daily' },
-  { id: 'sell_crypto', title: 'Sell Crypto', desc: 'Trade at least once', completed: false, screen: AppScreen.COIN_SELECTION, category: 'Weekly' },
+  { id: 'trade_giftcard', title: 'Trade Gift Card', desc: 'Trade at least once', completed: false, screen: AppScreen.GIFT_CARD_TRADE_OPTIONS, category: 'Weekly' },
 ];

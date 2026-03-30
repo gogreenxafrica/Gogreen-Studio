@@ -63,7 +63,7 @@ export const GuidesAndTutorialsScreen: React.FC<GuidesAndTutorialsScreenProps> =
   ];
 
   return (
-    <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in pb-24 overflow-y-auto no-scrollbar">
+    <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in pb-24 overflow-y-auto no-scrollbar w-full h-full min-h-0">
       {/* Header */}
       <div className="sticky top-0 z-50 bg-green-50/80 backdrop-blur-xl border-b border-brand-gray/20 px-6 py-6 flex items-center justify-between">
         <button 

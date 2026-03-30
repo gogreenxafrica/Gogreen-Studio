@@ -21,18 +21,6 @@ export const MeScreen: React.FC<MeScreenProps> = ({
 }) => {
   const { setGlobalOverlay, setSupportInitialView, setIsSupportOpen, kycData } = useAppContext();
   const meSections = [
-    ...(kycData.status !== 'VERIFIED' ? [{
-      title: 'Verification',
-      items: [
-        { 
-          icon: <Icons.ShieldCheck />, 
-          label: kycData.status === 'PENDING' ? 'Verification Pending' : 'Verify Identity', 
-          desc: kycData.status === 'PENDING' ? 'Under review' : 'BVN, NIN & Selfie', 
-          screen: kycData.status === 'PENDING' ? AppScreen.KYC_SUCCESS : AppScreen.KYC_INTRO,
-          color: kycData.status === 'PENDING' ? 'text-orange-500' : 'text-primary'
-        },
-      ]
-    }] : []),
     {
       title: 'Account',
       items: [
@@ -88,31 +76,49 @@ export const MeScreen: React.FC<MeScreenProps> = ({
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/5 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl"></div>
           
           <div className="w-full mx-auto px-6 py-8 relative z-10">
-             <div className="flex items-center justify-between">
-                <div className="flex items-center gap-5">
-                   <div className="relative">
-                     <div className="w-18 h-18 rounded-[28px] overflow-hidden bg-white border-4 border-white shadow-2xl ring-1 ring-gray-100">
-                        <img src={signupData.profileImage || getAvatarUrl(signupData.username)} className="w-full h-full object-cover" alt="Profile" referrerPolicy="no-referrer" />
-                     </div>
-                   </div>
-                   <div>
-                      <h2 className="text-2xl font-black text-gray-900 tracking-tighter mb-1">{signupData.username || "User"}</h2>
-                      <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.15em] border shadow-sm ${
-                          kycData.status === 'VERIFIED' ? 'bg-green-50 text-green-700 border-green-100' :
-                          kycData.status === 'PENDING' ? 'bg-orange-50 text-orange-700 border-orange-100' :
-                          'bg-red-50 text-red-700 border-red-100'
-                       }`}>
-                          <div className={`w-1.5 h-1.5 rounded-full ${
-                             kycData.status === 'VERIFIED' ? 'bg-green-500 animate-pulse' :
-                             kycData.status === 'PENDING' ? 'bg-orange-500 animate-pulse' :
-                             'bg-red-500'
-                          }`}></div>
-                          {kycData.status === 'VERIFIED' ? 'Fully Verified' : kycData.status === 'PENDING' ? 'Verification Pending' : 'Unverified'}
-                      </div>
-                   </div>
+             <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white shadow-xl ring-1 ring-gray-100">
+                    <img src={signupData.profileImage || getAvatarUrl(signupData.username)} className="w-full h-full object-cover" alt="Profile" referrerPolicy="no-referrer" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <h3 className="text-xl font-black text-gray-900 tracking-tight">{signupData.fullName || "User"}</h3>
+                      {kycData.status === 'VERIFIED' && <Icons.ShieldCheck className="w-6 h-6 text-blue-500" />}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">₦{(signupData.username || "USER").replace(/^[@₦]+/, '')}</span>
+                    </div>
+                  </div>
                 </div>
-                
-                <div></div>
+
+                {/* Verification Badges */}
+                <div className="flex flex-wrap gap-x-5 gap-y-2 mt-2">
+                  <div className="flex items-center gap-1.5">
+                    {kycData.status === 'VERIFIED' || kycData.status === 'PENDING' ? (
+                      <Icons.CheckCircle className="w-4 h-4 text-green-500" />
+                    ) : (
+                      <div className="w-4 h-4 rounded-full border-2 border-gray-300" />
+                    )}
+                    <span className={`text-[10px] font-bold uppercase tracking-wider ${kycData.status === 'VERIFIED' || kycData.status === 'PENDING' ? 'text-gray-700' : 'text-gray-400'}`}>Email</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    {kycData.status === 'VERIFIED' || kycData.status === 'PENDING' ? (
+                      <Icons.CheckCircle className="w-4 h-4 text-green-500" />
+                    ) : (
+                      <div className="w-4 h-4 rounded-full border-2 border-gray-300" />
+                    )}
+                    <span className={`text-[10px] font-bold uppercase tracking-wider ${kycData.status === 'VERIFIED' || kycData.status === 'PENDING' ? 'text-gray-700' : 'text-gray-400'}`}>Phone</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    {kycData.status === 'VERIFIED' ? (
+                      <Icons.CheckCircle className="w-4 h-4 text-green-500" />
+                    ) : (
+                      <div className="w-4 h-4 rounded-full border-2 border-gray-300" />
+                    )}
+                    <span className={`text-[10px] font-bold uppercase tracking-wider ${kycData.status === 'VERIFIED' ? 'text-gray-700' : 'text-gray-400'}`}>Identity</span>
+                  </div>
+                </div>
              </div>
           </div>
        </div>

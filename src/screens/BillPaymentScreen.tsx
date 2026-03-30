@@ -13,16 +13,10 @@ import { InsufficientBalanceModal } from '../components/InsufficientBalanceModal
 export const BillPaymentScreen = ({ 
   setIsGlobalLoading, 
   setGlobalLoadingMessage, 
-  setShowPinModal, 
-  setOnPinSuccess, 
-  setOnPinCancel,
   showToast: showToastProp 
 }: { 
   setIsGlobalLoading: (b: boolean) => void, 
   setGlobalLoadingMessage: (m: string) => void, 
-  setShowPinModal: (show: boolean) => void, 
-  setOnPinSuccess: (callback: () => void) => void,
-  setOnPinCancel: (callback: () => void) => void,
   showToast: (type: string, title: string, message: string) => void
 }) => {
   const { 
@@ -36,7 +30,10 @@ export const BillPaymentScreen = ({
     setBillDetails, 
     selectedVoucher, 
     setSelectedVoucher,
-    completeChecklistTask
+    completeChecklistTask,
+    setShowPinModal,
+    setOnPinSuccess,
+    setOnPinCancel
   } = useAppContext();
 
   const [showRecent, setShowRecent] = useState(false);
@@ -58,10 +55,10 @@ export const BillPaymentScreen = ({
 
   if (screen === AppScreen.PAY_BILLS) {
     return (
-      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in overflow-hidden items-center">
-        <div className="w-full max-w-2xl flex flex-col h-full mx-auto">
+      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in overflow-hidden items-center w-full h-full min-h-0">
+        <div className="w-full max-w-2xl flex flex-col flex-1 min-h-0 mx-auto">
             <BackHeader title="Pay Bills" onBack={() => setScreen(AppScreen.HOME)} />
-            <div className="p-5 grid grid-cols-2 gap-4 overflow-y-auto no-scrollbar pb-24">
+            <div className="p-5 grid grid-cols-2 gap-4 overflow-y-auto no-scrollbar pb-24 min-h-0">
               {[
                 { label: 'Registrations', desc: 'Register your Business Name or LTD Company', icon: <Icons.FileText />, providers: ['CAC'], bg: 'bg-white', iconColor: 'text-primary', iconBorder: 'border-primary/20' },
                 { label: 'Airtime', desc: 'Recharge your airtime to your preferred network', icon: <Icons.Phone />, providers: ['MTN', 'Airtel', 'Glo', '9mobile'], bg: 'bg-white', iconColor: 'text-primary', iconBorder: 'border-primary/20' },
@@ -90,10 +87,10 @@ export const BillPaymentScreen = ({
 
   if (screen === AppScreen.BILL_PAYMENT_DETAILS) {
     return (
-      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center">
-        <div className="w-full max-w-xl flex flex-col h-full mx-auto">
+      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center w-full h-full overflow-hidden min-h-0">
+        <div className="w-full max-w-xl flex flex-col flex-1 min-h-0 mx-auto">
             <BackHeader title={selectedBillCategory?.label || 'Bill Payment'} subtitle="Enter Payment Details" onBack={() => setScreen(AppScreen.PAY_BILLS)} />
-            <div className="p-6 space-y-6 overflow-y-auto no-scrollbar flex-1 pb-24">
+            <div className="p-6 space-y-6 overflow-y-auto no-scrollbar flex-1 pb-24 min-h-0">
                 <div className="space-y-3">
                     <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 ml-2">Select Provider</label>
                     <div className="grid grid-cols-2 gap-3">
@@ -287,11 +284,11 @@ export const BillPaymentScreen = ({
     const totalToPay = billAmount - discount;
 
     return (
-      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center relative overflow-hidden">
+      <div className="flex-1 flex flex-col bg-green-50/30 animate-fade-in items-center relative overflow-hidden w-full h-full min-h-0">
         <BrandPattern opacity={0.03} size={60} animate={true} className="absolute inset-0 pointer-events-none" />
-        <div className="w-full max-w-xl flex flex-col h-full mx-auto relative z-10">
+        <div className="w-full max-w-xl flex flex-col flex-1 min-h-0 mx-auto relative z-10">
             <BackHeader title="Summary" subtitle="Confirm Your Payment" onBack={() => setScreen(AppScreen.BILL_PAYMENT_DETAILS)} />
-            <div className="p-6 space-y-5 overflow-y-auto no-scrollbar flex-1 pb-24">
+            <div className="p-6 space-y-5 overflow-y-auto no-scrollbar flex-1 pb-24 min-h-0">
                 <div className="bg-white p-6 rounded-[40px] shadow-2xl shadow-gray-200/40 border border-gray-100 space-y-4">
                     <div className="flex justify-between items-center py-3 border-b border-gray-50">
                         <span className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em]">Service</span>

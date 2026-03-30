@@ -26,6 +26,8 @@ import { MeScreen } from './src/screens/MeScreen';
 import { SendScreen } from './src/screens/SendScreen';
 import { SwapScreen } from './src/screens/SwapScreen';
 import { WithdrawScreen } from './src/screens/WithdrawScreen';
+import { WithdrawMethodScreen } from './src/screens/WithdrawMethodScreen';
+import { SendToGreentagScreen } from './src/screens/SendToGreentagScreen';
 import { BillPaymentScreen } from './src/screens/BillPaymentScreen';
 import { SecurityScreen } from './src/screens/SecurityScreen';
 import { BankDetailsScreen } from './src/screens/BankDetailsScreen';
@@ -62,6 +64,8 @@ const MODAL_SCREENS = [
   AppScreen.RECEIPT_PDF_PREVIEW,
   AppScreen.SWAP_SELECT_ASSET_FROM, AppScreen.SWAP_SELECT_ASSET_TO, AppScreen.SWAP_AMOUNT, AppScreen.SWAP_CONFIRM,
   AppScreen.WITHDRAW_MONEY,
+  AppScreen.WITHDRAW_METHOD,
+  AppScreen.SEND_TO_GREENTAG,
   AppScreen.PAYMENT_SETTINGS,
   AppScreen.BILL_PAYMENT_DETAILS, AppScreen.BILL_PAYMENT_SUMMARY,
   AppScreen.AIRTIME,
@@ -91,11 +95,26 @@ const MODAL_SCREENS = [
   AppScreen.SELL_PROCESSING,
   AppScreen.SELL_FAILED,
   AppScreen.SELL_REJECTED,
-  AppScreen.GIFT_CARD_TRADE_OPTIONS,
   AppScreen.GIFT_CARD_LIST,
   AppScreen.GIFT_CARD_COUNTRY,
   AppScreen.GIFT_CARD_DETAILS,
-  AppScreen.GIFT_CARD_CONFIRMATION
+  AppScreen.GIFT_CARD_CONFIRMATION,
+  AppScreen.GIFT_CARD_TRADE_OPTIONS,
+  AppScreen.GIFT_CARD_TYPE_SELECTION,
+  AppScreen.GIFT_CARD_TRADE_CHAT
+];
+
+const FULL_HEIGHT_MODALS = [
+  AppScreen.SEND_SELECT_ASSET, AppScreen.SEND_RECIPIENT, AppScreen.SEND_AMOUNT, AppScreen.SEND_CONFIRM, AppScreen.SEND_PROCESSING, AppScreen.SEND_FAILED, AppScreen.SEND_REJECTED,
+  AppScreen.SWAP_SELECT_ASSET_FROM, AppScreen.SWAP_SELECT_ASSET_TO, AppScreen.SWAP_AMOUNT, AppScreen.SWAP_CONFIRM,
+  AppScreen.BILL_PAYMENT_DETAILS, AppScreen.BILL_PAYMENT_SUMMARY,
+  AppScreen.SELL_CRYPTO, AppScreen.SELL_SUMMARY, AppScreen.SELL_PROCESSING, AppScreen.SELL_FAILED, AppScreen.SELL_REJECTED,
+  AppScreen.GIFT_CARD_LIST, AppScreen.GIFT_CARD_COUNTRY, AppScreen.GIFT_CARD_DETAILS, AppScreen.GIFT_CARD_CONFIRMATION,
+  AppScreen.NOTIFICATIONS,
+  AppScreen.RATES,
+  AppScreen.COIN_DETAIL,
+  AppScreen.COIN_SELECTION,
+  AppScreen.BANK_DETAILS
 ];
 
 
@@ -134,6 +153,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
 
   const isSwiped = swipedItem?.id === tx.id;
   const direction = isSwiped ? swipedItem?.direction : null;
+  const isFailed = tx.status === 'Failed' || tx.status === 'Cancelled';
 
   return (
     <div className="relative overflow-hidden rounded-[16px]">
@@ -168,9 +188,9 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
         {...handlers}
         className={`p-3.5 bg-white rounded-2xl flex items-center gap-4 border border-gray-100 shadow-sm cursor-pointer active:scale-[0.98] transition-all hover:shadow-md relative z-10 transform transition-transform duration-300 ease-out ${
           direction === 'left' ? 'translate-x-[-70px]' : direction === 'right' ? 'translate-x-[70px]' : 'translate-x-0'
-        }`}
+        } ${isFailed ? 'opacity-70' : ''}`}
       >
-        <div className="w-5 h-5 rounded-full flex items-center justify-center text-white font-bold shadow-sm transition-transform relative shrink-0" style={{ backgroundColor: tx.color }}>
+        <div className="w-5 h-5 rounded-full flex items-center justify-center text-white font-bold shadow-sm transition-transform relative shrink-0" style={{ backgroundColor: isFailed ? '#9CA3AF' : tx.color }}>
           <div className="w-3 h-3">
             {tx.icon}
           </div>
@@ -182,8 +202,8 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-center mb-0.5">
-            <p className="font-bold text-[13px] tracking-tight text-gray-900 truncate">{tx.type}</p>
-            <p className={`font-bold text-[13px] tabular-nums ${tx.type === 'Add Fund' ? 'text-green-600' : 'text-gray-900'}`}>
+            <p className={`font-bold text-[13px] tracking-tight truncate ${isFailed ? 'text-gray-400 line-through' : 'text-gray-900'}`}>{tx.type}</p>
+            <p className={`font-bold text-[13px] tabular-nums ${isFailed ? 'text-gray-400 line-through' : (tx.type === 'Add Fund' ? 'text-green-600' : 'text-gray-900')}`}>
               {tx.type === 'Add Fund' ? '+' : ''}
               <PrivacyText hide={hideBalance}>{tx.fiatAmount}</PrivacyText>
             </p>
@@ -193,7 +213,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
             <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md ${
               tx.status === 'Success' ? 'bg-green-50 text-green-600' : 
               tx.status === 'Pending' || tx.status === 'Processing' ? 'bg-yellow-50 text-yellow-600' : 
-              'bg-red-50 text-red-600'
+              isFailed ? 'bg-gray-100 text-gray-500' : 'bg-red-50 text-red-600'
             }`}>
               {tx.status}
             </span>
@@ -231,7 +251,7 @@ export const RatesScreen = ({ onSell, onProtectedNavigation, areCryptoWalletsGen
   }, [coins, favoriteCoinIds, searchQuery]);
 
   return (
-    <div className="flex-1 flex flex-col bg-ghost animate-fade-in items-center">
+    <div className="flex-1 flex flex-col bg-ghost animate-fade-in items-center w-full h-full overflow-hidden min-h-0">
       <div className="w-full max-w-2xl flex flex-col h-full bg-white">
         <div className="px-6 pt-8 pb-4">
           <button 
@@ -319,6 +339,8 @@ export const RatesScreen = ({ onSell, onProtectedNavigation, areCryptoWalletsGen
 export const App = () => {
   const {
     screen, setScreen, previousScreen, setPreviousScreen,
+    navigate, scannerTab, setScannerTab, pendingRoute, setPendingRoute,
+    showPinModal, setShowPinModal, onPinSuccess, setOnPinSuccess, onPinCancel, setOnPinCancel,
     globalOverlay, setGlobalOverlay,
     walletBalance, setWalletBalance,
     pendingBalance, setPendingBalance,
@@ -358,7 +380,6 @@ export const App = () => {
   } = useAppContext();
 
   // Global Interception State
-  const [pendingRoute, setPendingRoute] = useState<AppScreen | null>(null);
   const [isGeneratingCryptoWallets, setIsGeneratingCryptoWallets] = useState<boolean>(false);
   const [isGeneratingBankAccounts, setIsGeneratingBankAccounts] = useState<boolean>(false);
 
@@ -372,9 +393,20 @@ export const App = () => {
   
   useEffect(() => {
     if ([AppScreen.HOME, AppScreen.SERVICES, AppScreen.TRANSACTION_HISTORY, AppScreen.ME, AppScreen.CHAT].includes(screen)) {
-      setActiveTab(screen);
+      if (activeTab !== screen) {
+        setActiveTab(screen);
+      }
     }
-  }, [screen, setActiveTab]);
+  }, [screen, setActiveTab, activeTab]);
+
+  useEffect(() => {
+    if (screen === AppScreen.SIGNUP_UNDER_REVIEW) {
+      const timer = setTimeout(() => {
+        setScreen(AppScreen.ONBOARDING_ADD_BANK);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [screen, setScreen]);
   
   // Features State
   const [selectedCoin, setSelectedCoin] = useState<any>(null);
@@ -398,10 +430,7 @@ export const App = () => {
   const allServices = Constants.ALL_SERVICES;
 
   // Transaction Signing State
-  const [showPinModal, setShowPinModal] = useState<boolean>(false);
   const [pinInput, setPinInput] = useState<string>('');
-  const [onPinSuccess, setOnPinSuccess] = useState<(() => void) | null>(null);
-  const [onPinCancel, setOnPinCancel] = useState<(() => void) | null>(null);
   
   // Global Loading State
   const [isGlobalLoading, setIsGlobalLoading] = useState<boolean>(false);
@@ -429,7 +458,6 @@ export const App = () => {
   const [isStateDropdownOpen, setIsStateDropdownOpen] = useState(false);
   const [stateSearchTerm, setStateSearchTerm] = useState('');
   const [advancedOtpValue, setAdvancedOtpValue] = useState('');
-  const [scannerTab, setScannerTab] = useState<'scan' | 'receive'>('scan');
   const [isBackCamera, setIsBackCamera] = useState(true);
   const [scannerError, setScannerError] = useState<string | null>(null);
   const [scannedData, setScannedData] = useState<any>(null);
@@ -733,8 +761,13 @@ export const App = () => {
   const handleNextSignup = useCallback(async () => {
     if (signupStep < signupSteps.length - 1) {
       setIsSignupLoading(true);
-      // Small delay for feedback
-      await new Promise(r => setTimeout(r, 600));
+      // Add 3-second delay if moving from Step 2 (email) to Step 3 (otp)
+      if (signupStep === 1) {
+        await new Promise(r => setTimeout(r, 3000));
+      } else {
+        // Small delay for feedback
+        await new Promise(r => setTimeout(r, 600));
+      }
       setSignupStep(prev => prev + 1);
       setIsSignupLoading(false);
     } else {
@@ -864,10 +897,9 @@ export const App = () => {
       let matchesType = true;
       if (txFilterType !== 'All') {
         const typeLower = tx.type.toLowerCase();
-        if (txFilterType === 'Buy') matchesType = typeLower.includes('bought') || typeLower.includes('buy');
-        else if (txFilterType === 'Sell') matchesType = typeLower.includes('sold') || typeLower.includes('sell');
-        else if (txFilterType === 'Add Fund') matchesType = typeLower.includes('add fund') || typeLower.includes('deposit') || typeLower.includes('funded');
-        else if (txFilterType === 'Withdrawal') matchesType = typeLower.includes('withdrawal') || typeLower.includes('airtime') || typeLower.includes('data') || typeLower.includes('cable');
+        if (txFilterType === 'Gift Card') matchesType = typeLower.includes('gift card');
+        else if (txFilterType === 'Withdrawal') matchesType = typeLower.includes('withdrawal');
+        else if (txFilterType === 'Transfer') matchesType = typeLower.includes('transfer');
       }
 
       // Date Filter
@@ -1065,13 +1097,11 @@ export const App = () => {
                     <div className="flex flex-col">
                       <Input 
                         label="Email or Username" 
-                        placeholder="kehindevhassan" 
-                        prefix="₦-"
+                        placeholder="johndoe" 
                         variant="default"
                         value={loginData.email} 
                         onChange={e => {
-                            let newVal = e.target.value ?? '';
-                            const raw = (newVal || '').replace(/^[₦-]+/, '').replace(/\s/g, '');
+                            const raw = (e.target.value ?? '').replace(/^[₦-]+/, '').replace(/\s/g, '');
                             setLoginData({...loginData, email: '₦-' + raw});
                         }} 
                       />
@@ -1107,7 +1137,7 @@ export const App = () => {
                       <Input 
                         value={loginData.email} 
                         onChange={(e) => setLoginData({...loginData, email: e.target.value})}
-                        placeholder="name@example.com" 
+                        placeholder="johndoe@example.com" 
                         type="email" 
                         variant="default"
                       />
@@ -1276,17 +1306,36 @@ export const App = () => {
                         value={(signupData as any)[currentStep.key] || ''} 
                         onPaste={currentStep.key === 'confirmPassword' ? (e) => e.preventDefault() : undefined}
                         onChange={e => {
-                            let newVal = e.target.value ?? '';
-                            if (currentStep.key === 'username' || currentStep.key === 'password' || currentStep.key === 'confirmPassword' || currentStep.key === 'referralCode') {
-                                newVal = newVal.replace(/\s/g, '');
+                            let val = e.target.value ?? '';
+                            
+                            if (currentStep.key === 'username') {
+                                // Strip the ₦ prefix to validate
+                                let raw = val.replace(/^₦/, '');
+                                
+                                // Strict rules: No spaces, no special characters, cannot start with a number
+                                // 1. Remove all non-alphanumeric characters
+                                raw = raw.replace(/[^a-zA-Z0-9]/g, '');
+                                
+                                // 2. Cannot start with a number
+                                raw = raw.replace(/^[0-9]+/, '');
+                                
+                                val = '₦' + raw;
+                            } else if (currentStep.key === 'password' || currentStep.key === 'confirmPassword' || currentStep.key === 'referralCode') {
+                                val = val.replace(/\s/g, '');
+                                if (currentStep.key === 'referralCode') {
+                                     const raw = val.replace(/^[₦-]+/, '');
+                                     val = '₦' + raw.replace(/-/g, '');
+                                }
                             }
-                            if (currentStep.key === 'username' || currentStep.key === 'referralCode') {
-                                 const raw = (newVal || '').replace(/^[₦-]+/, '');
-                                 newVal = '₦' + raw.replace(/-/g, '');
-                            }
-                            setSignupData({...signupData, [currentStep.key]: newVal});
+                            
+                            setSignupData({...signupData, [currentStep.key]: val});
                         }} 
                       />
+                      {currentStep.key === 'username' && (
+                        <p className="text-[10px] text-gray-500 font-medium mt-1">
+                          This will be your GoGreen tag to receive payments. No spaces, no special characters, and cannot start with a number.
+                        </p>
+                      )}
                       {currentStep.type === 'email' && (
                         <EmailSuggestions value={signupData.email} onSelect={(val) => setSignupData({...signupData, email: val})} />
                       )}
@@ -1460,7 +1509,7 @@ export const App = () => {
                            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Account Number</label>
                            <input 
                               type="tel" 
-                              placeholder="0123456789" 
+                              placeholder="08031234567" 
                               className="w-full p-4 rounded-[20px] bg-gray-50 border border-gray-200 focus:outline-none focus:border-primary text-sm font-mono font-bold text-gray-900 placeholder:text-gray-400" 
                               maxLength={10}
                               onInput={(e) => {
@@ -1539,7 +1588,7 @@ export const App = () => {
          );
 
       case AppScreen.CRYPTO_HUB:
-        return <CryptoHubScreen onNavigate={setScreen} onProtectedNavigation={handleProtectedNavigation} />;
+        return <CryptoHubScreen />;
       
       case AppScreen.GUIDES_AND_TUTORIALS:
         return <GuidesAndTutorialsScreen onNavigate={setScreen} />;
@@ -1557,14 +1606,10 @@ export const App = () => {
             walletBalance={walletBalance}
             bonusClaimed={bonusClaimed}
             pendingBalance={pendingBalance}
-            onNavigate={setScreen}
-            onProtectedNavigation={handleProtectedNavigation}
+            onNavigate={handleProtectedNavigation}
             quickAccessIds={quickAccessIds}
             showQuickAccessDropdown={showQuickAccessDropdown}
             setShowQuickAccessDropdown={setShowQuickAccessDropdown}
-            isTxLoading={isTxLoading}
-            setSelectedTx={setSelectedTx}
-            navigateToHistory={navigateToHistory}
           />
         );
 
@@ -1588,8 +1633,8 @@ export const App = () => {
          ========================================================================================== */
       case AppScreen.TRANSACTION_HISTORY:
         return (
-          <div className="flex-1 flex flex-col bg-white animate-fade-in overflow-hidden items-center relative">
-            <div className="w-full max-w-4xl flex flex-col h-full overflow-hidden">
+          <div className="flex-1 flex flex-col bg-white animate-fade-in items-center relative w-full h-full overflow-hidden min-h-0">
+            <div className="w-full max-w-4xl flex flex-col flex-1 min-h-0 overflow-hidden">
                 
                 {/* 1. FIXED TOP CONTAINER (Static Header) */}
                 <div className="z-20 flex-shrink-0 header-integrated">
@@ -1603,7 +1648,7 @@ export const App = () => {
                   <div className="px-5 py-4 space-y-4">
                     {/* Type Filters */}
                     <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-                      {['All', 'Buy', 'Sell', 'Withdrawal'].map(type => (
+                      {['All', 'Gift Card', 'Withdrawal', 'Transfer'].map(type => (
                         <button
                           key={type}
                           onClick={() => setTxFilterType(type)}
@@ -1680,12 +1725,30 @@ export const App = () => {
                         </>
                       ) : (
                         /* Empty State */
-                        <div className="flex flex-col items-center justify-center py-20 text-center">
+                        <div className="flex flex-col items-center justify-center py-20 text-center animate-fade-in">
                           <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-4">
                             <Icons.History className="w-10 h-10 text-gray-200" />
                           </div>
-                          <h3 className="text-gray-900 font-black text-sm mb-1">No transactions found</h3>
-                          <p className="text-gray-400 text-[10px] max-w-[200px]">Try adjusting your filters to find what you're looking for.</p>
+                          <h3 className="text-gray-900 font-black text-sm mb-1">
+                            {txFilterType !== 'All' || txFilterDate !== 'All Time' ? "No matches found" : "No transactions found"}
+                          </h3>
+                          <p className="text-gray-400 text-[10px] max-w-[200px] font-medium leading-relaxed">
+                            {txFilterType !== 'All' || txFilterDate !== 'All Time' 
+                              ? "Try adjusting your filters to find what you're looking for." 
+                              : "You haven't made any transactions yet. Start trading to see your history here!"}
+                          </p>
+                          {(txFilterType !== 'All' || txFilterDate !== 'All Time') && (
+                            <Button 
+                              variant="ghost" 
+                              className="mt-6 !h-9 !text-[10px] !px-6 border border-gray-100"
+                              onClick={() => {
+                                setTxFilterType('All');
+                                setTxFilterDate('All Time');
+                              }}
+                            >
+                              Clear Search
+                            </Button>
+                          )}
                         </div>
                       )}
                     </div>
@@ -1701,10 +1764,10 @@ export const App = () => {
       case AppScreen.TRANSACTION_DETAILS:
         if (!selectedTx) return <div />;
         return (
-           <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center">
-              <div className="w-full max-w-2xl flex flex-col h-full">
+           <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center w-full h-full overflow-hidden min-h-0">
+              <div className="w-full max-w-2xl flex flex-col flex-1 min-h-0">
                   <BackHeader title="Details" subtitle={selectedTx.status} onBack={() => setScreen(AppScreen.TRANSACTION_HISTORY)} />
-                  <div className="p-3 flex-1 overflow-y-auto no-scrollbar pb-24">
+                  <div className="p-3 flex-1 overflow-y-auto no-scrollbar pb-24 min-h-0">
                     <div className="bg-white rounded-[16px] p-3 shadow-sm border border-gray-100 flex flex-col items-center text-center">
                         
                         {/* Status Badge */}
@@ -1716,9 +1779,11 @@ export const App = () => {
                         <h2 className="text-xl font-black text-gray-900 mb-0.5">
                           <PrivacyText hide={hideBalance}>{selectedTx.fiatAmount}</PrivacyText>
                         </h2>
-                        <p className="text-gray-400 text-[9px] font-bold uppercase tracking-widest mb-6">
-                          <PrivacyText hide={hideBalance}>{selectedTx.cryptoAmount}</PrivacyText>
-                        </p>
+                        {selectedTx.cryptoAmount !== 'N/A' && (
+                          <p className="text-gray-400 text-[9px] font-bold uppercase tracking-widest mb-6">
+                            <PrivacyText hide={hideBalance}>{selectedTx.cryptoAmount}</PrivacyText>
+                          </p>
+                        )}
 
                         {/* Transaction Progress */}
                         <div className="w-full bg-gray-50 rounded-xl p-4 text-left border border-gray-100 mb-4">
@@ -1729,7 +1794,7 @@ export const App = () => {
                                     <div className={`absolute -left-[21px] top-6 bottom-0 w-0.5 ${selectedTx.status === 'Success' || selectedTx.status === 'Pending' ? 'bg-green-500' : 'bg-gray-200'}`}></div>
                                     <div className="absolute -left-[32px] top-0 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold shadow-sm">1</div>
                                     <p className="text-[11px] font-bold text-gray-900 leading-tight">
-                                      {selectedTx.type.includes('Sold') ? `Incoming deposit of ${selectedTx.cryptoAmount}` : 
+                                      {selectedTx.type.includes('Gift Card') ? `Incoming deposit of ${selectedTx.cryptoAmount}` : 
                                        selectedTx.type.includes('Withdrawal') ? `Withdrawal request of ${selectedTx.fiatAmount}` :
                                        `Initiated ${selectedTx.type}`}
                                     </p>
@@ -1741,7 +1806,7 @@ export const App = () => {
                                     <div className={`absolute -left-[21px] top-6 bottom-0 w-0.5 ${selectedTx.status === 'Success' ? 'bg-green-500' : 'bg-gray-200'}`}></div>
                                     <div className={`absolute -left-[32px] top-0 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shadow-sm ${selectedTx.status === 'Success' || selectedTx.status === 'Pending' ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500'}`}>2</div>
                                     <p className="text-[11px] font-bold text-gray-900 leading-tight">
-                                      {selectedTx.type.includes('Sold') ? `Converted ${selectedTx.cryptoAmount} to ${selectedTx.fiatAmount}` : 
+                                      {selectedTx.type.includes('Gift Card') ? `Converted ${selectedTx.cryptoAmount} to ${selectedTx.fiatAmount}` : 
                                        selectedTx.type.includes('Withdrawal') ? `Processing ${selectedTx.fiatAmount}` :
                                        `Processing transaction`}
                                     </p>
@@ -1752,7 +1817,7 @@ export const App = () => {
                                 <div className="relative">
                                     <div className={`absolute -left-[32px] top-0 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shadow-sm ${selectedTx.status === 'Success' ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500'}`}>3</div>
                                     <p className="text-[11px] font-bold text-gray-900 leading-tight">
-                                      {selectedTx.type.includes('Sold') ? `${selectedTx.fiatAmount} has been deposited` : 
+                                      {selectedTx.type.includes('Gift Card') ? `${selectedTx.fiatAmount} has been deposited` : 
                                        selectedTx.type.includes('Withdrawal') ? `Sent to ${selectedTx.bankName}` :
                                        `Transaction ${selectedTx.status.toLowerCase()}`}
                                     </p>
@@ -1794,7 +1859,7 @@ export const App = () => {
                               <span className="text-gray-900 text-[9px] font-bold font-mono">{selectedTx.ref}</span>
                           </div>
                           <div className="flex justify-between py-1 border-b border-gray-50">
-                              <span className="text-gray-400 text-[9px] font-medium">Network</span>
+                              <span className="text-gray-400 text-[9px] font-medium">Method / Network</span>
                               <span className="text-gray-900 text-[9px] font-bold">{selectedTx.network}</span>
                           </div>
                           
@@ -1844,8 +1909,8 @@ export const App = () => {
                           
                           <div className="flex justify-between py-1.5 border-b border-gray-50">
                               <div className="flex items-center gap-1">
-                                <span className="text-gray-400 text-[10px] font-medium">Network Fee</span>
-                                <button onClick={() => showToast("Fee charged by the blockchain network")} className="text-gray-300 hover:text-primary transition-colors">
+                                <span className="text-gray-400 text-[10px] font-medium">Provider Fee</span>
+                                <button onClick={() => showToast("Fee charged by the provider")} className="text-gray-300 hover:text-primary transition-colors">
                                   <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                 </button>
                               </div>
@@ -1880,7 +1945,7 @@ export const App = () => {
       case AppScreen.RECEIPT_IMAGE_PREVIEW:
          if (!selectedTx) return <div />;
          return (
-            <div className="flex-1 flex flex-col bg-dark animate-fade-in overflow-hidden relative items-center justify-center">
+            <div className="flex-1 flex flex-col bg-dark animate-fade-in overflow-hidden relative items-center justify-center w-full h-full min-h-0">
                <div className="w-full max-w-md h-full flex flex-col relative">
                   <div className="absolute top-4 left-4 z-20">
                       <button onClick={() => setScreen(AppScreen.TRANSACTION_DETAILS)} className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center text-white backdrop-blur-md">
@@ -1919,7 +1984,7 @@ export const App = () => {
       case AppScreen.RECEIPT_PDF_PREVIEW:
          if (!selectedTx) return <div />;
          return (
-            <div className="flex-1 flex flex-col bg-gray-200 animate-fade-in overflow-hidden relative items-center">
+            <div className="flex-1 flex flex-col bg-gray-200 animate-fade-in overflow-hidden relative items-center w-full h-full min-h-0">
                <div className="w-full max-w-4xl h-full flex flex-col relative">
                   <div className="absolute top-4 left-4 z-20">
                       <button onClick={() => setScreen(AppScreen.TRANSACTION_DETAILS)} className="w-9 h-9 bg-dark/10 rounded-full flex items-center justify-center text-dark hover:bg-dark/20 transition-colors">
@@ -1960,8 +2025,8 @@ export const App = () => {
 
       case AppScreen.COIN_SELECTION:
         return (
-          <div className="flex-1 flex flex-col bg-ghost animate-fade-in items-center">
-            <div className="w-full max-w-2xl flex flex-col h-full">
+          <div className="flex-1 flex flex-col bg-ghost animate-fade-in items-center w-full h-full overflow-hidden min-h-0">
+            <div className="w-full max-w-2xl flex flex-col flex-1 min-h-0">
               <BackHeader title="Assets" subtitle="Manage Portfolio" onBack={() => setScreen(AppScreen.HOME)} />
               
               <div className="px-4 pt-2 pb-1 space-y-2">
@@ -2046,8 +2111,8 @@ export const App = () => {
               ];
 
          return (
-            <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center">
-               <div className="w-full max-w-2xl flex flex-col h-full">
+            <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center w-full h-full overflow-hidden min-h-0">
+               <div className="w-full max-w-2xl flex flex-col flex-1 min-h-0">
                   <BackHeader title={`Select Network`} subtitle={selectedCoin.symbol} onBack={() => setScreen(AppScreen.COIN_DETAIL)} />
                   <div className="p-3 overflow-y-auto no-scrollbar pb-6">
                       
@@ -2099,8 +2164,8 @@ export const App = () => {
           case AppScreen.COIN_RECEIVE: {
          if (!selectedCoin) return <div />;
          return (
-            <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center">
-               <div className="w-full max-w-2xl flex flex-col h-full">
+            <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center w-full h-full overflow-hidden min-h-0">
+               <div className="w-full max-w-2xl flex flex-col flex-1 min-h-0">
                   <BackHeader 
                     title={`Receive ${selectedCoin.symbol}`} 
                     subtitle={`${selectedCoin.network} Network`} 
@@ -2191,8 +2256,8 @@ export const App = () => {
 
       case AppScreen.SELL_SUMMARY:
          return (
-            <div className="flex-1 flex flex-col bg-white animate-slide-up items-center">
-               <div className="w-full max-w-2xl flex flex-col h-full">
+            <div className="flex-1 flex flex-col bg-white animate-slide-up items-center w-full h-full overflow-hidden min-h-0">
+               <div className="w-full max-w-2xl flex flex-col flex-1 min-h-0">
                   <BackHeader title="Review & Confirm" subtitle="Transaction Details" onBack={() => setScreen(AppScreen.COIN_DETAIL)} />
                   <div className="p-6 flex-1 flex flex-col">
                       <div className="bg-white border border-[#d4d3d3] p-6 rounded-2xl mb-6 shadow-sm">
@@ -2309,7 +2374,7 @@ export const App = () => {
 
       case AppScreen.SCANNER:
         return (
-          <div className="flex-1 flex flex-col bg-black animate-fade-in items-center relative overflow-hidden">
+          <div className="flex-1 flex flex-col bg-black animate-fade-in items-center relative overflow-hidden w-full h-full min-h-0">
             {/* Header */}
             <div className="absolute top-0 left-0 right-0 p-4 flex flex-col gap-4 z-20">
               <div className="flex justify-between items-center">
@@ -2562,16 +2627,13 @@ export const App = () => {
         return <BillPaymentScreen 
             setIsGlobalLoading={setIsGlobalLoading} 
             setGlobalLoadingMessage={setGlobalLoadingMessage} 
-            setShowPinModal={setShowPinModal} 
-            setOnPinSuccess={setOnPinSuccess}
-            setOnPinCancel={setOnPinCancel}
             showToast={showToast}
         />;
 
       case AppScreen.SUGGESTION_BOX:
         return (
-           <div className="flex-1 flex flex-col bg-ghost animate-fade-in items-center">
-              <div className="w-full max-w-2xl flex flex-col h-full">
+           <div className="flex-1 flex flex-col bg-ghost animate-fade-in items-center w-full h-full overflow-hidden min-h-0">
+              <div className="w-full max-w-2xl flex flex-col flex-1 min-h-0">
                   <BackHeader title="Feedback" subtitle="Suggestion Box" />
                   <div className="p-3">
                     <h2 className="text-base font-black mb-1.5 text-gray-900">We're listening.</h2>
@@ -2585,8 +2647,8 @@ export const App = () => {
 
       case AppScreen.REPORT_BUG:
         return (
-           <div className="flex-1 flex flex-col bg-ghost animate-fade-in items-center">
-              <div className="w-full max-w-2xl flex flex-col h-full">
+           <div className="flex-1 flex flex-col bg-ghost animate-fade-in items-center w-full h-full overflow-hidden min-h-0">
+              <div className="w-full max-w-2xl flex flex-col flex-1 min-h-0">
                   <BackHeader title="Support" subtitle="Report a Bug" onBack={() => setScreen(AppScreen.ME)} />
                   <div className="p-4">
                     <div className="bg-red-50 p-3 rounded-[20px] border border-red-100 flex gap-3 items-start mb-4">
@@ -2689,8 +2751,8 @@ export const App = () => {
 
       case AppScreen.NOTIFICATIONS:
         return (
-          <div className="flex-1 flex flex-col bg-ghost animate-fade-in items-center">
-            <div className="w-full max-w-2xl flex flex-col h-full">
+          <div className="flex-1 flex flex-col bg-ghost animate-fade-in items-center w-full h-full overflow-hidden min-h-0">
+            <div className="w-full max-w-2xl flex flex-col flex-1 min-h-0">
                 <BackHeader title="Notifications" subtitle="Alerts" />
                 <div className="p-3 space-y-2.5 flex-1 pb-24 overflow-y-auto no-scrollbar">
                   {notifications.length > 0 ? (
@@ -2741,8 +2803,8 @@ export const App = () => {
 
       case AppScreen.ADD_MONEY:
          return (
-            <div className="flex-1 flex flex-col bg-white animate-slide-up items-center">
-               <div className="w-full max-w-2xl flex flex-col h-full">
+            <div className="flex-1 flex flex-col bg-white animate-slide-up items-center w-full h-full overflow-hidden min-h-0">
+               <div className="w-full max-w-2xl flex flex-col flex-1 min-h-0">
                   <BackHeader title="Add Money" subtitle="Choose a deposit method" onBack={() => setScreen(AppScreen.HOME)} />
                   <div className="p-6 flex-1 flex flex-col gap-4 overflow-y-auto pb-24">
                       {[
@@ -2782,8 +2844,8 @@ export const App = () => {
 
       case AppScreen.VIRTUAL_ACCOUNT:
          return (
-            <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center">
-               <div className="w-full max-w-2xl flex flex-col h-full">
+            <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center w-full h-full overflow-hidden min-h-0">
+               <div className="w-full max-w-2xl flex flex-col flex-1 min-h-0">
                   <div className="p-6 pt-12 pb-8 z-20 sticky top-0 flex flex-col header-integrated">
                     <h2 className="text-3xl font-black text-gray-900 tracking-tighter mb-2">Naira Wallet</h2>
                     <p className="text-gray-500 font-medium text-sm">Manage your funds</p>
@@ -2802,7 +2864,7 @@ export const App = () => {
                             </h2>
                             
                             <div className="flex gap-3">
-                                <Button variant="white" className="flex-1 !h-11 !rounded-2xl !text-[10px] font-black uppercase tracking-widest !bg-white/20 !text-white backdrop-blur-md border border-white/10" onClick={() => handleProtectedNavigation(AppScreen.WITHDRAW_MONEY)}>Withdraw</Button>
+                                <Button variant="white" className="flex-1 !h-11 !rounded-2xl !text-[10px] font-black uppercase tracking-widest !bg-white/20 !text-white backdrop-blur-md border border-white/10" onClick={() => navigate(AppScreen.WITHDRAW_MONEY)}>Withdraw</Button>
                                 <Button variant="white" className="flex-1 !h-11 !rounded-2xl !text-[10px] font-black uppercase tracking-widest" onClick={() => showToast("Transfer feature coming soon")}>Transfer</Button>
                             </div>
                         </div>
@@ -2876,7 +2938,7 @@ export const App = () => {
       case AppScreen.SECURITY:
       case AppScreen.CHANGE_PIN:
       case AppScreen.LOGGED_IN_DEVICES:
-        return <SecurityScreen onNavigate={handleProtectedNavigation} />;
+        return <SecurityScreen />;
 
       case AppScreen.BANK_DETAILS:
         return <BankDetailsScreen />;
@@ -2893,8 +2955,8 @@ export const App = () => {
 
       case AppScreen.ACCOUNT_SETTINGS:
         return (
-           <div className="flex-1 flex flex-col bg-ghost animate-fade-in items-center">
-              <div className="w-full max-w-2xl flex flex-col h-full">
+           <div className="flex-1 flex flex-col bg-ghost animate-fade-in items-center w-full h-full overflow-hidden min-h-0">
+              <div className="w-full max-w-2xl flex flex-col flex-1 min-h-0">
                   <BackHeader title="Settings" subtitle="Preferences" onBack={() => setScreen(AppScreen.ME)} />
                   <div className="p-4 space-y-4">
                      <div className="bg-white p-4 rounded-[16px] border border-gray-100 shadow-sm">
@@ -2977,8 +3039,8 @@ export const App = () => {
 
       case AppScreen.EDIT_PROFILE:
          return (
-            <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center">
-               <div className="w-full max-w-2xl flex flex-col h-full">
+            <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center w-full h-full overflow-hidden min-h-0">
+               <div className="w-full max-w-2xl flex flex-col flex-1 min-h-0">
                   <BackHeader title="Edit Profile" subtitle="Personal Info" onBack={() => setScreen(AppScreen.ME)} />
                   <div className="p-4 flex-1 flex flex-col">
                      <div className="flex justify-center mb-6 relative">
@@ -3015,7 +3077,7 @@ export const App = () => {
 
                         <Input 
                            label="Phone Number"
-                           placeholder="+234 800 000 0000"
+                           placeholder="+234 803 123 4567"
                            value={signupData.phone || ''}
                            variant="glass-light"
                            inputClassName="!h-9 !text-xs !text-gray-900"
@@ -3033,8 +3095,8 @@ export const App = () => {
 
       case AppScreen.PAYMENT_SETTINGS:
          return (
-            <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center">
-               <div className="w-full max-w-2xl flex flex-col h-full">
+            <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center w-full h-full overflow-hidden min-h-0">
+               <div className="w-full max-w-2xl flex flex-col flex-1 min-h-0">
                   <BackHeader title="Payment Settings" subtitle="Preferences" onBack={() => setScreen(AppScreen.ME)} onHome={() => setScreen(AppScreen.HOME)} />
                   <div className="p-3 flex-1 flex flex-col">
                       <div className="bg-white p-3.5 rounded-[16px] border border-gray-100 shadow-sm mb-3">
@@ -3066,8 +3128,8 @@ export const App = () => {
 
       case AppScreen.APP_UPDATE:
          return (
-            <div className="flex-1 flex flex-col bg-ghost animate-fade-in items-center">
-               <div className="w-full max-w-2xl flex flex-col h-full">
+            <div className="flex-1 flex flex-col bg-ghost animate-fade-in items-center w-full h-full overflow-hidden min-h-0">
+               <div className="w-full max-w-2xl flex flex-col flex-1 min-h-0">
                   <BackHeader title="App Update" subtitle="Version Info" onBack={() => setScreen(AppScreen.ME)} />
                   <div className="p-4 flex-1 flex flex-col items-center justify-center text-center">
                      <div className="w-16 h-16 bg-primary/10 rounded-[24px] flex items-center justify-center mb-4 shadow-sm border border-primary/20">
@@ -3102,8 +3164,8 @@ export const App = () => {
 
       case AppScreen.DELETE_ACCOUNT:
          return (
-            <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center">
-               <div className="w-full max-w-2xl flex flex-col h-full">
+            <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center w-full h-full overflow-hidden min-h-0">
+               <div className="w-full max-w-2xl flex flex-col flex-1 min-h-0">
                   <BackHeader title="Delete Account" subtitle="Danger Zone" onBack={() => setScreen(AppScreen.ME)} />
                   <div className="p-4 flex-1 flex flex-col">
                      <div className="bg-red-50 p-3.5 rounded-[16px] border border-red-100 mb-5 text-center shadow-sm">
@@ -3141,16 +3203,16 @@ export const App = () => {
          );
 
       case AppScreen.RATES:
-         return <RatesScreen areCryptoWalletsGenerated={areCryptoWalletsGenerated} onProtectedNavigation={handleProtectedNavigation} onSell={(coin) => {
+         return <RatesScreen areCryptoWalletsGenerated={areCryptoWalletsGenerated} onProtectedNavigation={navigate} onSell={(coin) => {
              setSelectedCoin(coin);
              setSellAmount('');
-             handleProtectedNavigation(AppScreen.COIN_DETAIL);
+             navigate(AppScreen.COIN_DETAIL);
          }} />;
 
       case AppScreen.REFER_FRIEND:
          return (
-            <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center">
-               <div className="w-full max-w-2xl flex flex-col h-full">
+            <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center w-full h-full overflow-hidden min-h-0">
+               <div className="w-full max-w-2xl flex flex-col flex-1 min-h-0">
                   <BackHeader title="Refer & Earn" subtitle="Earn Money" onBack={() => setScreen(AppScreen.ME)} />
                   <div className="p-4 flex-1 flex flex-col items-center justify-center text-center">
                      <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center text-primary mb-3">
@@ -3177,11 +3239,16 @@ export const App = () => {
           <WithdrawScreen 
             setIsGlobalLoading={setIsGlobalLoading}
             setGlobalLoadingMessage={setGlobalLoadingMessage}
-            onProtectedNavigation={handleProtectedNavigation}
-            setShowPinModal={setShowPinModal}
-            setOnPinSuccess={setOnPinSuccess}
+            onProtectedNavigation={navigate}
+            isModal={isModal}
           />
         );
+
+      case AppScreen.WITHDRAW_METHOD:
+        return <WithdrawMethodScreen isModal={isModal} />;
+
+      case AppScreen.SEND_TO_GREENTAG:
+        return <SendToGreentagScreen isModal={isModal} />;
 
       /* ==========================================================================================
          SEND FLOW
@@ -3200,9 +3267,6 @@ export const App = () => {
       case AppScreen.SEND_REJECTED:
         return (
           <SendScreen
-            setShowPinModal={setShowPinModal}
-            setOnPinSuccess={setOnPinSuccess}
-            setOnPinCancel={setOnPinCancel}
             setGlobalLoadingMessage={setGlobalLoadingMessage}
             setIsGlobalLoading={setIsGlobalLoading}
             showToast={showToast}
@@ -3219,68 +3283,24 @@ export const App = () => {
       case AppScreen.SWAP_SUCCESS:
         return (
           <SwapScreen
-            setShowPinModal={setShowPinModal}
-            setOnPinSuccess={setOnPinSuccess}
             setGlobalLoadingMessage={setGlobalLoadingMessage}
             setIsGlobalLoading={setIsGlobalLoading}
           />
         );
 
       case AppScreen.GIFT_CARD_TRADE_OPTIONS:
-        return (
-          <div className="p-6 pb-10">
-            <div className="w-12 h-1 bg-gray-200 rounded-full mx-auto mb-8" />
-            <h3 className="text-xl font-black text-gray-900 mb-2 text-center">Trade Giftcards</h3>
-            <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest text-center mb-8">Select an option to continue</p>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <button 
-                onClick={() => {
-                  setGiftCardTradeType('SELL');
-                  setScreen(AppScreen.GIFT_CARD_LIST);
-                }}
-                className="p-6 rounded-[24px] bg-orange-50 border border-orange-100 flex flex-col items-center gap-4 active:scale-95 transition-all group"
-              >
-                <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-md text-orange-500 group-hover:scale-110 transition-transform">
-                  <Icons.Gift className="w-7 h-7" />
-                </div>
-                <div className="text-center">
-                  <p className="font-black text-orange-900 text-sm">Sell Giftcards</p>
-                  <p className="text-[9px] font-bold text-orange-400 uppercase tracking-widest mt-1">Cash out fast</p>
-                </div>
-              </button>
-
-              <button 
-                onClick={() => {
-                  setGiftCardTradeType('BUY');
-                  setScreen(AppScreen.GIFT_CARD_LIST);
-                }}
-                className="p-6 rounded-[24px] bg-primary/5 border border-primary/10 flex flex-col items-center gap-4 active:scale-95 transition-all group"
-              >
-                <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-md text-primary group-hover:scale-110 transition-transform">
-                  <Icons.ShoppingBag className="w-7 h-7" />
-                </div>
-                <div className="text-center">
-                  <p className="font-black text-primary text-sm">Buy Giftcards</p>
-                  <p className="text-[9px] font-bold text-primary/40 uppercase tracking-widest mt-1">Shop globally</p>
-                </div>
-              </button>
-            </div>
-          </div>
-        );
-
       case AppScreen.GIFT_CARD_LIST:
       case AppScreen.GIFT_CARD_TYPE_SELECTION:
       case AppScreen.GIFT_CARD_COUNTRY:
       case AppScreen.GIFT_CARD_DETAILS:
       case AppScreen.GIFT_CARD_CONFIRMATION:
       case AppScreen.GIFT_CARD_TRADE_CHAT:
-        return <GiftCardScreen />;
+        return <GiftCardScreen isModal={isModal} />;
 
       case AppScreen.KYC_INTRO:
          return (
-            <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center">
-               <div className="w-full max-w-2xl flex flex-col h-full">
+            <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center w-full h-full overflow-hidden min-h-0">
+               <div className="w-full max-w-2xl flex flex-col flex-1 min-h-0">
                   <BackHeader title="Identity Verification" subtitle="KYC Level 1" onBack={() => setScreen(AppScreen.ME)} />
                   <div className="p-4 flex-1 flex flex-col">
                      <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
@@ -3334,9 +3354,9 @@ export const App = () => {
 
       case AppScreen.KYC_BVN:
          return (
-            <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center">
-               <div className="w-full max-w-2xl flex flex-col h-full">
-                  <BackHeader title="BVN Verification" subtitle="Step 1 of 3" onBack={() => setScreen(AppScreen.KYC_INTRO)} />
+            <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center w-full h-full overflow-hidden min-h-0">
+               <div className="w-full max-w-2xl flex flex-col flex-1 min-h-0">
+                  <BackHeader title="BVN Verification" subtitle="Identity Verification" onBack={() => setScreen(AppScreen.HOME)} />
                   <div className="p-4 flex-1 flex flex-col">
                      <div className="bg-blue-50 p-3.5 rounded-[20px] border border-blue-100 mb-6 flex gap-3 shadow-sm">
                         <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center shrink-0">
@@ -3350,7 +3370,7 @@ export const App = () => {
                      <div className="space-y-4">
                         <Input 
                            label="Bank Verification Number (BVN)"
-                           placeholder="222XXXXXXXX"
+                           placeholder="0123456789"
                            value={kycData.bvn}
                            variant="glass-light"
                            inputClassName="!h-12 !text-sm font-bold tracking-[0.2em]"
@@ -3367,12 +3387,24 @@ export const App = () => {
                               setIsKycLoading(true);
                               setTimeout(() => {
                                  setIsKycLoading(false);
-                                 setScreen(AppScreen.KYC_NIN);
+                                 if (kycData.bvn && kycData.nin && kycData.selfie) {
+                                    setKycData(prev => ({ ...prev, status: 'PENDING' }));
+                                    triggerReview({
+                                       title: 'KYC Verification',
+                                       message: 'Our team is reviewing your identity documents. This usually takes 24-48 hours.',
+                                       notificationTitle: 'KYC Verified',
+                                       notificationDesc: 'Your identity has been successfully verified.',
+                                       onComplete: () => setKycData(prev => ({ ...prev, status: 'VERIFIED' })),
+                                       nextScreen: AppScreen.KYC_SUCCESS
+                                    });
+                                 } else {
+                                    setScreen(AppScreen.HOME);
+                                 }
                               }, 1000);
                            }} 
                            className="!h-11 !text-xs"
                         >
-                           Continue
+                           Submit BVN
                         </Button>
                      </div>
                   </div>
@@ -3382,9 +3414,9 @@ export const App = () => {
 
       case AppScreen.KYC_NIN:
          return (
-            <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center">
-               <div className="w-full max-w-2xl flex flex-col h-full">
-                  <BackHeader title="NIN Verification" subtitle="Step 2 of 3" onBack={() => setScreen(AppScreen.KYC_BVN)} />
+            <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center w-full h-full overflow-hidden min-h-0">
+               <div className="w-full max-w-2xl flex flex-col flex-1 min-h-0">
+                  <BackHeader title="NIN Verification" subtitle="Identity Verification" onBack={() => setScreen(AppScreen.HOME)} />
                   <div className="p-4 flex-1 flex flex-col">
                      <div className="bg-blue-50 p-3.5 rounded-[20px] border border-blue-100 mb-6 flex gap-3 shadow-sm">
                         <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center shrink-0">
@@ -3398,7 +3430,7 @@ export const App = () => {
                      <div className="space-y-4">
                         <Input 
                            label="National Identity Number (NIN)"
-                           placeholder="123XXXXXXXX"
+                           placeholder="0123456789"
                            value={kycData.nin}
                            variant="glass-light"
                            inputClassName="!h-12 !text-sm font-bold tracking-[0.2em]"
@@ -3415,12 +3447,24 @@ export const App = () => {
                               setIsKycLoading(true);
                               setTimeout(() => {
                                  setIsKycLoading(false);
-                                 setScreen(AppScreen.KYC_SELFIE);
+                                 if (kycData.bvn && kycData.nin && kycData.selfie) {
+                                    setKycData(prev => ({ ...prev, status: 'PENDING' }));
+                                    triggerReview({
+                                       title: 'KYC Verification',
+                                       message: 'Our team is reviewing your identity documents. This usually takes 24-48 hours.',
+                                       notificationTitle: 'KYC Verified',
+                                       notificationDesc: 'Your identity has been successfully verified.',
+                                       onComplete: () => setKycData(prev => ({ ...prev, status: 'VERIFIED' })),
+                                       nextScreen: AppScreen.KYC_SUCCESS
+                                    });
+                                 } else {
+                                    setScreen(AppScreen.HOME);
+                                 }
                               }, 1000);
                            }} 
                            className="!h-11 !text-xs"
                         >
-                           Continue
+                           Submit NIN
                         </Button>
                      </div>
                   </div>
@@ -3430,9 +3474,9 @@ export const App = () => {
 
       case AppScreen.KYC_SELFIE:
          return (
-            <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center">
-               <div className="w-full max-w-2xl flex flex-col h-full">
-                  <BackHeader title="Selfie Verification" subtitle="Final Step" onBack={() => setScreen(AppScreen.KYC_NIN)} />
+            <div className="flex-1 flex flex-col bg-ghost animate-slide-up items-center w-full h-full overflow-hidden min-h-0">
+               <div className="w-full max-w-2xl flex flex-col flex-1 min-h-0">
+                  <BackHeader title="Selfie Verification" subtitle="Identity Verification" onBack={() => setScreen(AppScreen.HOME)} />
                   <div className="p-4 flex-1 flex flex-col">
                      <div className="flex-1 flex flex-col items-center justify-center py-6">
                         <div className="relative w-64 h-64 mb-8">
@@ -3490,20 +3534,24 @@ export const App = () => {
                                     setIsKycLoading(true);
                                     setTimeout(() => {
                                        setIsKycLoading(false);
-                                       setKycData(prev => ({ ...prev, status: 'PENDING' }));
-                                       triggerReview({
-                                          title: 'KYC Verification',
-                                          message: 'Our team is reviewing your identity documents. This usually takes 24-48 hours.',
-                                          notificationTitle: 'KYC Verified',
-                                          notificationDesc: 'Your identity has been successfully verified.',
-                                          onComplete: () => setKycData(prev => ({ ...prev, status: 'VERIFIED' })),
-                                          nextScreen: AppScreen.KYC_SUCCESS
-                                       });
-                                    }, 2000);
+                                       if (kycData.bvn && kycData.nin && kycData.selfie) {
+                                          setKycData(prev => ({ ...prev, status: 'PENDING' }));
+                                          triggerReview({
+                                             title: 'KYC Verification',
+                                             message: 'Our team is reviewing your identity documents. This usually takes 24-48 hours.',
+                                             notificationTitle: 'KYC Verified',
+                                             notificationDesc: 'Your identity has been successfully verified.',
+                                             onComplete: () => setKycData(prev => ({ ...prev, status: 'VERIFIED' })),
+                                             nextScreen: AppScreen.KYC_SUCCESS
+                                          });
+                                       } else {
+                                          setScreen(AppScreen.HOME);
+                                       }
+                                    }, 1000);
                                  }} 
                                  className="!h-11 !text-xs"
                               >
-                                 Submit for Review
+                                 Submit Selfie
                               </Button>
                               <Button 
                                  variant="ghost" 
@@ -3522,8 +3570,8 @@ export const App = () => {
 
       case AppScreen.KYC_SUCCESS:
          return (
-            <div className="flex-1 flex flex-col bg-ghost animate-fade-in items-center">
-               <div className="w-full max-w-2xl flex flex-col h-full">
+            <div className="flex-1 flex flex-col bg-ghost animate-fade-in items-center w-full h-full overflow-hidden min-h-0">
+               <div className="w-full max-w-2xl flex flex-col flex-1 min-h-0">
                   <div className="p-6 flex-1 flex flex-col items-center justify-center text-center">
                      <div className="w-24 h-24 bg-primary/10 rounded-[40px] flex items-center justify-center mb-8 animate-epic-bounce shadow-sm border border-primary/20">
                         <div className="w-12 h-12 text-primary"><Icons.ShieldCheck /></div>
@@ -3611,7 +3659,7 @@ export const App = () => {
         </div>
       </main>
 
-      <BottomSheet isOpen={isModal} onClose={() => setScreen(activeTab)}>
+      <BottomSheet isOpen={isModal} onClose={() => setScreen(activeTab)} fullHeight={FULL_HEIGHT_MODALS.includes(screen)}>
          {isModal && renderScreenContent(screen)}
       </BottomSheet>
 

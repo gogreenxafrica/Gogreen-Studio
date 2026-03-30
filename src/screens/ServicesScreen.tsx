@@ -5,16 +5,73 @@ import { useAppContext } from '../../AppContext';
 import { BackHeader } from '../components/BackHeader';
 import { Icons } from '../../components/Icons';
 import { BrandPattern } from '../components/BrandPattern';
+import { GIFT_CARDS, COUNTRIES } from '../../constants';
 
 export const ServicesScreen = () => {
-  const { setScreen } = useAppContext();
+  const { 
+    setScreen, 
+    setGiftCardTradeType, 
+    setSelectedGiftCard, 
+    setSelectedGiftCardCountry, 
+    setGiftCardCodeType,
+    setGiftCardAmount 
+  } = useAppContext();
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const cards = [
-    { title: 'RAZER GOLD', rate: '₦1,130.00/$', color: 'bg-gray-900', tag: 'HOT RATE', tagColor: 'bg-emerald-500', rateColor: 'text-emerald-400' },
-    { title: 'US APPLE (PHYSICAL)', rate: '₦1,200.00/$', color: 'bg-gray-200', tag: 'HOT RATE', tagColor: 'bg-blue-500', rateColor: 'text-blue-600' },
-    { title: 'STEAM GERMANY', rate: '₦1,150.00/€', color: 'bg-blue-900', tag: 'HOT RATE', tagColor: 'bg-yellow-500', rateColor: 'text-yellow-300' },
+    { 
+      title: 'RAZER GOLD', 
+      rate: '₦1,130.00/$', 
+      color: 'bg-gray-900', 
+      tag: 'HOT RATE', 
+      tagColor: 'bg-emerald-500', 
+      rateColor: 'text-emerald-400',
+      giftCardId: 'razer',
+      countryId: 'usa',
+      codeType: 'PHYSICAL' as const
+    },
+    { 
+      title: 'US APPLE (PHYSICAL)', 
+      rate: '₦1,200.00/$', 
+      color: 'bg-gray-200', 
+      tag: 'HOT RATE', 
+      tagColor: 'bg-blue-500', 
+      rateColor: 'text-blue-600',
+      giftCardId: 'apple',
+      countryId: 'usa',
+      codeType: 'PHYSICAL' as const
+    },
+    { 
+      title: 'STEAM GERMANY', 
+      rate: '₦1,150.00/€', 
+      color: 'bg-blue-900', 
+      tag: 'HOT RATE', 
+      tagColor: 'bg-yellow-500', 
+      rateColor: 'text-yellow-300',
+      giftCardId: 'steam',
+      countryId: 'germany',
+      codeType: 'ECODE' as const
+    },
   ];
+
+  const handleCardClick = (card: any) => {
+    const giftCard = GIFT_CARDS.find(c => c.id === card.giftCardId);
+    const country = COUNTRIES.find(c => c.id === card.countryId);
+    
+    if (giftCard && country) {
+      // Reset amount for a fresh trade
+      setGiftCardAmount('');
+      
+      // Auto-fill all details
+      setGiftCardTradeType('SELL');
+      setSelectedGiftCard(giftCard);
+      setSelectedGiftCardCountry(country);
+      setGiftCardCodeType(card.codeType);
+      
+      // Navigate directly to the amount input page
+      setScreen(AppScreen.GIFT_CARD_DETAILS);
+    }
+  };
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -43,8 +100,8 @@ export const ServicesScreen = () => {
   ];
 
   return (
-    <div className="flex-1 flex flex-col bg-white animate-fade-in items-center overflow-hidden">
-      <div className="w-full max-w-2xl flex flex-col flex-1 mx-auto relative">
+    <div className="flex-1 flex flex-col bg-white animate-fade-in items-center overflow-hidden w-full h-full min-h-0">
+      <div className="w-full max-w-2xl flex flex-col flex-1 mx-auto relative min-h-0">
         <BrandPattern opacity={0.02} size={60} className="absolute inset-0 pointer-events-none" />
         
         <div className="p-6 pt-12 pb-8 z-20 sticky top-0 header-integrated">
@@ -56,7 +113,10 @@ export const ServicesScreen = () => {
           {/* GoGreen Activity Cards */}
           <div className="mb-6 pt-4">
               <div className="grid grid-cols-2 gap-4">
-                  <div className={`relative h-44 ${cards[currentIndex].color} rounded-[32px] shadow-lg shadow-gray-900/10 overflow-hidden group cursor-pointer active:scale-[0.98] transition-colors duration-500`}>
+                  <div 
+                    onClick={() => handleCardClick(cards[currentIndex])}
+                    className={`relative h-44 ${cards[currentIndex].color} rounded-[32px] shadow-lg shadow-gray-900/10 overflow-hidden group cursor-pointer active:scale-[0.98] transition-colors duration-500`}
+                  >
                     <AnimatePresence mode="wait">
                       <motion.div
                         key={currentIndex}

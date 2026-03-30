@@ -2,13 +2,10 @@ import React from 'react';
 import { AppScreen } from '../../types';
 import { BackHeader } from '../components/BackHeader';
 import { Icons } from '../../components/Icons';
+import { useAppContext } from '../../AppContext';
 
-interface CryptoHubScreenProps {
-  onNavigate: (screen: AppScreen) => void;
-  onProtectedNavigation: (screen: AppScreen) => void;
-}
-
-export const CryptoHubScreen: React.FC<CryptoHubScreenProps> = ({ onNavigate, onProtectedNavigation }) => {
+export const CryptoHubScreen: React.FC = () => {
+  const { navigate } = useAppContext();
   const features = [
     { id: 'coins', label: 'My Wallet', icon: <Icons.Wallet className="w-6 h-6" />, screen: AppScreen.COIN_DETAIL, comingSoon: true },
     { id: 'trade', label: 'Trade Crypto', icon: <Icons.ArrowLeftRight className="w-6 h-6" />, screen: AppScreen.SELL_CRYPTO, comingSoon: true },
@@ -17,15 +14,15 @@ export const CryptoHubScreen: React.FC<CryptoHubScreenProps> = ({ onNavigate, on
   ];
 
   return (
-    <div className="flex-1 flex flex-col bg-white animate-fade-in pb-24 overflow-hidden">
-      <BackHeader title="Trade Crypto" subtitle="Manage your digital assets" onBack={() => onNavigate(AppScreen.HOME)} />
+    <div className="flex-1 flex flex-col bg-white animate-fade-in pb-24 overflow-hidden w-full h-full min-h-0">
+      <BackHeader title="Trade Crypto" subtitle="Manage your digital assets" onBack={() => navigate(AppScreen.HOME)} />
       
-      <div className="flex-1 overflow-y-auto no-scrollbar">
+      <div className="flex-1 overflow-y-auto no-scrollbar min-h-0">
         <div className="p-5 grid grid-cols-2 gap-4">
           {features.map((feature) => (
             <button
               key={feature.id}
-              onClick={() => !feature.comingSoon && onProtectedNavigation(feature.screen)}
+              onClick={() => !feature.comingSoon && navigate(feature.screen)}
               className={`flex flex-col items-center justify-center gap-3 p-6 rounded-3xl bg-green-50/50 border border-green-100/50 shadow-sm hover:shadow-md transition-all active:scale-[0.98] relative overflow-hidden ${feature.comingSoon ? 'opacity-40 grayscale cursor-not-allowed' : ''}`}
             >
               {feature.comingSoon && (
