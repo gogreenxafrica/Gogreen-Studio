@@ -1,0 +1,219 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* Brand - A more electric, modern green */
+  --c-primary: #2da437; 
+  --c-primary-dark: #24832c;
+  
+  /* Neutral Palette - Cool Grays (Slate-like) */
+  --c-secondary: #F3F4F6;
+  --c-accent: #ECFDF5;
+  
+  /* Backgrounds */
+  --c-app: #FFFFFF;
+  --c-surface: #FFFFFF;
+  --c-surface-alt: #FFFFFF;
+  --c-ghost: #FFFFFF;
+  
+  /* Content */
+  --c-content: #111827; /* Gray-900 */
+  --c-content-muted: #6B7280; /* Gray-500 */
+  --c-content-subtle: #9CA3AF; /* Gray-400 */
+  
+  /* Borders */
+  --c-line: #F3F4F6;
+  --c-line-strong: #E5E7EB;
+  
+  /* Dark Mode Base */
+  --c-dark: #0B0E11; /* Binance-like dark */
+}
+
+/* Dark Mode Base */
+.dark {
+  --c-primary: #2da437;
+  --c-primary-dark: #24832c;
+  
+  --c-secondary: #1E2329; /* Binance Card BG */
+  --c-accent: rgba(45, 164, 55, 0.1);
+  
+  --c-app: #0B0E11;
+  --c-surface: #1E2329;
+  --c-surface-alt: #2B3139;
+  
+  --c-content: #EAECEF;
+  --c-content-muted: #848E9C;
+  --c-content-subtle: #474D57;
+  
+  --c-line: #2B3139;
+  --c-line-strong: #474D57;
+  
+  --c-dark: #000000;
+}
+
+@theme {
+  --color-primary: var(--c-primary);
+  --color-primary-dark: var(--c-primary-dark);
+  --color-secondary: var(--c-secondary);
+  --color-accent: var(--c-accent);
+  --color-ghost: var(--c-ghost);
+  --color-app: var(--c-app);
+  --color-surface: var(--c-surface);
+  --color-surface-alt: var(--c-surface-alt);
+  --color-content: var(--c-content);
+  --color-content-muted: var(--c-content-muted);
+  --color-content-subtle: var(--c-content-subtle);
+  --color-line: var(--c-line);
+  --color-line-strong: var(--c-line-strong);
+  --color-dark: var(--c-dark);
+  
+  --radius-card: 24px;
+  --radius-button: 12px;
+  
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-display: var(--font-sans);
+}
+
+html {
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--color-app);
+  color: var(--color-content);
+  -webkit-tap-highlight-color: transparent;
+  font-family: var(--font-sans);
+  user-select: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Modern Fintech Card (Coinbase/Binance Hybrid) */
+.fintech-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.dark .fintech-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  box-shadow: none;
+}
+
+/* Refined Glassmorphism */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.dark .glass {
+  background: rgba(11, 14, 17, 0.7); /* Darker glass */
+}
+
+.header-integrated {
+  background: linear-gradient(to bottom, var(--c-app) 0%, var(--c-app) 60%, transparent 100%);
+}
+
+.dark .header-integrated {
+  background: linear-gradient(to bottom, var(--c-app) 0%, var(--c-app) 60%, transparent 100%);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+}
+
+.dark .glass-card {
+  background: rgba(30, 35, 41, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* Animations */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+  20%, 40%, 60%, 80% { transform: translateX(10px); }
+}
+
+.animate-shake {
+  animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes shine {
+  0% { transform: translateX(-100%) skewX(-15deg); }
+  50% { transform: translateX(200%) skewX(-15deg); }
+  100% { transform: translateX(200%) skewX(-15deg); }
+}
+
+.animate-shine {
+  animation: shine 4s infinite;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-10px) rotate(5deg); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes coin-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+.animate-coin-bounce {
+  animation: coin-bounce 2s ease-in-out infinite;
+}
+
+/* Input Reset */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
+
+input[type="date"] {
+  cursor: pointer;
+}

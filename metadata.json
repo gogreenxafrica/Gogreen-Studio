@@ -1,0 +1,7 @@
+{
+  "name": "Gogreen Crypto",
+  "description": "A premium crypto and multi-currency banking app for worldwide spending and rewards.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
